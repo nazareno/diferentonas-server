@@ -22,4 +22,6 @@ public class CidadeController extends Controller {
 
         return ok(toJson(cidade == null? Collections.emptyList() : cidade.getSimilares()));
     }
+
+
 }
