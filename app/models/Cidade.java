@@ -18,6 +18,7 @@ public class Cidade {
     @Id
 	private Long id;
     private String nome;
+    private String uf;
     private Double idhm;
     private Double idhmRenda;
     private Double idhmLongevidade;
@@ -32,10 +33,11 @@ public class Cidade {
         this.similares = new LinkedList<Cidade>();
 	}
 
-	public Cidade(Long id, String nome, Double idhm, Double idhmRenda,
+	public Cidade(Long id, String nome, String uf, Double idhm, Double idhmRenda,
 			Double idhmLongevidade, Double idhmEducacao, Long populacao) {
 		this.id = id;
 		this.nome = nome;
+		this.uf = uf;
 		this.idhm = idhm;
 		this.idhmRenda = idhmRenda;
 		this.idhmLongevidade = idhmLongevidade;
@@ -64,8 +66,16 @@ public class Cidade {
     public void setNome(String nome) {
         this.nome = nome;
     }
+    
+    public String getUf() {
+		return uf;
+	}
 
-    public Double getIdhm() {
+	public void setUf(String uf) {
+		this.uf = uf;
+	}
+
+	public Double getIdhm() {
 		return idhm;
 	}
 
@@ -115,8 +125,8 @@ public class Cidade {
 
 	@Override
 	public String toString() {
-		return "Cidade [id=" + id + ", nome=" + nome + ", idhm=" + idhm
-				+ ", idhmRenda=" + idhmRenda + ", idhmLongevidade="
+		return "Cidade [id=" + id + ", nome=" + nome + ", uf=" + uf + ", idhm="
+				+ idhm + ", idhmRenda=" + idhmRenda + ", idhmLongevidade="
 				+ idhmLongevidade + ", idhmEducacao=" + idhmEducacao
 				+ ", populacao=" + populacao + ", similares=" + similares + "]";
 	}

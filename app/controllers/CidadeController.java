@@ -1,14 +1,14 @@
 package controllers;
 
-import models.Cidade;
-import play.mvc.*;
-import play.db.jpa.*;
+import static play.libs.Json.toJson;
 
-import java.security.cert.CollectionCertStoreParameters;
 import java.util.Collections;
-import java.util.List;
 
-import static play.libs.Json.*;
+import models.Cidade;
+import play.db.jpa.JPA;
+import play.db.jpa.Transactional;
+import play.mvc.Controller;
+import play.mvc.Result;
 
 public class CidadeController extends Controller {
 

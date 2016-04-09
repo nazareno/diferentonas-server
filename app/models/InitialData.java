@@ -1,13 +1,8 @@
 package models;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Scanner;
 
 import org.h2.tools.Csv;
 
@@ -27,20 +22,18 @@ public class InitialData {
 
 		if (cidades.isEmpty()) {
 			try {
-				try {
-					System.out.println(new File(".").getCanonicalPath());
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
 				ResultSet resultSet = new Csv().read("public/data/dados2010.csv", null, "utf-8");
 				resultSet.next();
 				while (resultSet.next()) {
 					Cidade cidade = new Cidade(
 							resultSet.getLong(2),
-							resultSet.getString(1), resultSet.getDouble(3),
-							resultSet.getDouble(4), resultSet.getDouble(5),
-							resultSet.getDouble(6), resultSet.getLong(7));
+							resultSet.getString(3), 
+							resultSet.getString(4),
+							resultSet.getDouble(5), 
+							resultSet.getDouble(6),
+							resultSet.getDouble(7), 
+							resultSet.getDouble(8), 
+							resultSet.getLong(9));
 					jpaAPI.withTransaction(() -> {
 						jpaAPI.em().persist(cidade);
 					});
@@ -49,25 +42,6 @@ public class InitialData {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-
-			// try (Scanner input = new Scanner(new File(
-			// "public/data/dados2010.csv"));) {
-			// input.nextLine();
-			// while (input.hasNextLine()) {
-			// String[] fields = input.nextLine().split(" +");
-			// Cidade cidade = new Cidade(Long.valueOf(fields[1]),
-			// fields[0], Double.valueOf(fields[2]),
-			// Double.valueOf(fields[3]),
-			// Double.valueOf(fields[4]),
-			// Double.valueOf(fields[5]), Long.valueOf(fields[6]));
-			// jpaAPI.withTransaction(() -> {
-			// jpaAPI.em().persist(cidade);
-			// });
-			// }
-			// } catch (FileNotFoundException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 		}
 	}
 }
