@@ -21,7 +21,7 @@ public class IntegrationTest {
     public void test() {
         running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, browser -> {
             browser.goTo("http://localhost:3333");
-            assertThat(browser.pageSource(), containsString("Add Person"));
+            assertThat(browser.pageSource(), containsString("Olar"));
         });
     }
 
