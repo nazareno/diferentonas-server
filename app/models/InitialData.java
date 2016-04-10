@@ -17,8 +17,7 @@ public class InitialData {
 	public InitialData(JPAApi jpaAPI) {
 
 		List<Cidade> cidades = jpaAPI.withTransaction(entityManager -> {
-			return entityManager.createQuery("SELECT c FROM Cidade c",
-					Cidade.class).getResultList();
+			return entityManager.createQuery("FROM Cidade").getResultList();
 		});
 
 

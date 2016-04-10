@@ -20,11 +20,6 @@ public class CidadeController extends Controller {
 
     private JPAApi jpaAPI;
 
-    @Inject
-    public CidadeController(JPAApi jpaAPI) {
-        this.jpaAPI = jpaAPI;
-    }
-
     @Transactional(readOnly = true)
     public Result getCidade(long id) {
         Cidade cidade = JPA.em().find(Cidade.class, id);
@@ -38,7 +33,7 @@ public class CidadeController extends Controller {
 
     @Transactional(readOnly = true)
     public Result getCidades() {
-        List<Cidade> cidades = (List<Cidade>) this.jpaAPI.em().createQuery("FROM Cidade").getResultList();
+        List<Cidade> cidades = (List<Cidade>) JPA.em().createQuery("FROM Cidade").getResultList();
         return ok(toJson(cidades));
     }
 
