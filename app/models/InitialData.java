@@ -59,7 +59,7 @@ public class InitialData {
                     }
 				}
 				
-				dataPath = "dist/data/vizinhos.euclidiano-5.csv";
+				dataPath = "dist/data/vizinhos.euclidiano.csv";
 
 				final ResultSet vizinhosResultSet = new Csv().read(dataPath, null, "utf-8");
 				vizinhosResultSet.next(); // header
@@ -90,7 +90,7 @@ public class InitialData {
 												.map(obj -> (Cidade) obj)
 												.collect(Collectors.toList());
 						o.setSimilares(similares);
-			            Logger.info("Populando similares " + o);
+//			            Logger.info("Populando similares " + o);
 						em.persist(o);
 						em.flush();
 					});
