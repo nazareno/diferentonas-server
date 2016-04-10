@@ -19,15 +19,18 @@ public class Score implements Serializable{
 	private Long id;
 	private String tema;
 	private Double score;
+	private Double total;
+	private Double media;
 	
 	
 	public Score() {
 	}
-
-
-	public Score(String tema, Double score) {
+	public Score(String tema, Double score, Double total, Double media) {
+		super();
 		this.tema = tema;
 		this.score = score;
+		this.total = total;
+		this.media = media;
 	}
 
 
@@ -59,4 +62,18 @@ public class Score implements Serializable{
 	public void setScore(Double score) {
 		this.score = score;
 	}
+	public Double getTotal() {
+		return total;
+	}
+	public void setTotal(Double total) {
+		this.total = total;
+	}
+	public Double getMedia() {
+		return media;
+	}
+	public void setMedia(Double media) {
+		this.media = media;
+	}
+	
+	
 }

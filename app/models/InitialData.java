@@ -100,21 +100,23 @@ public class InitialData {
                     }
 				}
 				
-				dataPath = "dist/data/score.csv";
+				dataPath = "dist/data/diferencas-cidades.csv";
 
 				final ResultSet scoreResultSet = new Csv().read(dataPath, null, "utf-8");
 				scoreResultSet.next(); // header
                 count = 0;
 				while (scoreResultSet.next()) {
 					long originID = scoreResultSet.getLong(1);
-					Score score = new Score(scoreResultSet.getString(2), scoreResultSet.getDouble(3));
+					Score score = new Score(scoreResultSet.getString(2), scoreResultSet.getDouble(3), scoreResultSet.getDouble(4), scoreResultSet.getDouble(5));
 					
 					jpaAPI.withTransaction(() -> {
 						EntityManager em = jpaAPI.em();
 						Cidade o = em.find(Cidade.class, originID);
-						o.getScores().add(score);
-						em.persist(o);
-						em.flush();
+						if(o != null){
+							 o.getScores().add(score);
+							 em.persist(o);
+							 em.flush();
+						}
 					});
                     count++;
                     if(count % 500 == 0){

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -38,15 +39,17 @@ public class Cidade implements Serializable{
     @JsonBackReference
     private List<Cidade> similares;
     
-    @OneToMany(fetch=FetchType.EAGER)
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     private List<Score> scores;
     
     public Cidade() {
-        this.similares = new LinkedList<Cidade>();
+        this.similares = new LinkedList<>();
+        this.scores = new LinkedList<>();
 	}
 
 	public Cidade(Long id, String nome, String uf, Double idhm, Double idhmRenda,
 			Double idhmLongevidade, Double idhmEducacao, Long populacao) {
+		this();
 		this.id = id;
 		this.nome = nome;
 		this.uf = uf;
@@ -55,7 +58,6 @@ public class Cidade implements Serializable{
 		this.idhmLongevidade = idhmLongevidade;
 		this.idhmEducacao = idhmEducacao;
 		this.populacao = populacao;
-        this.similares = new LinkedList<Cidade>();
 	}
 
 	public Cidade(String nome) {
@@ -134,8 +136,6 @@ public class Cidade implements Serializable{
     public void setSimilares(List<Cidade> similares) {
         this.similares = similares;
     }
-    
-    
 
 	public List<Score> getScores() {
 		return scores;
