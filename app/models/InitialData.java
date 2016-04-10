@@ -28,6 +28,8 @@ public class InitialData {
 
 		if (cidades.isEmpty()) {
             Logger.info("Populando BD");
+            Logger.info(new File(".").getAbsolutePath());
+            Logger.info(new File(".").list().toString());
 			try {
 
                 String dataPath = null;
