@@ -3,6 +3,7 @@ package models;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -27,9 +28,12 @@ public class InitialData {
 
 		if (cidades.isEmpty()) {
             Logger.info("Populando BD");
-            try {
+            Logger.info(new File(".").getAbsolutePath());
+            Logger.info(Arrays.toString(new File(".").list()));
+			try {
 
-                String dataPath = new File("public").exists()? "public/data/dados2010.csv": "data/dados2010.csv";
+                // TODO como é a forma limpa de fazer isso?
+                String dataPath = "dist/data/dados2010.csv";
 
                 ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
 				resultSet.next(); // header
