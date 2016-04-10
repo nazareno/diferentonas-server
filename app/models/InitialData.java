@@ -1,20 +1,25 @@
 package models;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javafx.print.PageLayout;
 import org.h2.tools.Csv;
 
 import play.Logger;
+import play.api.Environment;
 import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
 
+import static play.api.Play.*;
+
 public class InitialData {
 
     @Inject
-	public InitialData(JPAApi jpaAPI) {
+	public InitialData(Environment environment, JPAApi jpaAPI) {
 
 		List<Cidade> cidades = jpaAPI.withTransaction(entityManager -> {
 			return entityManager.createQuery("FROM Cidade").getResultList();
@@ -24,7 +29,15 @@ public class InitialData {
 		if (cidades.isEmpty()) {
             Logger.info("Populando BD");
 			try {
-				ResultSet resultSet = new Csv().read("public/data/dados2010.csv", null, "utf-8");
+
+                String dataPath = null;
+                if(new File("public").exists()){
+                    dataPath = "public/data/dados2010.csv";
+                } else {
+                    dataPath = "data/dados2010.csv";
+                }
+
+                ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
 				resultSet.next(); // header
                 int count = 0;
 				while (resultSet.next()) {
