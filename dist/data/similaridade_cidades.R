@@ -13,11 +13,13 @@ acha_vizinhos = function(dist10, k, dados2010){
   names(neighours) <- paste0(names(neighours), ".nome")
   neighours$origem.nome = paste(dados2010$municipio, dados2010$UF)
   neighours$origem = dados2010$cod7
-  neighours = cbind(neighours, df)
+  neighbours.cod = df %>% 
+    mutate_each(funs(nome = paste(dados2010$cod7[.])))
+  neighours = cbind(neighours, neighbours.cod)
   neighours
 }
 
-dados2010 <- read.csv("public/data/dados2010.csv", header=T)
+dados2010 <- read.csv("dist/data/dados2010.csv", header=T)
 
 quantitativos = dados2010 %>% 
   select(6:9) %>% 
@@ -34,10 +36,10 @@ dist10.cos <- as.matrix(dist(quantitativos, method="cosine"))
 vizinhos.cosseno = acha_vizinhos(dist10.cos, k, dados2010)
 
 vizinhos.euclides %>% 
-  write.csv("public/data/vizinhos.euclidiano.csv", row.names = FALSE)
+  write.csv("dist/data/vizinhos.euclidiano.csv", row.names = FALSE)
 
 vizinhos.cosseno %>% 
-  write.csv("public/data/vizinhos.cosseno.csv", row.names = FALSE)
+  write.csv("dist/data/vizinhos.cosseno.csv", row.names = FALSE)
 
 # library(jsonlite)
 # write(toJSON(select(neighours, origem.nome, origem)), "todasascidades.json")
