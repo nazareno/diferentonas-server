@@ -31,11 +31,12 @@ public class InitialData {
             Logger.info(new File(".").list().toString());
 			try {
 
+                // TODO como é a forma limpa de fazer isso?
                 String dataPath = null;
-                if(new File("public").exists()){
-                    dataPath = "public/data/dados2010.csv";
-                } else {
+                if(new File("data").exists()){
                     dataPath = "data/dados2010.csv";
+                } else {
+                    dataPath = "public/data/dados2010.csv";
                 }
 
                 ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
