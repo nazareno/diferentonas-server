@@ -1,26 +1,26 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 
-//@JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class,
-//        property = "@id")
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
-public class Cidade {
+public class Cidade implements Serializable{
 
-    @Id
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 3104811717507160248L;
+	@Id
 	private Long id;
     private String nome;
     private String uf;
@@ -30,8 +30,11 @@ public class Cidade {
     private Double idhmEducacao;
     private Long populacao;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinTable
+    @ManyToMany(fetch=FetchType.LAZY)
+	@JoinTable(name = "cidades_similares", 
+	joinColumns = { @JoinColumn(name = "origin_id", referencedColumnName = "id")  }, 
+	inverseJoinColumns = { @JoinColumn(name = "similar_id", referencedColumnName = "id") })
+    @JsonBackReference
     private List<Cidade> similares;
     
     public Cidade() {
@@ -133,7 +136,7 @@ public class Cidade {
 		return "Cidade [id=" + id + ", nome=" + nome + ", uf=" + uf + ", idhm="
 				+ idhm + ", idhmRenda=" + idhmRenda + ", idhmLongevidade="
 				+ idhmLongevidade + ", idhmEducacao=" + idhmEducacao
-				+ ", populacao=" + populacao + ", similares=" + similares + "]";
+				+ ", populacao=" + populacao + ", similares=" + similares.size() + "]";
 	}
 
 	@Override

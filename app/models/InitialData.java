@@ -6,7 +6,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+
+import javax.persistence.EntityManager;
 
 import org.h2.tools.Csv;
 
@@ -57,26 +59,40 @@ public class InitialData {
                     }
 				}
 				
-				dataPath = new File("public").exists()? "public/data/vizinhos.euclidiano.csv": "data/vizinhos.euclidiano.csv";
+				dataPath = "dist/data/vizinhos.euclidiano-5.csv";
 
-                resultSet = new Csv().read(dataPath, null, "utf-8");
-				resultSet.next(); // header
+				final ResultSet vizinhosResultSet = new Csv().read(dataPath, null, "utf-8");
+				vizinhosResultSet.next(); // header
                 count = 0;
-				while (resultSet.next()) {
-					long originID = resultSet.getLong(12);
-					Cidade origin = jpaAPI.withTransaction(em -> em.find(Cidade.class, originID));
+				while (vizinhosResultSet.next()) {
+					long originID = vizinhosResultSet.getLong(12);
 					
-					List<Cidade> similares = IntStream
+					LongStream similaresIDs = LongStream
 							.range(13, 23)
-							.mapToObj(
-									value -> jpaAPI.withTransaction(em -> em
-											.find(Cidade.class, value)))
-							.map(obj -> (Cidade) obj)
-							.collect(Collectors.toList());
+							.map( value -> {
+								try {
+									return vizinhosResultSet.getLong((int)value);
+								} catch (Exception e) {
+									e.printStackTrace();
+									System.err.println("Não recupetou cidade " + value + " similar a " + originID);
+									return 0;
+								}
+							});
 					
-					origin.setSimilares(similares);
 					jpaAPI.withTransaction(() -> {
-						jpaAPI.em().persist(origin);
+						EntityManager em = jpaAPI.em();
+						
+						Cidade o = em.find(Cidade.class, originID);
+						List<Cidade> similares = similaresIDs
+								.mapToObj(
+										value -> em
+												.find(Cidade.class, value))
+												.map(obj -> (Cidade) obj)
+												.collect(Collectors.toList());
+						o.setSimilares(similares);
+			            Logger.info("Populando similares " + o);
+						em.persist(o);
+						em.flush();
 					});
                     count++;
                     if(count % 500 == 0){
@@ -88,6 +104,7 @@ public class InitialData {
                 e1.printStackTrace();
 			}
 			
+			Logger.info("Populou! ");
 			
 			
 		} else {
