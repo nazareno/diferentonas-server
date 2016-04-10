@@ -5,6 +5,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
+
+import javax.persistence.EntityManager;
 
 import org.h2.tools.Csv;
 
@@ -14,15 +18,13 @@ import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
 
-import static play.api.Play.*;
-
 public class InitialData {
 
     @Inject
 	public InitialData(Environment environment, JPAApi jpaAPI) {
 
 		List<Cidade> cidades = jpaAPI.withTransaction(entityManager -> {
-			return entityManager.createQuery("FROM Cidade").getResultList();
+			return entityManager.createQuery("FROM Cidade", Cidade.class).getResultList();
 		});
 
 
@@ -56,10 +58,55 @@ public class InitialData {
                         Logger.info("Inseri " + count + " cidades...");
                     }
 				}
+				
+				dataPath = "dist/data/vizinhos.euclidiano.csv";
+
+				final ResultSet vizinhosResultSet = new Csv().read(dataPath, null, "utf-8");
+				vizinhosResultSet.next(); // header
+                count = 0;
+				while (vizinhosResultSet.next()) {
+					long originID = vizinhosResultSet.getLong(12);
+					
+					LongStream similaresIDs = LongStream
+							.range(13, 23)
+							.map( value -> {
+								try {
+									return vizinhosResultSet.getLong((int)value);
+								} catch (Exception e) {
+									e.printStackTrace();
+									System.err.println("Não recupetou cidade " + value + " similar a " + originID);
+									return 0;
+								}
+							});
+					
+					jpaAPI.withTransaction(() -> {
+						EntityManager em = jpaAPI.em();
+						
+						Cidade o = em.find(Cidade.class, originID);
+						List<Cidade> similares = similaresIDs
+								.mapToObj(
+										value -> em
+												.find(Cidade.class, value))
+												.map(obj -> (Cidade) obj)
+												.collect(Collectors.toList());
+						o.setSimilares(similares);
+//			            Logger.info("Populando similares " + o);
+						em.persist(o);
+						em.flush();
+					});
+                    count++;
+                    if(count % 500 == 0){
+                        Logger.info("Inseri " + count + " cidades...");
+                    }
+				}
 			} catch (SQLException e1) {
                 Logger.error(e1.getLocalizedMessage());
                 e1.printStackTrace();
 			}
+			
+			Logger.info("Populou! ");
+			
+			
 		} else {
             Logger.info("BD já populado");
         }
