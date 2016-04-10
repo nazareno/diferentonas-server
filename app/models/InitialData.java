@@ -6,13 +6,14 @@ import java.util.List;
 
 import org.h2.tools.Csv;
 
+import play.Logger;
 import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
 
 public class InitialData {
 
-	@Inject
+    @Inject
 	public InitialData(JPAApi jpaAPI) {
 
 		List<Cidade> cidades = jpaAPI.withTransaction(entityManager -> {
@@ -20,10 +21,13 @@ public class InitialData {
 					Cidade.class).getResultList();
 		});
 
+
 		if (cidades.isEmpty()) {
+            Logger.info("Populando BD");
 			try {
 				ResultSet resultSet = new Csv().read("public/data/dados2010.csv", null, "utf-8");
-				resultSet.next();
+				resultSet.next(); // header
+                int count = 0;
 				while (resultSet.next()) {
 					Cidade cidade = new Cidade(
 							resultSet.getLong(2),
@@ -37,11 +41,17 @@ public class InitialData {
 					jpaAPI.withTransaction(() -> {
 						jpaAPI.em().persist(cidade);
 					});
+                    count++;
+                    if(count % 500 == 0){
+                        Logger.info("Inseri " + count + " cidades...");
+                    }
 				}
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+                Logger.error(e1.getLocalizedMessage());
+                e1.printStackTrace();
 			}
-		}
+		} else {
+            Logger.info("BD já populado");
+        }
 	}
 }
