@@ -3,6 +3,7 @@ package models;
 import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.h2.tools.Csv;
@@ -28,7 +29,7 @@ public class InitialData {
 		if (cidades.isEmpty()) {
             Logger.info("Populando BD");
             Logger.info(new File(".").getAbsolutePath());
-            Logger.info(new File(".").list().toString());
+            Logger.info(Arrays.toString(new File(".").list()));
 			try {
 
                 // TODO como é a forma limpa de fazer isso?
