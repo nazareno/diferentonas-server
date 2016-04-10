@@ -74,3 +74,5 @@ joined = inner_join(convenios, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = 
 
 head(joined)
 
+write.csv(joined, "convenios-municipio-ccodigo.csv", row.names = FALSE)
+
