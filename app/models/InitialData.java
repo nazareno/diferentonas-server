@@ -34,8 +34,8 @@ public class InitialData {
 
                 // TODO como é a forma limpa de fazer isso?
                 String dataPath = null;
-                if(new File("data").exists()){
-                    dataPath = "data/dados2010.csv";
+                if(new File("dist").exists()){
+                    dataPath = "dist/data/dados2010.csv";
                 } else {
                     dataPath = "public/data/dados2010.csv";
                 }
