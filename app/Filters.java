@@ -1,12 +1,10 @@
-package filters;
-
 import play.mvc.EssentialFilter;
 import play.filters.cors.CORSFilter;
 import play.http.HttpFilters;
 
 import javax.inject.Inject;
 
-public class OurFilters implements HttpFilters {
+public class Filters implements HttpFilters {
 
     @Inject
     CORSFilter corsFilter;
