@@ -33,12 +33,7 @@ public class InitialData {
 			try {
 
                 // TODO como é a forma limpa de fazer isso?
-                String dataPath = null;
-                if(new File("dist").exists()){
-                    dataPath = "dist/data/dados2010.csv";
-                } else {
-                    dataPath = "public/data/dados2010.csv";
-                }
+                String dataPath = "dist/data/dados2010.csv";
 
                 ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
 				resultSet.next(); // header
