@@ -9,6 +9,7 @@ scalaVersion := "2.11.7"
 PlayKeys.externalizeResources := false
 
 libraryDependencies ++= Seq(
+  filters,
   javaJdbc,
   jdbc,
   javaJpa,
