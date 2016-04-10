@@ -74,7 +74,7 @@ public class InitialData {
 									return vizinhosResultSet.getLong((int)value);
 								} catch (Exception e) {
 									e.printStackTrace();
-									System.err.println("Não recupetou cidade " + value + " similar a " + originID);
+									System.err.println("Não recuperou cidade " + value + " similar a " + originID);
 									return 0;
 								}
 							});
@@ -91,6 +91,28 @@ public class InitialData {
 												.collect(Collectors.toList());
 						o.setSimilares(similares);
 //			            Logger.info("Populando similares " + o);
+						em.persist(o);
+						em.flush();
+					});
+                    count++;
+                    if(count % 500 == 0){
+                        Logger.info("Inseri " + count + " cidades...");
+                    }
+				}
+				
+				dataPath = "dist/data/score.csv";
+
+				final ResultSet scoreResultSet = new Csv().read(dataPath, null, "utf-8");
+				scoreResultSet.next(); // header
+                count = 0;
+				while (scoreResultSet.next()) {
+					long originID = scoreResultSet.getLong(1);
+					Score score = new Score(scoreResultSet.getString(2), scoreResultSet.getDouble(3));
+					
+					jpaAPI.withTransaction(() -> {
+						EntityManager em = jpaAPI.em();
+						Cidade o = em.find(Cidade.class, originID);
+						o.getScores().add(score);
 						em.persist(o);
 						em.flush();
 					});

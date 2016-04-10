@@ -10,6 +10,10 @@ import javax.persistence.Id;
 @Entity
 public class Score implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 392920310936985766L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
@@ -55,10 +59,4 @@ public class Score implements Serializable{
 	public void setScore(Double score) {
 		this.score = score;
 	}
-	
-	
-	
-	
-	
-
 }

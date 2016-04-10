@@ -134,6 +134,16 @@ public class Cidade implements Serializable{
     public void setSimilares(List<Cidade> similares) {
         this.similares = similares;
     }
+    
+    
+
+	public List<Score> getScores() {
+		return scores;
+	}
+
+	public void setScores(List<Score> scores) {
+		this.scores = scores;
+	}
 
 	@Override
 	public String toString() {
