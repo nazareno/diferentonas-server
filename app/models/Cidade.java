@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -36,6 +37,9 @@ public class Cidade implements Serializable{
 	inverseJoinColumns = { @JoinColumn(name = "similar_id", referencedColumnName = "id") })
     @JsonBackReference
     private List<Cidade> similares;
+    
+    @OneToMany(fetch=FetchType.EAGER)
+    private List<Score> scores;
     
     public Cidade() {
         this.similares = new LinkedList<Cidade>();
