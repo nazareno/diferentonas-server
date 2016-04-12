@@ -1,5 +1,6 @@
 library(ggplot2)
 library(reshape2)
+library(tidyr)
 library(dplyr)
 
 convenios = read.csv("dist/data/convenios-municipio-ccodigo.csv")
@@ -65,18 +66,41 @@ cria_df_comparacao <- function(cod, convenios, vizinhos) {
     summarise(total = sum(total)) %>% 
     mutate(zscore = (total - mean(total)) / sd(total)) 
   cs = cs %>% group_by(NM_ORGAO_SUPERIOR) %>% mutate(media = mean(total)) 
-  cs[is.na(cs$zscore), "zscore"] = 1
+  cs[is.na(cs$zscore), "zscore"] = 0
   cs$origem = cod
   cs
 }
 
-resultado = data.frame(origem = c(), NM_ORGAO_SUPERIOR = c(), zscore = c(), total = c(), media = c())
-for (id in vizinhos$origem){
-  x = cria_df_comparacao(id, convenios, vizinhos) %>% 
-  filter(origem == cod7) %>% 
-  select(origem, NM_ORGAO_SUPERIOR, zscore, total, media) 
-  resultado = rbind(resultado, x)
+convenios.e = convenios %>% 
+  complete(c(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, ANO_CONVENIO, nome, cod7), 
+           NM_ORGAO_SUPERIOR, 
+           fill = list(total = 0))
+
+t = convenios.e %>% 
+  group_by(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, nome, cod7, ANO_CONVENIO) %>% 
+  summarise(total = sum(total))
+t$NM_ORGAO_SUPERIOR = "TOTAL GERAL"
+
+convenios.e = rbind(convenios.e, t)
+
+# resultado = data.frame(origem = c(), NM_ORGAO_SUPERIOR = c(), zscore = c(), total = c(), media = c())
+# for (id in vizinhos$origem){
+#   x = cria_df_comparacao(id, convenios.e, vizinhos) %>% 
+#   filter(origem == cod7) %>% 
+#   select(origem, NM_ORGAO_SUPERIOR, zscore, total, media) 
+#   resultado = rbind(resultado, x)
+# }
+
+cria_dados_score = function(id, convenios.e, vizinhos){
+  cria_df_comparacao(id, convenios.e, vizinhos) %>% 
+    filter(origem == cod7) %>% 
+    select(origem, NM_ORGAO_SUPERIOR, zscore, total, media) 
 }
+
+# essa chamada demora!
+resultado = vizinhos %>% 
+  group_by(origem) %>% 
+  do(cria_dados_score(.$origem, convenios.e, vizinhos))
 
 write.csv(resultado, "dist/data/diferencas-cidades.csv", row.names = FALSE)
 

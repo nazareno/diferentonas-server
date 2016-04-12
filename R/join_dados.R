@@ -47,10 +47,33 @@ rm_accent <- function(str,pattern="all") {
   return(str)
 }
 
-convenios = read.csv("public/data/convenios-por-municipio.csv")
-municipios = read.csv("public/data/dados2010.csv")
+## seleciona e salva apenas os convênios propostos no âmbito municipal
+convprog %>%
+  filter(!(TX_SITUACAO %in% c("Proposta/Plano de Trabalho Cancelados", 
+                              "Proposta/Plano de Trabalho Rejeitados")), 
+         !(TX_ESFERA_ADM_PROPONENTE %in% c("ESTADUAL", "FEDERAL"))) %>%
+  select(-ANO_PROPOSTA, 
+         -NR_PROPOSTA, 
+         -TX_ESFERA_ADM_PROPONENTE, 
+         -CD_IDENTIF_PROPONENTE, 
+         -65:-51) %>% 
+  write.csv(file = "dist/data/convenios-por-municipio-detalhes.csv", row.names = FALSE)
+
+convprog %>%
+  filter(!(TX_SITUACAO %in% c("Proposta/Plano de Trabalho Cancelados", 
+                              "Proposta/Plano de Trabalho Rejeitados")), 
+         !(TX_ESFERA_ADM_PROPONENTE %in% c("ESTADUAL", "FEDERAL"))) %>%
+  select(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, VL_REPASSE, NM_ORGAO_SUPERIOR, ANO_CONVENIO) %>%
+  group_by(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, NM_ORGAO_SUPERIOR, ANO_CONVENIO) %>%
+  summarise(total = sum(VL_REPASSE)) %>% 
+  write.csv(file = "dist/data/convenios-por-municipio.csv", row.names = FALSE)
+
+## Join:
+
+convenios = read.csv("dist/data/convenios-por-municipio.csv")
+municipios = read.csv("dist/data/dados2010.csv")
 # para pegar as UFs: 
-populacao = read.csv2("public/data/populacao.csv")
+populacao = read.csv2("dist/data/populacao.csv")
 
 convenios = convenios %>% 
   mutate(nome = rm_accent(tolower(as.character(NM_MUNICIPIO_PROPONENTE))))
