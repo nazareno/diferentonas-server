@@ -23,6 +23,7 @@ dados2010 <- read.csv("dist/data/dados2010.csv", header=T)
 
 quantitativos = dados2010 %>% 
   select(6:9) %>% 
+  mutate(pop = log(pop)) %>% 
   mutate_each(funs(scale))
 
 k=10
