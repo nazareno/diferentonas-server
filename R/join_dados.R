@@ -49,7 +49,8 @@ rm_accent <- function(str,pattern="all") {
 
 ## seleciona e salva apenas os convênios propostos no âmbito municipal
 convprog %>%
-  filter(!(TX_SITUACAO %in% c("Proposta/Plano de Trabalho Cancelados", 
+  filter(ANO_PROPOSTA >= 2013,
+         !(TX_SITUACAO %in% c("Proposta/Plano de Trabalho Cancelados", 
                               "Proposta/Plano de Trabalho Rejeitados")), 
          !(TX_ESFERA_ADM_PROPONENTE %in% c("ESTADUAL", "FEDERAL"))) %>%
   select(-ANO_PROPOSTA, 
@@ -97,5 +98,5 @@ joined = inner_join(convenios, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = 
 
 head(joined)
 
-write.csv(joined, "convenios-municipio-ccodigo.csv", row.names = FALSE)
+write.csv(joined, "dist/data/convenios-municipio-ccodigo.csv", row.names = FALSE)
 

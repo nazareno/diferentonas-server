@@ -102,8 +102,9 @@ resultado = vizinhos %>%
   group_by(origem) %>% 
   do(cria_dados_score(.$origem, convenios.e, vizinhos))
 
-write.csv(resultado, "dist/data/diferencas-cidades.csv", row.names = FALSE)
-
+r2 = resultado[resultado$total > 0, ] 
+write.csv(resultado, "dist/data/diferencas-cidades-tudo.csv", row.names = FALSE)
+write.csv(r2, "dist/data/diferencas-cidades.csv", row.names = FALSE)
 
 # Explorando:  
 x = cria_df_comparacao(convenios, vizinhos, 2503209)
