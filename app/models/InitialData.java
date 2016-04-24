@@ -23,9 +23,10 @@ public class InitialData {
 
     @Inject
     public InitialData(Environment environment, JPAApi jpaAPI) {
+        Logger.info("Na inicialização da aplicação.");
 
         List<Cidade> cidades = jpaAPI.withTransaction(entityManager -> {
-            return entityManager.createQuery("FROM Cidade", Cidade.class).getResultList();
+            return entityManager.createQuery("FROM Cidade", Cidade.class).setMaxResults(2).getResultList();
         });
 
 
