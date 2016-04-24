@@ -101,6 +101,7 @@ joined = inner_join(convenios, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = 
 joined.d = inner_join(convenios.d, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = "UF"))
 joined.d = joined.d %>% filter(ANO_CONVENIO >= 2013)
 joined.du = unique(joined.d)
+joined.du = joined.du[-which(duplicated(joined.du$NR_CONVENIO)),]
 
 write.csv(joined, "dist/data/convenios-municipio-ccodigo.csv", row.names = FALSE)
 write.csv(joined.du, "dist/data/convenios-municipio-detalhes-ccodigo.csv", row.names = FALSE)
