@@ -3,6 +3,7 @@ package controllers;
 import static play.libs.Json.toJson;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 import models.Cidade;
@@ -13,6 +14,17 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 public class CidadeController extends Controller {
+
+    @Transactional(readOnly = true)
+    public Result getConvenios(long id) {
+        Cidade cidade = JPA.em().find(Cidade.class, id);
+
+        if(cidade == null) {
+            return notFound();
+        } else {
+            return ok(toJson(cidade.getConvenios()));
+        }
+    }
 
     @Transactional(readOnly = true)
     public Result getCidade(long id) {

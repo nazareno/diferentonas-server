@@ -6,6 +6,7 @@
 GET        /                            controllers.CidadeController.index()
 GET        /cidade/:id                  controllers.CidadeController.getCidade(id: Long)
 GET        /cidade/:id/similares        controllers.CidadeController.getSimilares(id: Long)
+GET        /cidade/:id/convenios        controllers.CidadeController.getConvenios(id: Long)
 GET        /cidades                     controllers.CidadeController.getCidades()
 
 # Map static resources from the /public folder to the /assets URL path

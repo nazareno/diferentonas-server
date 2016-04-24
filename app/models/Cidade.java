@@ -4,10 +4,12 @@ import java.io.Serializable;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Cidade implements Serializable{
@@ -177,6 +179,7 @@ public class Cidade implements Serializable{
 	}
 
 
+    @JsonIgnore
     public List<Convenio> getConvenios() {
         return convenios;
     }
