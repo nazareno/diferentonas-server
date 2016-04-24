@@ -4,14 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
@@ -26,10 +19,10 @@ public class Cidade implements Serializable{
 	private Long id;
     private String nome;
     private String uf;
-    private Double idhm;
-    private Double idhmRenda;
-    private Double idhmLongevidade;
-    private Double idhmEducacao;
+    private Float idhm;
+    private Float idhmRenda;
+    private Float idhmLongevidade;
+    private Float idhmEducacao;
     private Long populacao;
 
     @ManyToMany(fetch=FetchType.LAZY)
@@ -47,8 +40,8 @@ public class Cidade implements Serializable{
         this.scores = new LinkedList<>();
 	}
 
-	public Cidade(Long id, String nome, String uf, Double idhm, Double idhmRenda,
-			Double idhmLongevidade, Double idhmEducacao, Long populacao) {
+	public Cidade(Long id, String nome, String uf, Float idhm, Float idhmRenda,
+			Float idhmLongevidade, Float idhmEducacao, Long populacao) {
 		this();
 		this.id = id;
 		this.nome = nome;
@@ -89,35 +82,35 @@ public class Cidade implements Serializable{
 		this.uf = uf;
 	}
 
-	public Double getIdhm() {
+	public Float getIdhm() {
 		return idhm;
 	}
 
-	public void setIdhm(Double idhm) {
+	public void setIdhm(Float idhm) {
 		this.idhm = idhm;
 	}
 
-	public Double getIdhmRenda() {
+	public Float getIdhmRenda() {
 		return idhmRenda;
 	}
 
-	public void setIdhmRenda(Double idhmRenda) {
+	public void setIdhmRenda(Float idhmRenda) {
 		this.idhmRenda = idhmRenda;
 	}
 
-	public Double getIdhmLongevidade() {
+	public Float getIdhmLongevidade() {
 		return idhmLongevidade;
 	}
 
-	public void setIdhmLongevidade(Double idhmLongevidade) {
+	public void setIdhmLongevidade(Float idhmLongevidade) {
 		this.idhmLongevidade = idhmLongevidade;
 	}
 
-	public Double getIdhmEducacao() {
+	public Float getIdhmEducacao() {
 		return idhmEducacao;
 	}
 
-	public void setIdhmEducacao(Double idhmEducacao) {
+	public void setIdhmEducacao(Float idhmEducacao) {
 		this.idhmEducacao = idhmEducacao;
 	}
 

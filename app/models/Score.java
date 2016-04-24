@@ -18,14 +18,14 @@ public class Score implements Serializable{
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	private String tema;
-	private Double score;
-	private Double total;
-	private Double media;
+	private Float score;
+	private Float total;
+	private Float media;
 	
 	
 	public Score() {
 	}
-	public Score(String tema, Double score, Double total, Double media) {
+	public Score(String tema, Float score, Float total, Float media) {
 		super();
 		this.tema = tema;
 		this.score = score;
@@ -54,24 +54,24 @@ public class Score implements Serializable{
 	}
 
 
-	public Double getScore() {
+	public Float getScore() {
 		return score;
 	}
 
 
-	public void setScore(Double score) {
+	public void setScore(Float score) {
 		this.score = score;
 	}
-	public Double getTotal() {
+	public Float getTotal() {
 		return total;
 	}
-	public void setTotal(Double total) {
+	public void setTotal(Float total) {
 		this.total = total;
 	}
-	public Double getMedia() {
+	public Float getMedia() {
 		return media;
 	}
-	public void setMedia(Double media) {
+	public void setMedia(Float media) {
 		this.media = media;
 	}
 	

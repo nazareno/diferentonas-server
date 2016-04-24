@@ -3,7 +3,7 @@
              xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
              version="2.1">
 
-    <persistence-unit name="defaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="h2PersistenceUnit" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <non-jta-data-source>DefaultDS</non-jta-data-source>
         <properties>
@@ -12,7 +12,7 @@
         </properties>
     </persistence-unit>
 
-    	<persistence-unit name="postgrePersistenceUnit"
+    	<persistence-unit name="defaultPersistenceUnit"
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<non-jta-data-source>DefaultDS</non-jta-data-source>

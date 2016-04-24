@@ -45,17 +45,17 @@ public class InitialData {
 							resultSet.getLong(2),
 							resultSet.getString(3), 
 							resultSet.getString(4),
-							resultSet.getDouble(5), 
-							resultSet.getDouble(6),
-							resultSet.getDouble(7), 
-							resultSet.getDouble(8), 
+							resultSet.getFloat(5), 
+							resultSet.getFloat(6),
+							resultSet.getFloat(7), 
+							resultSet.getFloat(8), 
 							resultSet.getLong(9));
 					jpaAPI.withTransaction(() -> {
 						jpaAPI.em().persist(cidade);
 					});
                     count++;
                     if(count % 500 == 0){
-                        Logger.info("Inseri " + count + " cidades...");
+                        Logger.info("Inseri " + count + " cidades.");
                     }
 				}
 				
@@ -96,7 +96,7 @@ public class InitialData {
 					});
                     count++;
                     if(count % 500 == 0){
-                        Logger.info("Inseri " + count + " cidades...");
+                        Logger.info("Inseri vizinhos para " + count + " cidades...");
                     }
 				}
 				
@@ -107,7 +107,11 @@ public class InitialData {
                 count = 0;
 				while (scoreResultSet.next()) {
 					long originID = scoreResultSet.getLong(1);
-					Score score = new Score(scoreResultSet.getString(2), scoreResultSet.getDouble(3), scoreResultSet.getDouble(4), scoreResultSet.getDouble(5));
+					Score score = new Score(
+                            scoreResultSet.getString(2),
+                            scoreResultSet.getFloat(3),
+                            scoreResultSet.getFloat(4),
+                            scoreResultSet.getFloat(5));
 					
 					jpaAPI.withTransaction(() -> {
 						EntityManager em = jpaAPI.em();
@@ -120,7 +124,7 @@ public class InitialData {
 					});
                     count++;
                     if(count % 500 == 0){
-                        Logger.info("Inseri " + count + " cidades...");
+                        Logger.info("Inseri " + count + " scores nas cidades.");
                     }
 				}
 			} catch (SQLException e1) {
