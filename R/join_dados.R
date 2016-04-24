@@ -72,11 +72,14 @@ convprog %>%
 ## Join:
 
 convenios = read.csv("dist/data/convenios-por-municipio.csv")
+convenios.d = read.csv("dist/data/convenios-por-municipio-detalhes.csv")
 municipios = read.csv("dist/data/dados2010.csv")
 # para pegar as UFs: 
 populacao = read.csv2("dist/data/populacao.csv")
 
 convenios = convenios %>% 
+  mutate(nome = rm_accent(tolower(as.character(NM_MUNICIPIO_PROPONENTE))))
+convenios.d = convenios.d %>% 
   mutate(nome = rm_accent(tolower(as.character(NM_MUNICIPIO_PROPONENTE))))
 
 municipios = municipios %>% 
@@ -95,8 +98,10 @@ convenios[!(convenios$nome %in% municipios$nome),] %>%
 m.ids = municipios %>% select(nome, cod7, UF)
 
 joined = inner_join(convenios, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = "UF"))
-
-head(joined)
+joined.d = inner_join(convenios.d, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = "UF"))
+joined.d = joined.d %>% filter(ANO_CONVENIO >= 2013)
+joined.du = unique(joined.d)
 
 write.csv(joined, "dist/data/convenios-municipio-ccodigo.csv", row.names = FALSE)
+write.csv(joined.du, "dist/data/convenios-municipio-detalhes-ccodigo.csv", row.names = FALSE)
 

@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,10 +35,14 @@ public class Cidade implements Serializable{
     
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
     private List<Score> scores;
-    
+
+    @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+    private List<Convenio> convenios;
+
     public Cidade() {
         this.similares = new LinkedList<>();
         this.scores = new LinkedList<>();
+        this.convenios = new LinkedList<>();
 	}
 
 	public Cidade(Long id, String nome, String uf, Float idhm, Float idhmRenda,
@@ -170,6 +175,13 @@ public class Cidade implements Serializable{
 			return false;
 		return true;
 	}
-    
-    
+
+
+    public List<Convenio> getConvenios() {
+        return convenios;
+    }
+
+    public void setConvenios(List<Convenio> convenios) {
+        this.convenios = convenios;
+    }
 }
