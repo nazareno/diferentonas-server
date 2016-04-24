@@ -30,7 +30,7 @@ public class InitialData {
         });
 
 
-        if (cidades.isEmpty() || cidades.size() < 5000) {
+        if (cidades.isEmpty()) {
             Logger.info("Populando BD");
             try {
                 populaCidades(jpaAPI);
