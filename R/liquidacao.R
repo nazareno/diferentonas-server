@@ -37,6 +37,7 @@ liquidacao$dispensa = grepl("DISPENSA", liquidacao$modalidade)
 jp = liquidacao %>% 
   filter(#cod7 %in% c(2507507, 2408102, 4113700), 
          NR_PROCESSO_DE_COMPRA != "",
+         TX_ESFERA_ADM_CONVENENTE == "MUNICIPAL",
          nchar(as.character(CD_IDENTIF_FAVORECIDO_DL)) == 14,
          !(TP_DOCUMENTO_LIQUIDACAO %in% c("DIÁRIAS", 
                                           "RECIBO DE PAGAMENTO A AUTONOMO", 
@@ -69,5 +70,6 @@ beneficiarios = jp %>%
 por.municipio = full_join(por.municipio, beneficiarios)
 
 summary(por.municipio)
+por.municipio %>% filter(documentos.liquidacao > 20) %>% ggpairs(alpha = .7)
 
 write.csv(por.municipio, file = "dist/data/beneficiarios-pj-por-municipio.csv", row.names = FALSE)
