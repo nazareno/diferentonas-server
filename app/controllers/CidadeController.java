@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import models.Cidade;
+import org.hibernate.Hibernate;
+import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Json;
@@ -22,6 +24,7 @@ public class CidadeController extends Controller {
         if(cidade == null) {
             return notFound();
         } else {
+            Logger.info("Convênios para " + cidade.getNome() + ": " + cidade.getConvenios().size());
             return ok(toJson(cidade.getConvenios()));
         }
     }
