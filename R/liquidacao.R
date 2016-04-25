@@ -45,16 +45,19 @@ jp = liquidacao %>%
 
 por.municipio = jp %>% 
   group_by(NM_MUNICIPIO_CONVENENTE, cod7) %>% 
-  summarise(total.pjs = sum(VL_BRUTO_DL), documentos.liquidacao = n())
+  summarise(total.pjs = sum(VL_BRUTO_DL), 
+            documentos.liquidacao = n(), 
+            pjs.favorecidos = n_distinct(CD_IDENTIF_FAVORECIDO_DL))
 
 dispensas = jp %>% 
   group_by(NM_MUNICIPIO_CONVENENTE, cod7, dispensa) %>% 
-  summarise(total = sum(VL_BRUTO_DL)) %>% 
-  mutate(prop = total / sum(total))  %>% 
+  summarise(total.d = sum(VL_BRUTO_DL)) %>% 
+  mutate(prop = total.d / sum(total.d))  %>% 
   ungroup() %>% 
-  select(-total) %>% 
-  dcast(NM_MUNICIPIO_CONVENENTE + cod7 ~ dispensa, value.var = "prop", fill = 0)
-names(dispensas)[3:4] = c("licitacao", "dispensa")
+  select(-total.d) %>% 
+  dcast(NM_MUNICIPIO_CONVENENTE + cod7 ~ dispensa, value.var = "prop", fill = 0) %>% 
+  select(-3)
+names(dispensas)[3] = "dispensa"
 
 por.municipio = full_join(por.municipio, dispensas)
 
@@ -70,6 +73,24 @@ beneficiarios = jp %>%
 por.municipio = full_join(por.municipio, beneficiarios)
 
 summary(por.municipio)
-por.municipio %>% filter(documentos.liquidacao > 20) %>% ggpairs(alpha = .7)
+por.municipio %>% filter(documentos.liquidacao > 20) %>% ungroup() %>% select(-1, -2) %>% ggpairs(alpha = .7)
+
+por.municipio %>% 
+  filter(documentos.liquidacao > 10) %>% 
+  ggplot(aes(x = 1, y = scale(log(beneficiarios.pjs)))) +  geom_point(position = "jitter")
+
+# dispensa: z-score > 1. mas a média é 0. seria o caso de comparar com percentil? (90% dos municípios são 0)
+
+
+## Escolhe as semelhantes quanto a receita total e total gasto com PJs e compara
+## 1. % dispensa
+## 2. # repetições do favorecido favorito
+## 3. concentração dos gastos nos maiores favorecidos
+## 4. % de pagamentos milionários
+## 5. % pagos a figurões (favorecidos que aparecem em muitos municípios)
+
+
+# olhar quem dos beneficiários são diferentonas
+
 
 write.csv(por.municipio, file = "dist/data/beneficiarios-pj-por-municipio.csv", row.names = FALSE)
