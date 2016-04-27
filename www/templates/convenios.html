@@ -1,0 +1,32 @@
+<ion-pane>
+    <ion-header-bar class="bar-stable bar-royal">
+        <button class="button icon ion-android-arrow-back" ng-click="returnClicked()"></button>
+        <h1 class="title">{{ City.info.nome }} - {{ City.info.uf }}</h1>
+        <!-- <button class="button icon ion-help" ng-click="helpClicked()"></button> -->
+    </ion-header-bar>
+    <ion-header-bar class="bar-stable bar-royal bar-subheader">
+        <h1 class="title">Convênios</h1>
+        <!-- <button class="button icon ion-help" ng-click="helpClicked()"></button> -->
+    </ion-header-bar>
+    <ion-content class="has-subheader">
+        <div class="citem card" ng-repeat="convenio in City.convenios">
+
+            <div class="item item-divider">
+                <div class="item item-body">
+                    {{ beautify(convenio.objeto) }}
+                </div>
+
+                <div class="item item-text-wraper">
+                    Ano: {{ convenio.ano }}<br>
+                    Repasse: R$ {{ formatCurrency(convenio.repasse) }}<br>
+                    Situação: {{ convenio.situacao }}
+                </div>
+
+                <div class="item item-divider">
+                    <a href="#" class="subdued"><i class="icon ion-heart"></i></a>
+                    <a href="#" class="subdued"><i class="icon ion-heart-broken"></i></a>
+                    <a href="#" class="subdued"><i class="icon ion-fireball"></i></a>
+                </div>
+            </div>
+        </ion-content>
+    </ion-pane>

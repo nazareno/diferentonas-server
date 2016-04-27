@@ -1,0 +1,14 @@
+<ion-pane class="home">
+    <ion-content class="descer" ng-class="{'subir': isInputSelected}" ng-controller="CitySelectorController">
+        <div scroll=false class="item item-input shorter" ng-class="cityInput ? 'part-rounded' : 'rounded'">
+            <input type="search" placeholder="Eu sou de..." ng-model="cityInput" ng-focus="inputIsFocused()">
+            <i class="icon icon-right icon-bigger placeholder-icon ion-location" ng-hide="cityInput"></i>
+            <a href="javascript:" ng-click="cityCleared()"><i class="icon icon-right ion-android-close" ng-show="cityInput"></i></a>
+        </div>
+            <ion-list ng-show="cityInput" ng-hide="isSelected">
+                <ion-radio class="shorter" ng-repeat="city in cities | filter:cityInput | limitTo: 15" ng-click="selectCity(city)">
+                    {{ city.nome }} - {{ city.uf }}
+                </ion-radio>
+            </ion-list>
+    </ion-content>
+</ion-pane>

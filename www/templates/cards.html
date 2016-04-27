@@ -1,0 +1,46 @@
+<ion-pane class="cards">
+    <ion-header-bar class="bar-stable bar-royal">
+        <button class="button icon ion-android-arrow-back" ng-click="returnClicked()"></button>
+        <h1 class="title">{{ City.info.nome }} - {{ City.info.uf }}</h1>
+        <!-- <button class="button icon ion-help" ng-click="helpClicked()"></button> -->
+    </ion-header-bar>
+
+    <ion-content>
+        <div ng-if="hasOutliers(City.info)">
+            <div class="citem card" ng-repeat="item in City.info.scores" ng-if="item.score > 0.9 || item.score < -0.9">
+
+                <!-- <div class="item item-divider icon-info">
+                    <a href="#" class="subdued"><i class="icon ion-alert-circled icon-bigger"></i></a>
+                </div> -->
+
+                <div class="item item-divider" ng-click="checkConvenios(item.tema)">
+                    <div class="item item-divider">
+                        {{ beautify(item.tema) }}
+                    </div>
+                    <div class="item item-divider item-text-wrap">
+                        <!-- <span ng-if="item.score < -0.9 && item.score > -2">Recebeu bem menos verba</span>
+                        <span ng-if="item.score < -2">Recebeu muito menos verba</span>
+                        <span ng-if="item.score > 0.9 && item.score < 2">Recebeu bem mais verba</span>
+                        <span ng-if="item.score > 2">Recebeu muito mais verba</span>
+                        <br> -->
+                        <div style="float: left; width: 45%">
+                            {{ City.info.nome }}<br>
+                            {{ formatCurrency(item.total) }}
+                        </div>
+                        <i style="float: left; width: 10%" class="icon ion-close-round"></i>
+                        <div style="float: left; width: 45%">
+                            Semelhantes<br>
+                            {{ formatCurrency(item.media) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item item-divider">
+                    <a href="#" class="subdued"><i class="icon ion-heart"></i></a>
+                    <a href="#" class="subdued"><i class="icon ion-heart-broken"></i></a>
+                    <a href="#" class="subdued"><i class="icon ion-fireball"></i></a>
+                </div>
+            </div>
+        </div>
+    </ion-content>
+</ion-pane>

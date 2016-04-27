@@ -1,0 +1,112 @@
+
+/* HOME */
+
+ion-pane.home {
+    background-color: #469E71;
+}
+
+.descer {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+    transition: top 1s;
+}
+
+.subir {
+    top : 10%;
+}
+
+.shorter {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.rounded {
+    border-radius: 10px 35px 35px 10px;
+}
+
+.part-rounded {
+    border-radius: 10px 10px 0px 0px;
+}
+
+i.icon-right {
+    padding-right: 15px;
+}
+
+i.icon-bigger {
+    font-size: 30px;
+}
+
+
+/* CARDS */
+
+.icon-info {
+    float: left;
+    height: 100%;
+}
+
+.info {
+    width : 2%;
+}
+
+.vote {
+    vertical-align: middle;
+    float : right;
+}
+
+.centered-text {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.card-expand {
+    position: relative;
+    width: 100%;
+    max-height: 60px;
+    transition: max-height 0.1s ease-out;
+    overflow: hidden;
+}
+
+.card-expand.inactive:after {
+    content: "";
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    height: 15px;
+    width: 100%;
+    display: block;
+    background-image: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, rgba(255, 255, 255, 0)),
+        color-stop(1, rgba(255, 255, 255, 1))
+        );
+        background-image: -o-linear-gradient(bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+        background-image: -moz-linear-gradient(bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+        background-image: -webkit-linear-gradient(left, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+        background-image: -ms-linear-gradient(bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+        background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+    }
+
+    .card-expand.active {
+        max-height: 500px;
+        transition: max-height 0.3s ease-out;
+    }
+
+    .card-expand-footer {
+        margin-top: 10px;
+    }
+
+    .card-expand-footer i {
+        margin-right: 10px;
+    }
+
+    .card-expand-footer.inactive {
+        color: green;
+    }
+
+    .card-expand-footer.active {
+        color: red;
+    }
