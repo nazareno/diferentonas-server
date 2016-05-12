@@ -25,6 +25,7 @@ public class Score implements Serializable{
 	
 	public Score() {
 	}
+
 	public Score(String tema, Float score, Float total, Float media) {
 		super();
 		this.tema = tema;
