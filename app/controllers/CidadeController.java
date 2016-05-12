@@ -34,8 +34,10 @@ public class CidadeController extends Controller {
         Cidade cidade = JPA.em().find(Cidade.class, id);
 
         if(cidade == null) {
-            ok(toJson(Json.newObject()));
+            return ok(toJson(Json.newObject()));
         }
+
+        Logger.debug("Acesso a " + cidade.getNome());
 
         return ok(toJson(cidade));
     }

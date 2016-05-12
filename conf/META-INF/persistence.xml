@@ -12,7 +12,7 @@
         </properties>
     </persistence-unit>
 
-    	<persistence-unit name="defaultPersistenceUnit"
+	<persistence-unit name="defaultPersistenceUnit"
 		transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<non-jta-data-source>DefaultDS</non-jta-data-source>
