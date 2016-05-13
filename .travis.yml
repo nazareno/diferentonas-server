@@ -1,5 +1,13 @@
 language: java
 jdk:
-    - oraclejdk8
-script: 
-    - ./activator compile compile
+- oraclejdk8
+script:
+- "./activator compile"
+services:
+- postgresql
+before_script:
+- psql -c 'create database diferentonas;' -U postgres
+deploy:
+  provider: heroku
+  api_key:
+    secure: ywfAhT6QxCPvuo4cKKY9peuG3WdWsVGuil/cnspg/dccPlOOOM7mrUO5Sx5nadW7eDo3gVjCHTZXRWJjBZcskcCFaX04Ou/iC6bNgs1tXTVERW25cA+tnDecRfa19sRJdeAhKgK1ehZxFKJYAatPfbnA9gHu8S1KGwrDWY9KaC4avwQ2GcLUnm11jAn3TxqLsK2KdHxfYTj1TDPoIkoTjKks7HRgUS8KmKtjvMXnh6dufteqe8M74dq3PJ9EIEhU987FMTklgGfDcSHdi1gqN7m895NmzmVGFXYsWd0E8CPfdBE6NaOgKV6FuoFQTNM8XvU8x2AD4ivReElNwzAS3HVymkLB0mKfw6SeGTROZnPjPJk97OeVieLTsLfcFpfsUgfuNV508fdFju1FiumXu0KU2/Es5tDAr279tRmX/O1x7PEb9/cKxrtWESyzPNoYpuSI+yTDHXBX6LDPltbJEwmisHrghmhyGBYOZajqdk+Ib+BRN76QoabE7zRBgE+iXg/Vwlos/xsVTSL2kHc/DbkEf/VhlqQo6WESXiTltaFsdxfwW+sn7Yyq5+PMThyhm596DsjQ/BhV/AsoTybpWp2mArmzeCkDEpJ7uhmDSVuEM+UNgTUNWq72/vLOtdxNtb2Jzxk+i6kIKV1d3mveDJS1c6RGyk0XJRXRbMevmO8=
