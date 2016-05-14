@@ -30,7 +30,7 @@ for ano in `seq 2013 $ano_atual`; do
             mes=0$mes # 01, 02, etc
         fi
         # pega o arquivo
-        if [[ ! -e  ${ano}${mes}_Transferencias.csv ]]; then
+        if [[ ! -e  utf8-${ano}${mes}_Transferencias.csv ]]; then
             echo "baixando mês " $mes
             curl 'http://arquivos.portaldatransparencia.gov.br/downloads.asp?a='$ano'&m='$mes'&consulta=Transferencias' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Referer: http://www.portaltransparencia.gov.br/downloads/mensal.asp?c=Transferencias' -H 'Connection: keep-alive' --compressed > transferencias-$ano-$mes.zip
         else
@@ -57,4 +57,13 @@ echo "Fim. Os .zip e .csv que não iniciam com 'utf8-' podem ser descartados"
 # rm transparenciabrasil/*zip
 # rm rm transparenciabrasil/201*
 
+echo "Consolidando o que precisamos em um arquivo só"
+ofn='transferencias-siafi-em-'${ano_atual}${mes_atual}'.csv'
+of='../'$ofn
+echo "Número Convênio;Modalidade Aplicação;Fonte-Finalidade;Nome Favorecido;Codigo Acao;Nome Programa;Codigo Programa;Nome Sub Funcao;Codigo Sub Funcao ;Nome Funcao;Nome Funcao;Nome Municipio;Codigo SIAFI Municipio;Sigla Unidade Federação" > $of
+# Seleciona colunas e remove duplicatas
+awk -F'\t' 'BEGIN{OFS = ";"};
+            NR > 1 && $(17) != "" && !($0 in a) {a[$0]; print $(17), $(16), $(15), $(14), $(10), $9, $8, $7, $6, $5, $5, $3, $2, $1}' utf8-*_Transferencias.csv >> $of
 cd -
+
+echo "Resultado em " $ofn
