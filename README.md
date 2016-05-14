@@ -26,5 +26,6 @@ Rode `./activator run` e seu servidor escutará na porta 9000. Os endpoints REST
 
 ```
 cd dados-externos
-./get_dados_siafi.sh # Isso gera ~6GB dos quais você pode descartar 3GB (veja no final do script como)
+./get_dados_siafi.sh
+# Isso gera ~6GB
 ```
