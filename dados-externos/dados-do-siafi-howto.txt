@@ -1,0 +1,4 @@
+1. Vá em http://www.portaltransparencia.gov.br/downloads/snapshot.asp?c=Convenios
+2. Baixe o arquivo mais recente e extraia o csv de dentro
+3. Rode:
+ iconv -t UTF-8 -f ISO-8859-15 arquivocsv.csv > convenios-siafi-YYYYMMDD.csv
