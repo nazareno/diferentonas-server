@@ -16,6 +16,11 @@ set -e
 mkdir -p transparenciabrasil
 cd transparenciabrasil
 
+
+curl -o  'http://arquivos.portaldatransparencia.gov.br/downloads.asp?a=2016&m=05&d=08&consulta=Convenios' -H 'Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8' -H 'Referer: http://www.portaltransparencia.gov.br/downloads/snapshot.asp?c=Convenios' -H 'Upgrade-Insecure-Requests: 1' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.94 Safari/537.36' --compressed
+
+
+
 ano_atual=`date +'%Y'`
 mes_atual=`date +'%m'`
 for ano in `seq 2013 $ano_atual`; do
