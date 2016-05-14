@@ -26,6 +26,7 @@ Rode `./activator run` e seu servidor escutará na porta 9000. Os endpoints REST
 
 ```
 cd dados-externos
-./get_dados_siafi.sh
-# Isso gera ~6GB
+./get_dados_siafi.sh # Isso gera ~6GB
+./get_dados_siconv.sh # as vezes o download falha
+cd - 
 ```
