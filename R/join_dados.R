@@ -49,7 +49,7 @@ arquivo_siafi = "dados-externos/convenios-siafi-em-201605.csv"
 siafi <- read.csv(arquivo_siafi, sep=";")
 siafi$Número.Convênio = as.integer(as.character(siafi$Número.Convênio))
 names(siafi)[1] = "numero.convenio"
-siafi = siafi[!duplicated(select(siafi, 1, 5, 7, 9, 13)),]
+siafi = siafi[!duplicated(select(siafi, 1, 13), fromLast = TRUE),]
 
 convenios = convenios %>% 
   mutate(nome = rm_accent(tolower(as.character(NM_MUNICIPIO_PROPONENTE))))
