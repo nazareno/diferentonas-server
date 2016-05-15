@@ -27,6 +27,7 @@ Rode `./activator run` e seu servidor escutará na porta 9000. Os endpoints REST
 ```
 cd dados-externos
 ./get_dados_siconv.sh # as vezes o download falha
-# siga as instruções em dados-externos/dados-do-siafi-howto.txt para baixar os do SIAFI
+./get_dados_siafi.sh # demora
 cd -
+Rscript R/join_dados.R # depende de R instalado
 ```
