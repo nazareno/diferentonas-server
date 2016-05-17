@@ -1,12 +1,17 @@
 package models;
 
 import java.io.Serializable;
-import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -18,6 +23,7 @@ public class Cidade implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 3104811717507160248L;
+	public static final String TABLE = "Cidade";
 	@Id
 	private Long id;
     private String nome;
@@ -39,7 +45,7 @@ public class Cidade implements Serializable{
     private List<Score> scores;
 
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-    private List<Convenio> convenios;
+    private List<Iniciativa> convenios;
 
     public Cidade() {
         this.similares = new LinkedList<>();
@@ -144,6 +150,16 @@ public class Cidade implements Serializable{
 	public void setScores(List<Score> scores) {
 		this.scores = scores;
 	}
+	
+    @JsonIgnore
+    public List<Iniciativa> getConvenios() {
+        return convenios;
+    }
+
+    public void setConvenios(List<Iniciativa> convenios) {
+        this.convenios = convenios;
+    }
+
 
 	@Override
 	public String toString() {
@@ -179,12 +195,4 @@ public class Cidade implements Serializable{
 	}
 
 
-    @JsonIgnore
-    public List<Convenio> getConvenios() {
-        return convenios;
-    }
-
-    public void setConvenios(List<Convenio> convenios) {
-        this.convenios = convenios;
-    }
 }
