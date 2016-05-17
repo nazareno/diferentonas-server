@@ -4,9 +4,12 @@
 
 # Home page
 GET        /                            controllers.CidadeController.index()
-GET        /cidade/:id                  controllers.CidadeController.getCidade(id: Long)
+GET        /cidade/:id                  controllers.CidadeController.get(id: Long)
 GET        /cidade/:id/similares        controllers.CidadeController.getSimilares(id: Long)
-GET        /cidade/:id/convenios        controllers.CidadeController.getConvenios(id: Long)
+# > deprecated route
+GET        /cidade/:id/convenios        controllers.CidadeController.getIniciativas(id: Long) 
+# < deprecated route
+GET        /cidade/:id/iniciativas      controllers.CidadeController.getIniciativas(id: Long)
 GET        /cidades                     controllers.CidadeController.getCidades()
 
 # Map static resources from the /public folder to the /assets URL path
