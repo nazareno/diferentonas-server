@@ -1,15 +1,17 @@
-package models;
+package util;
 
-import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+
+import models.Cidade;
+import models.Iniciativa;
+import models.Score;
 
 import org.h2.tools.Csv;
 
@@ -19,8 +21,17 @@ import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
 
+/**
+ * Loads data into database the first time the application is executed.
+ * 
+ * @author ricardo
+ */
 public class InitialData {
 
+    /**
+     * @param environment
+     * @param jpaAPI
+     */
     @Inject
     public InitialData(Environment environment, JPAApi jpaAPI) {
         Logger.info("Na inicialização da aplicação.");
@@ -189,7 +200,7 @@ public class InitialData {
                     Long cidade = resultSet.getLong(48);
                     float repasse = resultSet.getString(29).contains("NA") ? 0f : resultSet.getFloat(29); // repasse
                     long idConvenio = resultSet.getLong(2);
-                    Convenio convenio = new Convenio(
+                    Iniciativa convenio = new Iniciativa(
                             idConvenio, // numero
                             resultSet.getInt(1), // ano
                             resultSet.getString(4), // situacao

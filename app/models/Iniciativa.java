@@ -1,16 +1,15 @@
 package models;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import java.io.Serializable;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 
 /**
  * Created by nazareno on 24/04/16.
  */
 @Entity
-public class Convenio implements Serializable {
+public class Iniciativa implements Serializable {
 
     private static final long serialVersionUID = 811023123992501763L;
 
@@ -23,11 +22,11 @@ public class Convenio implements Serializable {
     private Float repasse;
     private String objeto;
 
-    public Convenio(){
+    public Iniciativa(){
 
     }
 
-    public Convenio(long id, int ano, String situacao, String orgaoSuperior, String programa, float repasse, String objeto) {
+    public Iniciativa(long id, int ano, String situacao, String orgaoSuperior, String programa, float repasse, String objeto) {
         this.id = id;
         this.ano = ano;
         this.situacao = situacao;
@@ -110,7 +109,7 @@ public class Convenio implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Convenio other = (Convenio) obj;
+        Iniciativa other = (Iniciativa) obj;
         if (id == null) {
             if (other.id != null)
                 return false;
