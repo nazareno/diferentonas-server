@@ -2,4 +2,6 @@
 # 
 # a partir de um bd postgres local chamado diferentonas, e com 
 # o psql no PATH: 
+heroku pg:reset DATABASE
 heroku pg:push diferentonas DATABASE_URL --app diferentonas
+heroku restart
