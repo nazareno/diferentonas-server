@@ -8,4 +8,4 @@ db_name="diferentonas"
 dropdb $db_name
 createdb $db_name
 
-echo $db_name "database is clean!"
+echo "BD " $db_name " limpo"
