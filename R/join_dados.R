@@ -108,6 +108,9 @@ criar_mapa = function(df){
 
 mapa.funcoes = criar_mapa(joined.du.siafi)
 joined.siafi.imputado = left_join(joined.du.siafi, mapa.funcoes)
+joined.siafi.imputado$funcao.imputada = ifelse(is.na(joined.siafi.imputado$Nome.Funcao), 
+                                               joined.siafi.imputado$funcao.imputada, 
+                                               joined.siafi.imputado$Nome.Funcao)
 
 write.csv(joined, "dist/data/convenios-municipio-ccodigo.csv", row.names = FALSE)
 write.csv(joined.siafi.imputado, "dist/data/convenios-municipio-detalhes-ccodigo.csv", row.names = FALSE)
