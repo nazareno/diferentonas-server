@@ -5,6 +5,10 @@ target
 /.classpath
 /.project
 /.settings
+.cache-main
+.cache-tests
+dist/data/.RData
+dist/data/.Rhistory
 /RUNNING_PID
 .Rproj.user
 /bin/

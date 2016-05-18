@@ -2,6 +2,10 @@ package util;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -62,7 +66,7 @@ public class InitialData {
             return entityManager.createQuery("FROM Cidade", Cidade.class).setMaxResults(2).getResultList();
         });
 
-        if(cidades.get(1).getConvenios().isEmpty()) {
+        if(cidades.get(1).getIniciativas().isEmpty()) {
             try{
                 populaConvenios(jpaAPI);
             } catch (SQLException e1) {
@@ -197,23 +201,30 @@ public class InitialData {
                 resultSet.next(); // header
                 int count = 0;
                 while (resultSet.next()) {
-                    Long cidade = resultSet.getLong(48);
-                    float repasse = resultSet.getString(29).contains("NA") ? 0f : resultSet.getFloat(29); // repasse
-                    long idConvenio = resultSet.getLong(2);
-                    Iniciativa convenio = new Iniciativa(
-                            idConvenio, // numero
-                            resultSet.getInt(1), // ano
-                            resultSet.getString(4), // situacao
-                            resultSet.getString(7), // orgao superior
-                            resultSet.getString(16), // TX programa
-                            repasse,
-                            resultSet.getString(35)); // objeto
-
+                    Long cidade = resultSet.getLong(63);
+                    float valorGovF = resultSet.getString(29).contains("NA") ? 0f : resultSet.getFloat(29); // repasse
+                    float valorMun = resultSet.getString(30).contains("NA") ? 0f : resultSet.getFloat(30);	// contrapartida
+                    long idIniciativa = resultSet.getLong(2);
+                    DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
+                    Iniciativa iniciativa = new Iniciativa(
+                            idIniciativa, 				// numero
+                            resultSet.getInt(1), 		// ano
+                            resultSet.getString(35),	// titulo
+                            resultSet.getString(7),		// fonte
+                            resultSet.getString(69),	// area
+                            resultSet.getString(4),		// status
+                            valorGovF,					// valor do governo federal
+                            valorMun,					// valor do municipio
+                            (Date) dateFormat.parse(resultSet.getString(18)),		// data de inicio
+                            (Date) dateFormat.parse(resultSet.getString(19)),		// data de conclusao municipio
+                            resultSet.getString(16) // TX programa
+                            );
+                            
 
                     try {
                         Cidade o = em.find(Cidade.class, cidade);
                         if (o != null) {
-                            o.getConvenios().add(convenio);
+                            o.getIniciativas().add(iniciativa);
                             //em.persist(o);
                         }
                         count++;
@@ -221,12 +232,14 @@ public class InitialData {
                             Logger.info("Inseri " + count + " convenios.");
                         }
                     } catch (EntityExistsException e){
-                        Logger.warn("Convênio duplicado: " + idConvenio, e);
+                        Logger.warn("Convênio duplicado: " + idIniciativa, e);
                     }
                 }
                 em.flush();
             } catch (SQLException e){
                 Logger.error(e.getMessage(), e);
+            } catch (ParseException e){
+            	Logger.error(e.getMessage(), e);
             }
         });
     }

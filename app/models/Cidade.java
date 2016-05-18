@@ -45,12 +45,12 @@ public class Cidade implements Serializable{
     private List<Score> scores;
 
     @OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL)
-    private List<Iniciativa> convenios;
+    private List<Iniciativa> iniciativas;
 
     public Cidade() {
         this.similares = new LinkedList<>();
         this.scores = new LinkedList<>();
-        this.convenios = new LinkedList<>();
+        this.iniciativas = new LinkedList<>();
 	}
 
 	public Cidade(Long id, String nome, String uf, Float idhm, Float idhmRenda,
@@ -152,12 +152,12 @@ public class Cidade implements Serializable{
 	}
 	
     @JsonIgnore
-    public List<Iniciativa> getConvenios() {
-        return convenios;
+    public List<Iniciativa> getIniciativas() {
+        return iniciativas;
     }
 
-    public void setConvenios(List<Iniciativa> convenios) {
-        this.convenios = convenios;
+    public void setIniciativas(List<Iniciativa> iniciativas) {
+        this.iniciativas = iniciativas;
     }
 
 

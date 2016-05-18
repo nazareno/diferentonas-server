@@ -21,8 +21,8 @@ public class CidadeController extends Controller {
         if(cidade == null) {
             return notFound();
         } else {
-            Logger.debug("Iniciativas para " + cidade.getNome() + ": " + cidade.getConvenios().size());
-            return ok(toJson(cidade.getConvenios()));
+            Logger.debug("Iniciativas para " + cidade.getNome() + ": " + cidade.getIniciativas().size());
+            return ok(toJson(cidade.getIniciativas()));
         }
     }
 

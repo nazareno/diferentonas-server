@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -16,26 +17,52 @@ public class Iniciativa implements Serializable {
     @Id
     private Long id;
     private Integer ano;
-    private String situacao;
-    private String orgaoSuperior;
+    private String titulo;			// objeto
+    private String area;			// funcao
+    private String fonte;			// orgaoSuperior
+    private String status;			// situacao
+    private Float valorGovF;		// repasse
+	private Float valorMun;			// contrapartida
+    private Date dataInicio;
+    private Date dataConclusaoMun;	// dataTerminoVigencia
+    private Date dataConclusaoGovF;	// dataLimitePrestacaoContas
     private String programa;
-    private Float repasse;
-    private String objeto;
 
     public Iniciativa(){
 
     }
 
-    public Iniciativa(long id, int ano, String situacao, String orgaoSuperior, String programa, float repasse, String objeto) {
-        this.id = id;
-        this.ano = ano;
-        this.situacao = situacao;
-        this.orgaoSuperior = orgaoSuperior;
-        this.programa = programa;
-        this.repasse = repasse;
-        this.objeto = objeto;
-    }
-
+    public Iniciativa(Long id, Integer ano, String titulo, String fonte, String area, String status, Float valorGovF,
+			Float valorMun, Date dataInicio, Date dataConclusaoMun, String programa) {
+		this.id = id;
+		this.ano = ano;
+		this.titulo = titulo;
+		this.fonte = fonte;
+		this.area = area;
+		this.status = status;
+		this.valorGovF = valorGovF;
+		this.valorMun = valorMun;
+		this.dataInicio = dataInicio;
+		this.dataConclusaoMun = dataConclusaoMun;
+		this.programa = programa;
+	}
+    
+    
+    public Iniciativa(Long id, Integer ano, String titulo, String area, String fonte, String status, Float valorGovF,
+			Float valorMun, Date dataInicio, Date dataConclusaoMun, Date dataConclusaoGovF, String programa) {
+		this.id = id;
+		this.ano = ano;
+		this.titulo = titulo;
+		this.area = area;
+		this.fonte = fonte;
+		this.status = status;
+		this.valorGovF = valorGovF;
+		this.valorMun = valorMun;
+		this.dataInicio = dataInicio;
+		this.dataConclusaoMun = dataConclusaoMun;
+		this.dataConclusaoGovF = dataConclusaoGovF;
+		this.programa = programa;
+	}
 
     public long getId() {
         return id;
@@ -45,24 +72,12 @@ public class Iniciativa implements Serializable {
         return ano;
     }
 
-    public String getSituacao() {
-        return situacao;
-    }
-
-    public String getOrgaoSuperior() {
-        return orgaoSuperior;
+    public String getStatus() {
+        return status;
     }
 
     public String getPrograma() {
         return programa;
-    }
-
-    public float getRepasse() {
-        return repasse;
-    }
-
-    public String getObjeto() {
-        return objeto;
     }
 
     public void setId(long id) {
@@ -73,25 +88,45 @@ public class Iniciativa implements Serializable {
         this.ano = ano;
     }
 
-    public void setSituacao(String situacao) {
-        this.situacao = situacao;
-    }
-
-    public void setOrgaoSuperior(String orgaoSuperior) {
-        this.orgaoSuperior = orgaoSuperior;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setPrograma(String programa) {
         this.programa = programa;
     }
+    
+    public Float getValorMun() {
+		return valorMun;
+	}
 
-    public void setRepasse(float repasse) {
-        this.repasse = repasse;
-    }
+	public void setValorMun(Float valorMun) {
+		this.valorMun = valorMun;
+	}
 
-    public void setObjeto(String objeto) {
-        this.objeto = objeto;
-    }
+	public Date getDataInicio() {
+		return dataInicio;
+	}
+
+	public void setDataInicio(Date dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+
+	public Date getDataConclusaoMun() {
+		return dataConclusaoMun;
+	}
+
+	public void setDataConclusaoMun(Date dataConclusaoMun) {
+		this.dataConclusaoMun = dataConclusaoMun;
+	}
+
+	public Date getDataConclusaoGovF() {
+		return dataConclusaoGovF;
+	}
+
+	public void setDataConclusaoGovF(Date dataConclusaoGovF) {
+		this.dataConclusaoGovF = dataConclusaoGovF;
+	}
 
     @Override
     public int hashCode() {
@@ -117,4 +152,36 @@ public class Iniciativa implements Serializable {
             return false;
         return true;
     }
+
+	public String getTitulo() {
+		return titulo;
+	}
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+	public String getFonte() {
+		return fonte;
+	}
+
+	public void setFonte(String fonte) {
+		this.fonte = fonte;
+	}
+
+	public Float getValorGovF() {
+		return valorGovF;
+	}
+
+	public void setValorGovF(Float valorGovF) {
+		this.valorGovF = valorGovF;
+	}
 }
