@@ -17,8 +17,7 @@ convprog %>%
   select(-ANO_PROPOSTA, 
          -NR_PROPOSTA, 
          -TX_ESFERA_ADM_PROPONENTE, 
-         -CD_IDENTIF_PROPONENTE, 
-         -65:-51) %>% 
+         -CD_IDENTIF_PROPONENTE) %>% 
   write.csv(file = "dist/data/convenios-por-municipio-detalhes.csv", row.names = FALSE)
 
 convprog %>%
@@ -85,5 +84,30 @@ joined.du.siafi = joined.du %>% left_join(select(siafi, numero.convenio, 6:10),
 message(paste(NROW(joined.du.siafi), " convênios após cruzar com SIAFI"))
 message(paste(sum(is.na(joined.du.siafi$Nome.Funcao)), " convênios sem função orçamentária após cruzar SICONV e SIAFI"))
 
+### PREENCHER FUNÇÃO PARA CONVÊNIOS AUSENTES DO SIAFI
+criar_mapa = function(df){
+  resposta = df %>% 
+    filter(!is.na(Nome.Funcao)) %>%
+    group_by(NM_ORGAO_SUPERIOR, Nome.Funcao) %>% 
+    tally() %>% 
+    arrange(-n) %>% 
+    slice(1) %>% 
+    ungroup() %>% 
+    select(-n)
+  # Lidando com ministérios sem convênio com função em nenhum convênio do SIAFI
+  resposta = rbind(resposta, 
+                   data.frame(NM_ORGAO_SUPERIOR = c("JUSTICA ELEITORAL", 
+                                                    "MINISTERIO DE MINAS E ENERGIA", 
+                                                    "MINISTERIO DOS TRANSPORTES"), 
+                              Nome.Funcao = c("Administração", 
+                                              "Energia", 
+                                              "Transporte")))
+  names(resposta)[2] = "funcao.imputada"
+  return(resposta)
+}
+
+mapa.funcoes = criar_mapa(joined.du.siafi)
+joined.siafi.imputado = left_join(joined.du.siafi, mapa.funcoes)
+
 write.csv(joined, "dist/data/convenios-municipio-ccodigo.csv", row.names = FALSE)
-write.csv(joined.du.siafi, "dist/data/convenios-municipio-detalhes-ccodigo.csv", row.names = FALSE)
+write.csv(joined.siafi.imputado, "dist/data/convenios-municipio-detalhes-ccodigo.csv", row.names = FALSE)
