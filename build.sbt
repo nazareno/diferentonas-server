@@ -18,3 +18,8 @@ libraryDependencies ++= Seq(
   "org.postgresql" % "postgresql" % "9.4.1207.jre7"
 )
 
+herokuAppName in Compile := "diferentonas"
+
+herokuIncludePaths in Compile := Seq(
+  "app", "conf/routes", "dist/data"
+)
