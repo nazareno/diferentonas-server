@@ -200,23 +200,25 @@ public class InitialData {
                 resultSet.next(); // header
                 int count = 0;
                 while (resultSet.next()) {
-                    Long cidade = resultSet.getLong(63);
-                    float valorGovF = resultSet.getString(29).contains("NA") ? 0f : resultSet.getFloat(29); // repasse
-                    float valorMun = resultSet.getString(30).contains("NA") ? 0f : resultSet.getFloat(30);	// contrapartida
-                    long idIniciativa = resultSet.getLong(3);
+                	Long cidade = resultSet.getLong(63);
+                	long idIniciativa = resultSet.getLong(3);
+                    float verbaGovernoFederal = resultSet.getString(29).contains("NA") ? 0f : resultSet.getFloat(29); // repasse
+                    float verbaMunicipio = resultSet.getString(30).contains("NA") ? 0f : resultSet.getFloat(30);	// contrapartida
                     DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
                     Iniciativa iniciativa = new Iniciativa(
-                            idIniciativa, 				// numero
+                    		idIniciativa,				// id
                             resultSet.getInt(2), 		// ano
                             resultSet.getString(35),	// titulo
+                            resultSet.getString(16), 	// programa
                             resultSet.getString(69),	// area
                             resultSet.getString(7),		// fonte
+                            resultSet.getString(13),	// concedente
                             resultSet.getString(70),	// status
-                            valorGovF,					// valor do governo federal
-                            valorMun,					// valor do municipio
+                            resultSet.getBoolean(50),	// temAditivo
+                            verbaGovernoFederal,		// verba do governo federal
+                            verbaMunicipio,				// verba do municipio
                             (Date) dateFormat.parse(resultSet.getString(18)),		// data de inicio
-                            (Date) dateFormat.parse(resultSet.getString(19)),		// data de conclusao municipio
-                            resultSet.getString(16) // TX programa
+                            (Date) dateFormat.parse(resultSet.getString(19))	// data de conclusao municipio
                             );
                             
 

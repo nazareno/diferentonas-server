@@ -51,7 +51,12 @@ capitalizar <- function(frase) {
 
 novas.iniciativas$TX_OBJETO_CONVENIO <- sapply(novas.iniciativas$TX_OBJETO_CONVENIO, capitalizar)
 novas.iniciativas$NM_ORGAO_SUPERIOR <- sapply(novas.iniciativas$NM_ORGAO_SUPERIOR, capitalizar)
+novas.iniciativas$NM_ORGAO_CONCEDENTE <- sapply(novas.iniciativas$NM_ORGAO_CONCEDENTE, capitalizar)
 novas.iniciativas$NM_PROGRAMA <-  sapply(novas.iniciativas$NM_PROGRAMA, capitalizar)
 
+
+# Transformando in_aditivo em boolean
+
+novas.iniciativas$IN_ADITIVO_SN <- with(novas.iniciativas, ifelse(IN_ADITIVO_SN == 'S', 1, 0))
 
 write.csv(novas.iniciativas, '../dist/data/iniciativas-detalhadas.csv', row.names = FALSE)

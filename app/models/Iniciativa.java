@@ -19,54 +19,45 @@ public class Iniciativa implements Serializable {
     @Id
     private Long id;
     private Integer ano;
-    private String titulo;			// objeto
-    private String area;			// funcao
-    private String fonte;			// orgaoSuperior
-    private String status;			// situacao
-    private Float valorGovF;		// repasse
-	private Float valorMun;			// contrapartida
+    private String titulo;				// objeto
+    private String programa;	
+    private String area;				// funcao
+    private String fonte;				// orgaoSuperior
+    private String concedente;
+    private String status;				// situacao
+    private Boolean temAditivo;			// in aditivo sn
+    private Float verbaGovernoFederal;	// repasse
+	private Float verbaMunicipio;		// contrapartida
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
 	private Date dataInicio;
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
-	private Date dataConclusaoMun;	// dataTerminoVigencia
+	private Date dataConclusaoMunicipio;	// dataTerminoVigencia
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
-    private Date dataConclusaoGovF;	// dataLimitePrestacaoContas
-    private String programa;
+    private Date dataConclusaoGovernoFederal;	// dataLimitePrestacaoContas
+    
 
     public Iniciativa(){
 
     }
-
-    public Iniciativa(Long id, Integer ano, String titulo, String area, String fonte, String status, Float valorGovF,
-			Float valorMun, Date dataInicio, Date dataConclusaoMun, String programa) {
+    
+    public Iniciativa(Long id, Integer ano, String titulo, String programa, String area, String fonte, String concedente,
+    				  String status, Boolean temAditivo, Float verbaGovernoFederal, Float verbaMunicipio, Date dataInicio,
+    				  Date dataConclusaoMunicipio) {
 		this.id = id;
 		this.ano = ano;
 		this.titulo = titulo;
+		this.programa = programa;
 		this.area = area;
 		this.fonte = fonte;
+		this.concedente = concedente;
 		this.status = status;
-		this.valorGovF = valorGovF;
-		this.valorMun = valorMun;
+		this.temAditivo = temAditivo;
+		this.verbaGovernoFederal = verbaGovernoFederal;
+		this.verbaMunicipio = verbaMunicipio;
 		this.dataInicio = dataInicio;
-		this.dataConclusaoMun = dataConclusaoMun;
-		this.programa = programa;
-	}
-    
-    
-    public Iniciativa(Long id, Integer ano, String titulo, String area, String fonte, String status, Float valorGovF,
-			Float valorMun, Date dataInicio, Date dataConclusaoMun, Date dataConclusaoGovF, String programa) {
-		this.id = id;
-		this.ano = ano;
-		this.titulo = titulo;
-		this.area = area;
-		this.fonte = fonte;
-		this.status = status;
-		this.valorGovF = valorGovF;
-		this.valorMun = valorMun;
-		this.dataInicio = dataInicio;
-		this.dataConclusaoMun = dataConclusaoMun;
-		this.dataConclusaoGovF = dataConclusaoGovF;
-		this.programa = programa;
+		this.dataConclusaoMunicipio = dataConclusaoMunicipio;
+//		this.dataConclusaoGovernoFederal = dataConclusaoGovernoFederal;
+		
 	}
 
     public long getId() {
@@ -100,14 +91,6 @@ public class Iniciativa implements Serializable {
     public void setPrograma(String programa) {
         this.programa = programa;
     }
-    
-    public Float getValorMun() {
-		return valorMun;
-	}
-
-	public void setValorMun(Float valorMun) {
-		this.valorMun = valorMun;
-	}
 
 	public Date getDataInicio() {
 		return dataInicio;
@@ -115,22 +98,6 @@ public class Iniciativa implements Serializable {
 
 	public void setDataInicio(Date dataInicio) {
 		this.dataInicio = dataInicio;
-	}
-
-	public Date getDataConclusaoMun() {
-		return dataConclusaoMun;
-	}
-
-	public void setDataConclusaoMun(Date dataConclusaoMun) {
-		this.dataConclusaoMun = dataConclusaoMun;
-	}
-
-	public Date getDataConclusaoGovF() {
-		return dataConclusaoGovF;
-	}
-
-	public void setDataConclusaoGovF(Date dataConclusaoGovF) {
-		this.dataConclusaoGovF = dataConclusaoGovF;
 	}
 
     @Override
@@ -182,11 +149,35 @@ public class Iniciativa implements Serializable {
 		this.fonte = fonte;
 	}
 
-	public Float getValorGovF() {
-		return valorGovF;
+	public String getConcedente() {
+		return concedente;
 	}
 
-	public void setValorGovF(Float valorGovF) {
-		this.valorGovF = valorGovF;
+	public void setConcedente(String concedente) {
+		this.concedente = concedente;
+	}
+
+	public Float getVerbaGovernoFederal() {
+		return verbaGovernoFederal;
+	}
+
+	public void setVerbaGovernoFederal(Float verbaGovernoFederal) {
+		this.verbaGovernoFederal = verbaGovernoFederal;
+	}
+
+	public Float getVerbaMunicipio() {
+		return verbaMunicipio;
+	}
+
+	public void setVerbaMunicipio(Float verbaMunicipio) {
+		this.verbaMunicipio = verbaMunicipio;
+	}
+
+	public Boolean getTemAditivo() {
+		return temAditivo;
+	}
+
+	public void setTemAditivo(Boolean temAditivo) {
+		this.temAditivo = temAditivo;
 	}
 }
