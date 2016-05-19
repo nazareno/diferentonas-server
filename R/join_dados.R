@@ -20,20 +20,9 @@ convprog %>%
          -CD_IDENTIF_PROPONENTE) %>% 
   write.csv(file = "dist/data/convenios-por-municipio-detalhes.csv", row.names = FALSE)
 
-convprog %>%
-  filter(ANO_PROPOSTA >= 2013,
-         !(TX_SITUACAO %in% c("Proposta/Plano de Trabalho Cancelados", 
-                              "Proposta/Plano de Trabalho Rejeitados")), 
-         !(TX_ESFERA_ADM_PROPONENTE %in% c("ESTADUAL", "FEDERAL"))) %>%
-  select(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, VL_REPASSE, NM_ORGAO_SUPERIOR, ANO_CONVENIO) %>%
-  group_by(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, NM_ORGAO_SUPERIOR, ANO_CONVENIO) %>%
-  summarise(total = sum(VL_REPASSE)) %>% 
-  write.csv(file = "dist/data/convenios-por-municipio.csv", row.names = FALSE)
-
 ## Join:
 
 # 1. Dados dos convênios no SICONV:
-convenios = read.csv("dist/data/convenios-por-municipio.csv")
 convenios.d = read.csv("dist/data/convenios-por-municipio-detalhes.csv")
 
 # 2. Dados do IBGE e IDH
@@ -50,8 +39,6 @@ siafi$Número.Convênio = as.integer(as.character(siafi$Número.Convênio))
 names(siafi)[1] = "numero.convenio"
 siafi = siafi[!duplicated(select(siafi, 1, 13), fromLast = TRUE),]
 
-convenios = convenios %>% 
-  mutate(nome = rm_accent(tolower(as.character(NM_MUNICIPIO_PROPONENTE))))
 convenios.d = convenios.d %>% 
   mutate(nome = rm_accent(tolower(as.character(NM_MUNICIPIO_PROPONENTE))))
 
@@ -64,13 +51,10 @@ municipios = inner_join(municipios,
 
 # TODO só temos códigos para ~5300 municípios. Faltam uns 300 mais para todos do Brasil. Nos SICONV temos ~15 a mais que esse número.
 NROW(levels(municipios$municipio))
-NROW(levels(convenios$NM_MUNICIPIO_PROPONENTE))
-convenios[!(convenios$nome %in% municipios$nome),] %>% 
-  select(NM_MUNICIPIO_PROPONENTE) %>% unique() %>% NROW()
+NROW(levels(convenios.d$NM_MUNICIPIO_PROPONENTE))
 
 m.ids = municipios %>% select(nome, cod7, UF)
 
-joined = inner_join(convenios, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = "UF"))
 joined.d = inner_join(convenios.d, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = "UF"))
 joined.du = unique(joined.d)
 # TODO Aqui guardamos apenas a última menção ao convênio. Quando quisermos histórico, rever isso.
@@ -91,7 +75,7 @@ criar_mapa = function(df){
     group_by(NM_ORGAO_SUPERIOR, Nome.Funcao) %>% 
     tally() %>% 
     arrange(-n) %>% 
-    slice(1) %>% 
+    slice(1) %>% g
     ungroup() %>% 
     select(-n)
   # Lidando com ministérios sem convênio com função em nenhum convênio do SIAFI
@@ -117,5 +101,4 @@ joined.siafi.imputado = joined.siafi.imputado %>%
   ungroup() %>% 
   mutate(funcao.imputada = as.factor(funcao.imputada))
 
-write.csv(joined, "dist/data/convenios-municipio-ccodigo.csv", row.names = FALSE)
 write.csv(joined.siafi.imputado, "dist/data/convenios-municipio-detalhes-ccodigo.csv", row.names = FALSE)

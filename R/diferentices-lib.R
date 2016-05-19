@@ -1,6 +1,13 @@
+sumariza_convenios_para_diferentices = function(df){
+  df %>% 
+    select(  NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, funcao.imputada, nome, cod7, VL_REPASSE) %>%
+    group_by(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, funcao.imputada, nome, cod7) %>%
+    summarise(total = sum(VL_REPASSE)) 
+}
+
 expande_convenios = function(convenios){
   convenios %>% 
-  complete(nesting(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, ANO_CONVENIO, nome, cod7), funcao.imputada, 
+  complete(nesting(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, nome, cod7), funcao.imputada, 
            fill = list(total = 0)) %>% unique()
 }
 
@@ -8,13 +15,19 @@ cria_df_comparacao <- function(cod, convenios.expandidos, vizinhos.df, col_orige
   ids = vizinhos.df[vizinhos.df$origem == cod, c(col_origem, cols_vizinhos)]
   cs = convenios.expandidos %>% filter(cod7 %in% ids)
   cs$cod7 = droplevels(factor(cs$cod7))
-  cs$funcao.imputada = droplevels(cs$funcao.imputada)
+  
+  score = function(x){
+    if(sd(x) == 0){
+      return(0)
+    } else{ 
+      return((x - mean(x)) / sd(x))
+    }
+  }
+  
   cs = cs %>% 
-    group_by(funcao.imputada, cod7) %>% 
-    summarise(total = sum(total)) %>% 
-    mutate(zscore = (total - mean(total)) / sd(total)) 
-  cs = cs %>% group_by(funcao.imputada) %>% mutate(media = mean(total)) 
-  cs[is.na(cs$zscore), "zscore"] = 0
+    group_by(funcao.imputada) %>% 
+    mutate(zscore = score(total), 
+           media = mean(total)) 
   cs$origem = cod
   cs
 }
@@ -30,6 +43,29 @@ computa_scores_para_todos = function(os.convenios, vizinhos.df, col_origem = 12,
     select(origem) %>% 
     rowwise() %>% 
     do(cria_dados_score(.$origem, os.convenios, vizinhos.df, col_origem, cols_vizinhos))
-    # group_by(origem) %>% 
-    # do(cria_dados_score(.$origem, os.convenios, vizinhos.df))
+}
+
+pca_comparacao <- function(convenios, vizinhos, cod) {
+  ids = vizinhos[vizinhos$origem == cod, 12:22]
+  cs = convenios %>% filter(cod7 %in% ids, ANO_CONVENIO >= 2013)
+  cs$cod7 = factor(cs$cod7)
+  cs$funcao.imputada = droplevels(cs$funcao.imputada)
+  
+  cs.w = dcast(select(cs, cod7, funcao.imputada, total), 
+               formula = cod7 ~ funcao.imputada, sum)
+  
+  df = cs.w[, -1]
+  row.names(df) = cs$NM_MUNICIPIO_PROPONENTE
+  pcs = prcomp(df, scale = TRUE)
+  autoplot(pcs, label = TRUE, label.size = 3, shape = FALSE, 
+           loadings = TRUE, loadings.colour = 'blue',
+           loadings.label = TRUE, loadings.label.size = 3)
+  
+  pr.var <- pcs$sdev^2
+  pve <- pr.var / sum(pr.var)
+  df = data.frame(x = 1:NROW(pve), y = cumsum(pve))
+  ggplot(df, aes(x = x, y = y)) + 
+    geom_point(size = 3) + 
+    geom_line() + 
+    labs(x='Principal Component', y = 'Cumuative Proportion of Variance Explained')
 }
