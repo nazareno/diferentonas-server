@@ -82,7 +82,7 @@ public class InitialData {
     private void populaScores(JPAApi jpaAPI) throws SQLException {
         jpaAPI.withTransaction(() -> {
             try{
-                String dataPath = "dist/data/diferencas-cidades.csv";
+                String dataPath = "dist/data/diferencas-cidades-tudo.csv";
                 int count = 0;
                 EntityManager em = jpaAPI.em();
 
@@ -99,10 +99,9 @@ public class InitialData {
                     Cidade o = em.find(Cidade.class, originID);
                     if(o != null){
                         o.getScores().add(score);
-                        //em.persist(o);
                     }
                     count++;
-                    if(count % 500 == 0){
+                    if(count % 2000 == 0){
                         Logger.info("Inseri " + count + " scores nas cidades.");
                     }
                 }
@@ -147,7 +146,7 @@ public class InitialData {
                     o.setSimilares(similares);
                     // em.persist(o);
                     count++;
-                    if (count % 500 == 0) {
+                    if (count % 1000 == 0) {
                         Logger.info("Inseri vizinhos para " + count + " cidades...");
                     }
                 }
@@ -228,7 +227,7 @@ public class InitialData {
                             //em.persist(o);
                         }
                         count++;
-                        if (count % 500 == 0) {
+                        if (count % 1000 == 0) {
                             Logger.info("Inseri " + count + " convenios.");
                         }
                     } catch (EntityExistsException e){

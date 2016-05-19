@@ -26,7 +26,7 @@ convenios.e = rbind(convenios.e, t)
 # essa chamada demora!
 resultado = computa_scores_para_todos(convenios.e, vizinhos)
 
-r2 = resultado[resultado$total > 0, ] 
+r2 = resultado[resultado$media != 0, ] 
 write.csv(resultado, "dist/data/diferencas-cidades-tudo.csv", row.names = FALSE)
 write.csv(r2, "dist/data/diferencas-cidades.csv", row.names = FALSE)
 
