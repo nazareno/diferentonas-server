@@ -195,7 +195,7 @@ public class InitialData {
             try {
                 EntityManager em = jpaAPI.em();
                 // TODO estou perdendo a primeira linha (?)
-                String dataPath = "dist/data/convenios-municipio-detalhes-ccodigo.csv";
+                String dataPath = "dist/data/iniciativas-detalhadas.csv";
 
                 ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
                 resultSet.next(); // header
@@ -204,15 +204,15 @@ public class InitialData {
                     Long cidade = resultSet.getLong(63);
                     float valorGovF = resultSet.getString(29).contains("NA") ? 0f : resultSet.getFloat(29); // repasse
                     float valorMun = resultSet.getString(30).contains("NA") ? 0f : resultSet.getFloat(30);	// contrapartida
-                    long idIniciativa = resultSet.getLong(2);
+                    long idIniciativa = resultSet.getLong(3);
                     DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
                     Iniciativa iniciativa = new Iniciativa(
                             idIniciativa, 				// numero
-                            resultSet.getInt(1), 		// ano
+                            resultSet.getInt(2), 		// ano
                             resultSet.getString(35),	// titulo
-                            resultSet.getString(7),		// fonte
                             resultSet.getString(69),	// area
-                            resultSet.getString(4),		// status
+                            resultSet.getString(7),		// fonte
+                            resultSet.getString(70),	// status
                             valorGovF,					// valor do governo federal
                             valorMun,					// valor do municipio
                             (Date) dateFormat.parse(resultSet.getString(18)),		// data de inicio

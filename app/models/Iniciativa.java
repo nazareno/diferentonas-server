@@ -6,6 +6,8 @@ import java.util.Date;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 /**
  * Created by nazareno on 24/04/16.
  */
@@ -23,8 +25,11 @@ public class Iniciativa implements Serializable {
     private String status;			// situacao
     private Float valorGovF;		// repasse
 	private Float valorMun;			// contrapartida
-    private Date dataInicio;
-    private Date dataConclusaoMun;	// dataTerminoVigencia
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
+	private Date dataInicio;
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
+	private Date dataConclusaoMun;	// dataTerminoVigencia
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
     private Date dataConclusaoGovF;	// dataLimitePrestacaoContas
     private String programa;
 
@@ -32,13 +37,13 @@ public class Iniciativa implements Serializable {
 
     }
 
-    public Iniciativa(Long id, Integer ano, String titulo, String fonte, String area, String status, Float valorGovF,
+    public Iniciativa(Long id, Integer ano, String titulo, String area, String fonte, String status, Float valorGovF,
 			Float valorMun, Date dataInicio, Date dataConclusaoMun, String programa) {
 		this.id = id;
 		this.ano = ano;
 		this.titulo = titulo;
-		this.fonte = fonte;
 		this.area = area;
+		this.fonte = fonte;
 		this.status = status;
 		this.valorGovF = valorGovF;
 		this.valorMun = valorMun;
