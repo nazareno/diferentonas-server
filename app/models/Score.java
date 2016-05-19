@@ -7,6 +7,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Representa o quão diferente uma cidade é em uma determinada área.
+ * O desvio do normal é representado pelo valor do score. O score é o z-score
+ * desse município em relação aos seus semelhantes. Assim, positivo significa acima
+ * da média; negativo abaixo. A unidade é em desvios padrao.
+ *
+ * A área do Score corresponde a uma função orçamentária do Governo Federal.
+ * Por exemplo, Riacho da Carreira pode se destacar em Segurança: caso tenha um
+ * score com valor 1, ela recebeu 1 desvio padrão mais recursos nessa área que
+ * suas cidades semelhantes.
+ */
 @Entity
 public class Score implements Serializable{
 	
@@ -17,21 +28,21 @@ public class Score implements Serializable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	private String tema;
-	private Float score;
-	private Float total;
-	private Float media;
+	private String area;
+	private Float valorScore;
+	private Float repasseTotal;
+	private Float mediaCidadesSemelhantes;
 	
 	
 	public Score() {
 	}
 
-	public Score(String tema, Float score, Float total, Float media) {
+	public Score(String area, Float valor, Float total, Float media) {
 		super();
-		this.tema = tema;
-		this.score = score;
-		this.total = total;
-		this.media = media;
+		this.area = area;
+		this.valorScore = valor;
+		this.repasseTotal = total;
+		this.mediaCidadesSemelhantes = media;
 	}
 
 
@@ -45,35 +56,35 @@ public class Score implements Serializable{
 	}
 
 
-	public String getTema() {
-		return tema;
+	public String getArea() {
+		return area;
 	}
 
 
-	public void setTema(String tema) {
-		this.tema = tema;
+	public void setArea(String tema) {
+		this.area = tema;
 	}
 
 
-	public Float getScore() {
-		return score;
+	public Float getValorScore() {
+		return valorScore;
 	}
 
 
-	public void setScore(Float score) {
-		this.score = score;
+	public void setValorScore(Float score) {
+		this.valorScore = score;
 	}
-	public Float getTotal() {
-		return total;
+	public Float getRepasseTotal() {
+		return repasseTotal;
 	}
-	public void setTotal(Float total) {
-		this.total = total;
+	public void setRepasseTotal(Float total) {
+		this.repasseTotal = total;
 	}
-	public Float getMedia() {
-		return media;
+	public Float getMediaCidadesSemelhantes() {
+		return mediaCidadesSemelhantes;
 	}
-	public void setMedia(Float media) {
-		this.media = media;
+	public void setMediaCidadesSemelhantes(Float media) {
+		this.mediaCidadesSemelhantes = media;
 	}
 
 	@Override
