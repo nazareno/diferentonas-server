@@ -13,3 +13,4 @@ heroku pg:push diferentonas DATABASE_URL --app diferentonas
 
 echo "Reiniciando todos os dynos"
 heroku restart
+    
