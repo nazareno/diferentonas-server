@@ -2,31 +2,18 @@ library(ggplot2)
 library(reshape2)
 library(tidyr)
 library(dplyr)
+source("R/diferentices-lib.R")
 
-convenios = read.csv("dist/data/convenios-municipio-ccodigo.csv")
+convenios = read.csv("dist/data/convenios-municipio-detalhes-ccodigo.csv")
 vizinhos = read.csv("dist/data/vizinhos.euclidiano.csv")
 
-ve_conv <- function(convenios, cod) {
-  c1 = convenios %>% filter(cod7 == cod, ANO_CONVENIO >= 2013)
-  
-  c1 %>% 
-    slice(1) %>% 
-    select(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE) %>% 
-    print()
-  
-  print(paste("Total: ", sum(c1$total)))
-  
-  c1 %>% 
-    group_by(NM_ORGAO_SUPERIOR) %>% 
-    summarise(total = sum(total)) %>% 
-    arrange(desc(total))
-}
-
-ve_conv(convenios, 2503209)
-ve_conv(convenios, 4321329)
+convenios  = convenios %>% 
+  select(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, VL_REPASSE, funcao.imputada, ANO_CONVENIO, nome, cod7) %>%
+  group_by(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, funcao.imputada, ANO_CONVENIO, nome, cod7) %>%
+  summarise(total = sum(VL_REPASSE)) 
 
 # cs %>% 
-#   ggplot(aes(x = NM_ORGAO_SUPERIOR, fill = NM_ORGAO_SUPERIOR, weight = total)) + 
+#   ggplot(aes(x = funcao.imputada, fill = funcao.imputada, weight = total)) + 
 #   geom_bar() + 
 #   facet_grid(NM_MUNICIPIO_PROPONENTE ~ .) + coord_flip()
 
@@ -34,10 +21,10 @@ pca_comparacao <- function(convenios, vizinhos, cod) {
   ids = vizinhos[vizinhos$origem == cod, 12:22]
   cs = convenios %>% filter(cod7 %in% ids, ANO_CONVENIO >= 2013)
   cs$cod7 = factor(cs$cod7)
-  cs$NM_ORGAO_SUPERIOR = droplevels(cs$NM_ORGAO_SUPERIOR)
+  cs$funcao.imputada = droplevels(cs$funcao.imputada)
   
-  cs.w = dcast(select(cs, cod7, NM_ORGAO_SUPERIOR, total), 
-               formula = cod7 ~ NM_ORGAO_SUPERIOR, sum)
+  cs.w = dcast(select(cs, cod7, funcao.imputada, total), 
+               formula = cod7 ~ funcao.imputada, sum)
   
   df = cs.w[, -1]
   row.names(df) = cs$NM_MUNICIPIO_PROPONENTE
@@ -55,52 +42,17 @@ pca_comparacao <- function(convenios, vizinhos, cod) {
     labs(x='Principal Component', y = 'Cumuative Proportion of Variance Explained')
 }
 
-
-cria_df_comparacao <- function(cod, convenios, vizinhos) {
-  ids = vizinhos[vizinhos$origem == cod, 12:22]
-  cs = convenios %>% filter(cod7 %in% ids, ANO_CONVENIO >= 2013)
-  cs$cod7 = droplevels(factor(cs$cod7))
-  cs$NM_ORGAO_SUPERIOR = droplevels(cs$NM_ORGAO_SUPERIOR)
-  cs = cs %>% 
-    group_by(NM_ORGAO_SUPERIOR, cod7) %>% 
-    summarise(total = sum(total)) %>% 
-    mutate(zscore = (total - mean(total)) / sd(total)) 
-  cs = cs %>% group_by(NM_ORGAO_SUPERIOR) %>% mutate(media = mean(total)) 
-  cs[is.na(cs$zscore), "zscore"] = 0
-  cs$origem = cod
-  cs
-}
-
-convenios.e = convenios %>% 
-  complete(c(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, ANO_CONVENIO, nome, cod7), 
-           NM_ORGAO_SUPERIOR, 
-           fill = list(total = 0))
+convenios.e = expande_convenios(convenios)
 
 t = convenios.e %>% 
   group_by(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, nome, cod7, ANO_CONVENIO) %>% 
   summarise(total = sum(total))
-t$NM_ORGAO_SUPERIOR = "TOTAL GERAL"
+t$funcao.imputada = "TOTAL GERAL"
 
 convenios.e = rbind(convenios.e, t)
 
-# resultado = data.frame(origem = c(), NM_ORGAO_SUPERIOR = c(), zscore = c(), total = c(), media = c())
-# for (id in vizinhos$origem){
-#   x = cria_df_comparacao(id, convenios.e, vizinhos) %>% 
-#   filter(origem == cod7) %>% 
-#   select(origem, NM_ORGAO_SUPERIOR, zscore, total, media) 
-#   resultado = rbind(resultado, x)
-# }
-
-cria_dados_score = function(id, convenios.e, vizinhos){
-  cria_df_comparacao(id, convenios.e, vizinhos) %>% 
-    filter(origem == cod7) %>% 
-    select(origem, NM_ORGAO_SUPERIOR, zscore, total, media) 
-}
-
 # essa chamada demora!
-resultado = vizinhos %>% 
-  group_by(origem) %>% 
-  do(cria_dados_score(.$origem, convenios.e, vizinhos))
+resultado = computa_scores_para_todos(convenios.e, vizinhos)
 
 r2 = resultado[resultado$total > 0, ] 
 write.csv(resultado, "dist/data/diferencas-cidades-tudo.csv", row.names = FALSE)
@@ -110,11 +62,11 @@ write.csv(r2, "dist/data/diferencas-cidades.csv", row.names = FALSE)
 x = cria_df_comparacao(convenios, vizinhos, 2503209)
 
 x %>%
-  ggplot(aes(x = NM_ORGAO_SUPERIOR, y = total, colour = NM_MUNICIPIO_PROPONENTE)) + 
+  ggplot(aes(x = funcao.imputada, y = total, colour = NM_MUNICIPIO_PROPONENTE)) + 
   geom_point() + theme_bw() + coord_flip()
 
 x %>%
-  ggplot(aes(x = NM_ORGAO_SUPERIOR, y = zscore, colour = NM_MUNICIPIO_PROPONENTE)) + 
+  ggplot(aes(x = funcao.imputada, y = zscore, colour = NM_MUNICIPIO_PROPONENTE)) + 
   geom_point() + theme_bw() + coord_flip()
 
 
