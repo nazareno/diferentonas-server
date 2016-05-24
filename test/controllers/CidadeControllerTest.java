@@ -5,11 +5,14 @@ import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.contentAsString;
+import module.MainModule;
 
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import play.Application;
+import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.mvc.Result;
 import play.test.WithApplication;
@@ -19,14 +22,25 @@ import play.test.WithApplication;
  */
 public class CidadeControllerTest extends WithApplication {
 	
+	private CidadeController controller;
+
+	private JPAApi jpaAPI;
+
+	@Before
+	public void setUp() {
+		this.controller = app.injector().instanceOf(CidadeController.class);
+		this.jpaAPI = app.injector().instanceOf(JPAApi.class);
+	}
+	
 	@Override
 	protected Application provideApplication() {
-		return new GuiceApplicationBuilder().build();
+		return new GuiceApplicationBuilder().bindings(new MainModule())
+		.build();
 	}
 
 	@Test
 	public void testIndex() {
-		Result result = new CidadeController().index();
+		Result result = controller.index();
 		assertEquals(OK, result.status());
 		assertEquals("text/plain", result.contentType().get());
 		assertEquals("utf-8", result.charset().get());
@@ -35,12 +49,23 @@ public class CidadeControllerTest extends WithApplication {
 
 	/**
 	 * Test method for {@link controllers.CidadeController#getCidades()}.
-	 * FIXME and remove {@link Ignore}. Maybe we should mock and not inject...
 	 */
 	@Test
-	@Ignore("Not working without injecting JPAApi and I don't know why...")
 	public void testGetCidadeInexistente() {
-		Result result = new CidadeController().get(0L);
-		assertEquals(NOT_FOUND, result.status());
+		jpaAPI.withTransaction(() ->{
+			Result result = controller.get(0L);
+			assertEquals(NOT_FOUND, result.status());
+		});
+	}
+
+	/**
+	 * Test method for {@link controllers.CidadeController#getCidades()}.
+	 */
+	@Test
+	public void testGetCidadeExistente() {
+		jpaAPI.withTransaction(() ->{
+			Result result = controller.get(2513406L);
+			assertEquals(OK, result.status());
+		});
 	}
 }

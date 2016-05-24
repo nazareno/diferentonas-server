@@ -1,20 +1,23 @@
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static play.mvc.Http.Status.NOT_FOUND;
+import static play.mvc.Http.Status.OK;
+
+import java.io.IOException;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
+
 import models.Cidade;
 
 import org.junit.Test;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 import play.Application;
 import play.inject.guice.GuiceApplicationBuilder;
-import play.test.WithServer;
 import play.libs.Json;
-import play.libs.ws.*;
-
-import java.io.IOException;
-import java.util.concurrent.*;
-
-import static org.junit.Assert.*;
-import static play.test.Helpers.*;
+import play.libs.ws.WS;
+import play.libs.ws.WSClient;
+import play.libs.ws.WSResponse;
+import play.test.WithServer;
 
 public class HTTPStackTest extends WithServer {
 

@@ -2,9 +2,23 @@ package models;
 
 import java.util.List;
 
-import play.db.jpa.JPA;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
+import play.db.jpa.JPA;
+import play.db.jpa.JPAApi;
+
+@Singleton
 public class CidadeDAO {
+	
+	
+	private JPAApi jpaAPI;
+
+	@Inject
+	public CidadeDAO(JPAApi jpaAPI) {
+		this.jpaAPI = jpaAPI;
+	}
+	
     /**
      * Create an Cidade
      *
@@ -12,9 +26,9 @@ public class CidadeDAO {
      *
      * @return Cidade
      */
-    public static Cidade create (Cidade model) {
+    public Cidade create (Cidade model) {
 //        model.emptyToNull();
-        JPA.em().persist(model);
+        jpaAPI.em().persist(model);
         // Flush and refresh for check
         JPA.em().flush();
         JPA.em().refresh(model);
@@ -28,8 +42,8 @@ public class CidadeDAO {
      *
      * @return Cidade
      */
-    public static Cidade find(Long id) {
-        return JPA.em().find(Cidade.class, id);
+    public Cidade find(Long id) {
+        return jpaAPI.em().find(Cidade.class, id);
     }
 
     /**
@@ -39,7 +53,7 @@ public class CidadeDAO {
      *
      * @return Cidade
      */
-    public static Cidade update(Cidade model) {
+    public Cidade update(Cidade model) {
         return JPA.em().merge(model);
     }
 
@@ -48,7 +62,7 @@ public class CidadeDAO {
      *
      * @param Integer id
      */
-    public static void delete(Long id) {
+    public void delete(Long id) {
         Cidade model = JPA.em().getReference(Cidade.class, id);
         JPA.em().remove(model);
     }
@@ -58,7 +72,7 @@ public class CidadeDAO {
      *
      * @return List<Cidade>
      */
-    public static List<Cidade> all() {
+    public List<Cidade> all() {
         return JPA.em().createQuery("SELECT m FROM " + Cidade.TABLE + " m ORDER BY id", Cidade.class).getResultList();
     }
 
@@ -70,7 +84,7 @@ public class CidadeDAO {
      *
      * @return List<Cidade>
      */
-    public static List<Cidade> paginate(Integer page, Integer size) {
+    public List<Cidade> paginate(Integer page, Integer size) {
         return JPA.em().createQuery("SELECT m FROM " + Cidade.TABLE + " m ORDER BY id", Cidade.class).setFirstResult(page*size).setMaxResults(size).getResultList();
     }
 
@@ -79,7 +93,7 @@ public class CidadeDAO {
      *
      * @return Long
      */
-    public static Long count() {
+    public Long count() {
         return JPA.em().createQuery("SELECT count(m) FROM " + Cidade.TABLE + " m", Long.class).getSingleResult();
     }
 }

@@ -12,14 +12,20 @@
         </properties>
     </persistence-unit>
 
-	<persistence-unit name="defaultPersistenceUnit"
-		transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="defaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<non-jta-data-source>DefaultDS</non-jta-data-source>
 		<properties>
-			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
-			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="true" />
+			<property name="hibernate.hbm2ddl.auto" value="update" />
+			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+
+<!-- I've seen this in an ancient code... don't know if it's default for now 
+			<property name="hibernate.connection.CharSet" value="utf8"/>
+            <property name="hibernate.connection.characterEncoding" value="utf8"/>
+            <property name="hibernate.connection.useUnicode" value="true"/>
+ -->			
 		</properties>
 	</persistence-unit>
 </persistence>
