@@ -20,6 +20,11 @@ Você precisará de um postgres instalado na sua máquina, com usuário e senha 
 
 Rode `./activator run` e seu servidor escutará na porta 9000. Os endpoints REST são os expostos em `conf/routes`.
 
+## Testes automáticos
+
+Java: `./activator test`
+R: `Rscript R/test_diferentices.R`
+
 ## Para gerar os dados do BD a partir dos dados públicos
 
 (WIP)
