@@ -14,6 +14,7 @@ import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 
 import models.Cidade;
+import models.CidadeDAO;
 import models.Iniciativa;
 import models.Score;
 
@@ -30,57 +31,37 @@ import com.google.inject.Inject;
  * 
  * @author ricardo
  */
-public class InitialData {
+public class InitialDataWithDAO {
 
     /**
      * @param environment
      * @param jpaAPI
      */
     @Inject
-    public InitialData(Environment environment, JPAApi jpaAPI) throws SQLException {
+    public InitialDataWithDAO(Environment environment, JPAApi jpaAPI, CidadeDAO dao) {
         Logger.info("Na inicialização da aplicação.");
 
         List<Cidade> cidades = jpaAPI.withTransaction(entityManager -> {
             return entityManager.createQuery("FROM Cidade", Cidade.class).setMaxResults(2).getResultList();
         });
-        
 
 
         if (cidades.isEmpty()) {
             Logger.info("Populando BD");
-            long start = System.currentTimeMillis();
-            long end = start;
-            jpaAPI.withTransaction(() -> {
-			try {
-				populaCidades(jpaAPI);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-//			Logger.info("Populou cidades " + (end-start));
-			try {
-				populaVizinhos(jpaAPI);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-//			Logger.info("Populou vizinhos + " + (end-start));
-			try {
-				populaScores(jpaAPI);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			});
-            end = System.currentTimeMillis();
-            Logger.info("Populou " + (end-start));
-            start = end;
+            try {
+                populaCidades(jpaAPI, dao);
+                Logger.info("Populou cidades.");
+                populaVizinhos(jpaAPI);
+                Logger.info("Populou vizinhos");
+                populaScores(jpaAPI);
+                Logger.info("Populou scores");
+            } catch (SQLException e1) {
+                Logger.error(e1.getLocalizedMessage(), e1);
+            }
         } else {
             Logger.info("BD já populado com cidades, vizinhos e scores");
         }
 
-    	long start = System.currentTimeMillis();
-    	long end = start;
         // Depois de popular ou já populado
         cidades = jpaAPI.withTransaction(entityManager -> {
             return entityManager.createQuery("FROM Cidade", Cidade.class).setMaxResults(2).getResultList();
@@ -93,15 +74,14 @@ public class InitialData {
                 Logger.error(e1.getLocalizedMessage());
                 e1.printStackTrace();
             }
-            end = System.currentTimeMillis();
-            Logger.info("Populou convenios " + (end-start));
-            start = end;
+            Logger.info("Populou convenios");
         } else {
             Logger.info("BD já populado com convenios.");
         }
     }
 
     private void populaScores(JPAApi jpaAPI) throws SQLException {
+        jpaAPI.withTransaction(() -> {
             try{
                 String dataPath = "dist/data/diferencas-cidades-tudo.csv";
                 int count = 0;
@@ -126,13 +106,17 @@ public class InitialData {
                         Logger.info("Inseri " + count + " scores nas cidades.");
                     }
                 }
+                em.flush();
             }catch (SQLException e){
                 Logger.error(e.getMessage(), e);
             }
+        });
     }
 
     private void populaVizinhos(JPAApi jpaAPI) throws SQLException {
+        jpaAPI.withTransaction(() -> {
             try {
+                EntityManager em = jpaAPI.em();
                 String dataPath = "dist/data/vizinhos.euclidiano.csv";
                 int count = 0;
 
@@ -153,7 +137,6 @@ public class InitialData {
                                 }
                             });
 
-                    EntityManager em = jpaAPI.em();
                     Cidade o = em.find(Cidade.class, originID);
                     List<Cidade> similares = similaresIDs
                             .mapToObj(
@@ -162,18 +145,21 @@ public class InitialData {
                             .map(obj -> (Cidade) obj)
                             .collect(Collectors.toList());
                     o.setSimilares(similares);
-                    em.persist(o);
+                    // em.persist(o);
                     count++;
                     if (count % 1000 == 0) {
                         Logger.info("Inseri vizinhos para " + count + " cidades...");
                     }
                 }
+                em.flush();
             } catch (SQLException e) {
                 Logger.error(e.getMessage(), e);
             }
+        });
     }
 
-    private void populaCidades(JPAApi jpaAPI) throws SQLException {
+    private void populaCidades(JPAApi jpaAPI, CidadeDAO dao) throws SQLException {
+        jpaAPI.withTransaction(() -> {
             try {
                 String dataPath = "dist/data/dados2010.csv";
 
@@ -191,7 +177,7 @@ public class InitialData {
                             resultSet.getFloat(8),
                             resultSet.getLong(9));
 
-                    jpaAPI.em().persist(cidade);
+                    dao.create(cidade);
 
                     count++;
                     if (count % 500 == 0) {
@@ -201,6 +187,7 @@ public class InitialData {
             }catch (SQLException e){
                 Logger.error(e.getMessage(), e);
             }
+        });
     }
 
     private void populaConvenios(JPAApi jpaAPI) throws SQLException {
@@ -240,6 +227,7 @@ public class InitialData {
                         Cidade o = em.find(Cidade.class, cidade);
                         if (o != null) {
                             o.getIniciativas().add(iniciativa);
+                            //em.persist(o);
                         }
                         count++;
                         if (count % 1000 == 0) {
@@ -249,6 +237,7 @@ public class InitialData {
                         Logger.warn("Convênio duplicado: " + idIniciativa, e);
                     }
                 }
+                em.flush();
             } catch (SQLException e){
                 Logger.error(e.getMessage(), e);
             } catch (ParseException e){

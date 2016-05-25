@@ -7,14 +7,16 @@ import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.contentAsString;
 import module.MainModule;
 
+
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+
 
 import play.Application;
 import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.mvc.Result;
+import play.test.Helpers;
 import play.test.WithApplication;
 
 /**
@@ -66,6 +68,9 @@ public class CidadeControllerTest extends WithApplication {
 		jpaAPI.withTransaction(() ->{
 			Result result = controller.get(2513406L);
 			assertEquals(OK, result.status());
+			System.out.println(" >>>>>>> ");
+			System.out.println(Helpers.contentAsString(result));
+			System.out.println(" >>>>>>> ");
 		});
 	}
 }
