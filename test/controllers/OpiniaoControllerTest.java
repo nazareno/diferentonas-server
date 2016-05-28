@@ -13,7 +13,6 @@ import play.test.Helpers;
 import play.test.WithApplication;
 
 import java.util.Iterator;
-import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -28,7 +27,8 @@ public class OpiniaoControllerTest extends WithApplication {
 
     // TODO pagination
     // TODO max size
-
+    // TODO conteudo
+    // TODO tipos de opinião
 
     private OpiniaoController controller;
 
@@ -95,7 +95,7 @@ public class OpiniaoControllerTest extends WithApplication {
 
         // impiedosamente apagamos ela sem deixar rastro
         jpaAPI.withTransaction(() ->{
-            Result result = controller.removeOpiniao(iniciativaExemplo, opiniaoId[0]);
+            Result result = controller.removeOpiniao(opiniaoId[0]);
             assertEquals(OK, result.status());
 
             Result result2 = controller.getOpinioes(iniciativaExemplo);

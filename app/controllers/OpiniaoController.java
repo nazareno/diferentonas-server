@@ -49,20 +49,17 @@ public class OpiniaoController {
      * Usado para testes. Hoje não precisa de rota.
      */
     @Transactional
-    public Result removeOpiniao(Long idIniciativa, String idOpiniao) {
+    public Result removeOpiniao(String idOpiniao) {
         Logger.debug("Removendo opinião " + idOpiniao);
-        Iniciativa iniciativa = iniciativaService.find(idIniciativa);
-        if(iniciativa == null){
-            return notFound("Iniciativa não encontrada");
-        }
 
         Opiniao paraRemover = opiniaoDAO.find(idOpiniao);
         if(paraRemover == null){
             return notFound("Opinião não encontrada");
         }
 
-        // TODO melhor recuperar a iniciativa a partir da opinião; evita que a iniciativa esteja errada
+        Iniciativa iniciativa = paraRemover.getIniciativa();
         iniciativa.removeOpiniao(paraRemover);
+
         opiniaoDAO.delete(paraRemover);
 
         return ok(toJson(paraRemover));

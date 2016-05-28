@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -36,7 +37,8 @@ public class Iniciativa implements Serializable {
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
     private Date dataConclusaoGovernoFederal;	// dataLimitePrestacaoContas
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
+	@JsonBackReference
 	private List<Opiniao> opinioes;
 
 
@@ -192,6 +194,7 @@ public class Iniciativa implements Serializable {
 
 	public void addOpiniao(Opiniao opiniao) {
 		this.opinioes.add(opiniao);
+		opiniao.setIniciativa(this);
 	}
 
 	public boolean removeOpiniao(Opiniao paraRemover) {

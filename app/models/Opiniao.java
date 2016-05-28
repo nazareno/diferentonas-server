@@ -1,10 +1,9 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -19,11 +18,24 @@ public class Opiniao implements Serializable {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "iniciativa")
+    @JsonBackReference
+    private Iniciativa iniciativa;
+
     public UUID getId() {
         return id;
     }
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public Iniciativa getIniciativa() {
+        return iniciativa;
+    }
+
+    public void setIniciativa(Iniciativa iniciativa) {
+        this.iniciativa = iniciativa;
     }
 }
