@@ -43,9 +43,6 @@ public class CoachingControllerTest extends WithApplication {
 		.build();
 	}
 
-	/**
-	 * Test method for {@link controllers.CoachingController#getMensagens(Long)}.
-	 */
 	@Test
 	public void testGetMensagensComBancoVazio() {
 		jpaAPI.withTransaction(() ->{
@@ -56,9 +53,6 @@ public class CoachingControllerTest extends WithApplication {
 		});
 	}
 
-	/**
-	 * Test method for {@link controllers.CoachingController#getMensagens(Long)}.
-	 */
 	@Test
 	@Ignore
 	public void testSaveMensagem() {
@@ -70,9 +64,6 @@ public class CoachingControllerTest extends WithApplication {
 		});
 	}
 
-	/**
-	 * Test method for {@link controllers.CoachingController#getMensagens(Long)}.
-	 */
 	@Test
 	@Ignore
 	public void testGetMensagensComUmaMensagem() {

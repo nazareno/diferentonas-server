@@ -49,9 +49,6 @@ public class CidadeControllerTest extends WithApplication {
 		assertTrue(contentAsString(result).contains("Olar"));
 	}
 
-	/**
-	 * Test method for {@link controllers.CidadeController#getCidades()}.
-	 */
 	@Test
 	public void testGetCidadeInexistente() {
 		jpaAPI.withTransaction(() ->{
@@ -60,9 +57,6 @@ public class CidadeControllerTest extends WithApplication {
 		});
 	}
 
-	/**
-	 * Test method for {@link controllers.CidadeController#getCidades()}.
-	 */
 	@Test
 	public void testGetCidadeExistente() {
 		jpaAPI.withTransaction(() ->{
