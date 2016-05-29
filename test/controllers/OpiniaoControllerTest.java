@@ -145,15 +145,20 @@ public class OpiniaoControllerTest extends WithApplication {
     @Test
     @Ignore
     public void deveImpedirPostsMuitoGrandes() throws IOException {
-        String conteudo = "";
-        for (int i = 0; i < 200; i++) {
-            conteudo += "12345";
-        }
-        conteudo += "x";
         jpaAPI.withTransaction(() -> {
-            Result result = requisicaoAddOpiniao(conteudo);
-            assertEquals(BAD_REQUEST, result.status());
-            assertEquals("Conteúdo não pode ultrapassar 1000 caracteres", Helpers.contentAsString(result));
+            try {
+                String conteudo = "";
+                for (int i = 0; i < 200; i++) {
+                    conteudo += "12345";
+                }
+                conteudo += "x";
+                Result result = null;
+                result = requisicaoAddOpiniao(conteudo);
+                assertEquals(BAD_REQUEST, result.status());
+                assertEquals("Conteúdo não pode ultrapassar 1000 caracteres", Helpers.contentAsString(result));
+            } catch (IOException e) {
+                fail();
+            }
         });
     }
 
