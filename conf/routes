@@ -11,7 +11,8 @@ GET        /cidade/:id                  controllers.CidadeController.get(id: Lon
 GET        /cidade/:id/similares        controllers.CidadeController.getSimilares(id: Long)
 GET        /cidade/:id/iniciativas      controllers.CidadeController.getIniciativas(id: Long)
 # .. Opiniões
-POST       /iniciativas/:iniciativa/opinioes controllers.OpiniaoController.addOpiniao(iniciativa: Long)
+POST       /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.addOpiniao(iniciativa: Long)
+GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long)
 
 # > deprecated route
 GET        /cidade/:id/convenios        controllers.CidadeController.getIniciativas(id: Long)
