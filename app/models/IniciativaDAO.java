@@ -21,4 +21,7 @@ public class IniciativaDAO {
         return jpaAPI.em().find(Iniciativa.class, id);
     }
 
+    public void flush() {
+        jpaAPI.em().flush();
+    }
 }

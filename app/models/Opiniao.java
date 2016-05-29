@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -23,6 +24,9 @@ public class Opiniao implements Serializable {
     @JsonBackReference
     private Iniciativa iniciativa;
 
+    //@NotNull
+    private String conteudo;
+
     public UUID getId() {
         return id;
     }
@@ -37,5 +41,13 @@ public class Opiniao implements Serializable {
 
     public void setIniciativa(Iniciativa iniciativa) {
         this.iniciativa = iniciativa;
+    }
+
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
+
+    public String getConteudo() {
+        return conteudo;
     }
 }

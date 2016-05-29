@@ -17,4 +17,7 @@ public class IniciativaService {
         return dao.find(id);
     }
 
+    public void flush() {
+        this.dao.flush();
+    }
 }

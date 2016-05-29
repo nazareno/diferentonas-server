@@ -1,12 +1,18 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
+import com.sun.corba.se.impl.naming.cosnaming.InterOperableNamingImpl;
 import models.*;
 import play.Logger;
 import play.db.jpa.Transactional;
+import play.libs.Json;
+import play.mvc.Controller;
 import play.mvc.Result;
 
 import static play.libs.Json.toJson;
+import static play.mvc.Controller.request;
+import static play.mvc.Results.badRequest;
 import static play.mvc.Results.notFound;
 import static play.mvc.Results.ok;
 
@@ -39,9 +45,24 @@ public class OpiniaoController {
         if(iniciativa == null){
             return notFound("Iniciativa não encontrada");
         }
+
+        JsonNode json = request().body().asJson();
+
+        if(json == null) {
+            return badRequest("Esperava receber json");
+        }
+
+        String conteudo = json.findPath("conteudo").textValue();
+        if(conteudo == null){
+            return badRequest("Falta parâmetro [conteudo]");
+        }
+
+        Logger.debug("Add opinião: " + conteudo.substring(0, 30) + "...");
+        // Opiniao opiniao = Json.fromJson(json, Opiniao.class);
         Opiniao opiniao = new Opiniao();
+        opiniao.setConteudo(conteudo);
         iniciativa.addOpiniao(opiniao);
-        //JPA.em().flush(); // TODO necessário?
+        iniciativaService.flush(); // para que a opinião seja retornada com id
         return ok(toJson(opiniao));
     }
 
