@@ -2,34 +2,26 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.*;
+import models.Opiniao;
 import module.MainModule;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import play.Application;
 import play.Logger;
 import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
-import play.mvc.Call;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import static org.junit.Assert.*;
-import static play.mvc.Http.Status.BAD_REQUEST;
-import static play.mvc.Http.Status.NOT_FOUND;
-import static play.mvc.Http.Status.OK;
-import static play.test.Helpers.fakeRequest;
-import static play.test.Helpers.invokeWithContext;
+import static play.mvc.Http.Status.*;
 import static play.test.Helpers.route;
 
 /**
@@ -38,23 +30,27 @@ import static play.test.Helpers.route;
 public class OpiniaoControllerTest extends WithApplication {
 
     // TODO pagination
-    // TODO max size
-    // TODO conteudo
-    // TODO tipos de opinião
 
     private OpiniaoController controller;
 
     private JPAApi jpaAPI;
 
     private Long iniciativaExemplo = 805264L;
-    private String conteudoExemplo = "Minha opinião sobre essa iniciativa é que ela é " +
-            "absolutamente estrogonófica para a cidade.";
+    private String conteudoExemplo = "Essa iniciativa é absolutamente estrogonófica para a cidade.";
 
     @Before
     public void setUp() {
         this.controller = app.injector().instanceOf(OpiniaoController.class);
         this.jpaAPI = app.injector().instanceOf(JPAApi.class);
     }
+
+    // TODO Essa forma seria mais limpa? Não funciona (ConcurrentModificationException)
+//    @After
+//    public void tearDown() {
+//        jpaAPI.withTransaction(() -> {
+//            Result result = controller.removeOpinioes(iniciativaExemplo);
+//        });
+//    }
 
     @Override
     protected Application provideApplication() {
@@ -64,11 +60,7 @@ public class OpiniaoControllerTest extends WithApplication {
 
     @Test
     public void deveRetornarJsonVazioQuandoNaoHaOpinioes() {
-        jpaAPI.withTransaction(() -> {
-            Result result = controller.getOpinioes(iniciativaExemplo);
-            assertEquals(OK, result.status());
-            assertTrue(temZeroElementosJson(result));
-        });
+        failSeHaOpinioes(iniciativaExemplo);
     }
 
     @Test
@@ -83,17 +75,15 @@ public class OpiniaoControllerTest extends WithApplication {
 
     @Test
     public void devePostarOpiniao() throws IOException {
+        // se houver algum efeito colateral de outro teste, falhe
+        failSeHaOpinioes(iniciativaExemplo);
         jpaAPI.withTransaction(() -> {
-            // confirmar que não há opinião
-            Result result = controller.getOpinioes(iniciativaExemplo);
-            assertTrue(temZeroElementosJson(result));
-
             // criar opinião
             try {
-                Result result2 = requisicaoAddOpiniao(conteudoExemplo);
+                Result result2 = enviaPOSTAddOpiniao(conteudoExemplo);
                 assertEquals(OK, result2.status());
             } catch (IOException e) {
-                fail();
+                fail(e.getMessage());
             }
         });
 
@@ -109,8 +99,10 @@ public class OpiniaoControllerTest extends WithApplication {
             assertFalse(elementosIt.hasNext()); // ha apenas um
 
             opiniaoId[0] = node.get("id").asText();
+            assertNotNull(opiniaoId[0]);
         });
-        // impiedosamente apagamos ela sem deixar rastro
+
+        // impiedosamente apagamos ela para não deixar rastro
         removeOpiniaoDoBD(opiniaoId[0]);
     }
 
@@ -120,30 +112,25 @@ public class OpiniaoControllerTest extends WithApplication {
 
         jpaAPI.withTransaction(() -> {
             try {
-                Result result = requisicaoAddOpiniao(conteudoExemplo);
+                Result result = enviaPOSTAddOpiniao(conteudoExemplo);
 
                 assertEquals(OK, result.status());
                 JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
-                Logger.debug("Resposta: " + Helpers.contentAsString(result));
 
                 String postado = respostaJson.get("conteudo").asText();
                 assertEquals(conteudoExemplo, postado);
 
                 opiniaoId[0] = respostaJson.get("id").asText();
+                assertNotNull(opiniaoId[0]);
             } catch (IOException e) {
-                fail();
+                fail(e.getMessage());
             }
         });
 
         removeOpiniaoDoBD(opiniaoId[0]);
     }
 
-    private JsonNode criaRequisicao(String conteudo) throws IOException {
-        return (new ObjectMapper()).readTree("{ \"conteudo\": \"" + conteudo + "\" }");
-    }
-
     @Test
-    @Ignore
     public void deveImpedirPostsMuitoGrandes() throws IOException {
         jpaAPI.withTransaction(() -> {
             try {
@@ -151,14 +138,68 @@ public class OpiniaoControllerTest extends WithApplication {
                 for (int i = 0; i < 200; i++) {
                     conteudo += "12345";
                 }
+                // 1001 caracteres.
                 conteudo += "x";
-                Result result = null;
-                result = requisicaoAddOpiniao(conteudo);
+
+                Result result = enviaPOSTAddOpiniao(conteudo);
                 assertEquals(BAD_REQUEST, result.status());
-                assertEquals("Conteúdo não pode ultrapassar 1000 caracteres", Helpers.contentAsString(result));
+                // é preciso ter limites
+                assertEquals("{\"conteudo\":[\"Opiniões devem ter 1000 caracteres ou menos\"]}", Helpers.contentAsString(result));
             } catch (IOException e) {
-                fail();
+                fail(e.getMessage());
             }
+        });
+    }
+
+    @Test
+    public void deveImpedirPostsVazios() throws IOException {
+        jpaAPI.withTransaction(() -> {
+            try {
+                String conteudo = "";
+
+                Result result = enviaPOSTAddOpiniao(conteudo);
+                assertEquals(BAD_REQUEST, result.status());
+                // é preciso ter limites
+                assertEquals("{\"conteudo\":[\"Campo necessário\"]}", Helpers.contentAsString(result));
+            } catch (IOException e) {
+                fail(e.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void deveExigirCampos() throws IOException {
+        jpaAPI.withTransaction(() -> {
+            try {
+                JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\"}");
+                Result result = enviaPOSTAddOpiniao(json);
+                assertEquals(BAD_REQUEST, result.status());
+                assertEquals("{\"conteudo\":[\"Campo necessário\"]}", Helpers.contentAsString(result));
+            } catch (IOException e) {
+                fail(e.getMessage());
+            }
+        });
+
+        jpaAPI.withTransaction(() -> {
+            try {
+                JsonNode json = new ObjectMapper().readTree("{\"conteudo\": \"Topíssimo\"}");
+                Result result = enviaPOSTAddOpiniao(json);
+                assertEquals(BAD_REQUEST, result.status());
+                assertEquals("{\"tipo\":[\"Campo necessário\"]}", Helpers.contentAsString(result));
+            } catch (IOException e) {
+                fail(e.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Falha se houver alguma opinião para a iniciativa.
+     */
+    private void failSeHaOpinioes(Long idIniciativa) {
+        jpaAPI.withTransaction(() -> {
+            Result result = controller.getOpinioes(idIniciativa);
+            assertEquals(OK, result.status());
+            assertTrue(temZeroElementosJson(result));
         });
     }
 
@@ -177,9 +218,20 @@ public class OpiniaoControllerTest extends WithApplication {
         });
     }
 
-    private Result requisicaoAddOpiniao(String conteudo) throws IOException {
+    private JsonNode criaJsonDaRequisicao(String conteudo) throws IOException {
+        return (new ObjectMapper()).readTree("{ \"conteudo\": \"" + conteudo + "\", " +
+                "\"tipo\": \"coracao\"}");
+    }
+
+    private Result enviaPOSTAddOpiniao(String conteudo) throws IOException {
+        JsonNode json = criaJsonDaRequisicao(conteudo);
+        return enviaPOSTAddOpiniao(json);
+    }
+
+    private Result enviaPOSTAddOpiniao(JsonNode json) {
+        Logger.debug("Requisição para add opinião: " + json.toString());
         Http.RequestBuilder request = new Http.RequestBuilder().method("POST")
-                .bodyJson(criaRequisicao(conteudo))
+                .bodyJson(json)
                 .uri(controllers.routes.OpiniaoController.addOpiniao(iniciativaExemplo).url());
         return route(request);
     }

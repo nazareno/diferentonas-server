@@ -2,9 +2,9 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import org.hibernate.annotations.GenericGenerator;
+import play.data.validation.Constraints;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -24,8 +24,15 @@ public class Opiniao implements Serializable {
     @JsonBackReference
     private Iniciativa iniciativa;
 
-    //@NotNull
+    @Column(length = 1000)
+    @Constraints.MaxLength(value = 1000,message = "Opiniões devem ter 1000 caracteres ou menos")
+    @Constraints.Required(message = "Campo necessário")
+    @Constraints.MinLength(1)
     private String conteudo;
+
+    @Constraints.Required(message = "Campo necessário")
+    @Constraints.Pattern("^(bomba|coracao|coracao_partido)$")
+    private String tipo;
 
     public UUID getId() {
         return id;
@@ -50,4 +57,13 @@ public class Opiniao implements Serializable {
     public String getConteudo() {
         return conteudo;
     }
+
+    public String getTipo() {
+        return this.tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
 }
