@@ -1,14 +1,10 @@
 package controllers;
 
 import static play.libs.Json.toJson;
-
-import java.util.Collections;
-
-import models.CidadeService;
 import models.Mensagem;
+import models.MensagemService;
+import play.data.FormFactory;
 import play.db.jpa.Transactional;
-import play.libs.Json;
-import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -16,23 +12,23 @@ import com.google.inject.Inject;
 
 public class CoachingController extends Controller {
 	
-	private CidadeService service;
+	private MensagemService service;
+	private FormFactory formFactory;
 
 	@Inject
-	public CoachingController(CidadeService service) {
+	public CoachingController(MensagemService service, FormFactory formFactory) {
 		this.service = service;
+		this.formFactory = formFactory;
 	}
 	
     @Transactional(readOnly = true)
     public Result getMensagens(Long size) {
-    	return ok(toJson(Collections.EMPTY_LIST));
+    	return ok(toJson(service.paginate(0, size.intValue())));
     }
 	
     @Transactional
     public Result save() {
-    	Mensagem mensagem = Json.fromJson(Controller.request().body().asJson(), Mensagem.class);
-    	assert mensagem != null: "Caguei tudo";
-    	assert mensagem.getId() != null: "Caguei o UUID tudo";
-    	return ok("Não caguei!");
+    	Mensagem mensagem = service.create(formFactory.form(Mensagem.class).bindFromRequest().get());
+    	return created(toJson(mensagem)); 
     }
 }

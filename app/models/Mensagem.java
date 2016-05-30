@@ -6,12 +6,9 @@ package models;
 import java.io.Serializable;
 import java.util.UUID;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import org.hibernate.annotations.GenericGenerator;
 
 /**
  * @author ricardoas
@@ -24,19 +21,22 @@ public class Mensagem implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = -1169792076018944039L;
+
+	public static final String TABLE = "Mensagem";
 	
 	@Id
-	@GeneratedValue(generator = "uuid2")
-    @GenericGenerator(name = "uuid2", strategy = "uuid2")
 	private UUID id;
 	private String conteudo;
 	private String titulo;
 	private String autor;
+
 	
 	public Mensagem() {
+		this.id = java.util.UUID.fromString(new com.eaio.uuid.UUID().toString());
 	}
 	
 	public Mensagem(String conteudo, String titulo, String autor) {
+		this();
 		this.conteudo = conteudo;
 		this.titulo = titulo;
 		this.autor = autor;
@@ -104,5 +104,4 @@ public class Mensagem implements Serializable {
 			return false;
 		return true;
 	}
-
 }

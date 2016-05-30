@@ -2,18 +2,19 @@ package controllers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static play.mvc.Http.Status.CREATED;
 import static play.mvc.Http.Status.OK;
+import static play.test.Helpers.fakeRequest;
+import static play.test.Helpers.route;
 import models.Mensagem;
 import module.MainModule;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import play.Application;
-import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Result;
@@ -27,16 +28,6 @@ import com.fasterxml.jackson.databind.JsonNode;
  */
 public class CoachingControllerTest extends WithApplication {
 	
-	private CoachingController controller;
-
-	private JPAApi jpaAPI;
-
-	@Before
-	public void setUp() {
-		this.controller = app.injector().instanceOf(CoachingController.class);
-		this.jpaAPI = app.injector().instanceOf(JPAApi.class);
-	}
-	
 	@Override
 	protected Application provideApplication() {
 		return new GuiceApplicationBuilder().bindings(new MainModule())
@@ -48,43 +39,63 @@ public class CoachingControllerTest extends WithApplication {
 	 */
 	@Test
 	public void testGetMensagensComBancoVazio() {
-		jpaAPI.withTransaction(() ->{
-			Result result = controller.getMensagens(10L);
-			assertEquals(OK, result.status());
-			JsonNode node = Json.parse(Helpers.contentAsString(result));
-			assertFalse(node.elements().hasNext());
-		});
+		Result result = Helpers.route(controllers.routes.CoachingController.getMensagens(10L));
+		assertEquals(OK, result.status());
+		assertNotNull(Helpers.contentAsString(result));
+		JsonNode node = Json.parse(Helpers.contentAsString(result));
+		assertTrue(node.isArray());
 	}
 
 	/**
 	 * Test method for {@link controllers.CoachingController#getMensagens(Long)}.
 	 */
 	@Test
-	@Ignore
 	public void testSaveMensagem() {
-		jpaAPI.withTransaction(() ->{
-			Result result = controller.save();
-			assertEquals(OK, result.status());
-			JsonNode node = Json.parse(Helpers.contentAsString(result));
-			assertFalse(node.elements().hasNext());
-		});
+		Mensagem mensagem = new Mensagem("Fica de olho na sua cidade...", "Miga, lá vem a dezembrada!!!", "Ministério da Justiça");
+		
+		Result result = route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(mensagem)));
+		
+		assertEquals(CREATED, result.status());
+		JsonNode node = Json.parse(Helpers.contentAsString(result));
+		assertFalse("deveria retornar mensagem no JSON de resposta", node.isNull());
+		
+		Mensagem mensagemCriada = Json.fromJson(node, Mensagem.class);
+		
+		assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
+		assertEquals(mensagem.getTitulo(), mensagemCriada.getTitulo());
 	}
 
 	/**
 	 * Test method for {@link controllers.CoachingController#getMensagens(Long)}.
 	 */
 	@Test
-	@Ignore
-	public void testGetMensagensComUmaMensagem() {
-		jpaAPI.withTransaction(() ->{
-			Result result = controller.getMensagens(1L);
-			assertEquals(OK, result.status());
-			JsonNode node = Json.parse(Helpers.contentAsString(result));
-			assertTrue(node.elements().hasNext());
-			JsonNode messageJSON = node.elements().next();
-			Mensagem mensagem = Json.fromJson(messageJSON, Mensagem.class);
-			assertNotNull(mensagem);
-			assertNotNull(mensagem.getId());
-		});
+	public void testGetUltimaMensagem() {
+		Json.parse(Helpers.contentAsString(Helpers.route(controllers.routes.CoachingController.getMensagens(10L))));
+		
+		Mensagem mensagemAntiga = new Mensagem("Fique de olho na sua cidade... " + System.currentTimeMillis(), "Primeira mensagem", "Ministério da Justiça");
+		assertEquals(CREATED, route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(mensagemAntiga))).status());
+
+		Result result = Helpers.route(controllers.routes.CoachingController.getMensagens(1L));
+		
+		assertEquals(OK, result.status());
+		JsonNode node = Json.parse(Helpers.contentAsString(result));
+		assertTrue(node.isArray());
+		assertTrue(node.elements().hasNext());
+		
+		assertEquals(mensagemAntiga, Json.fromJson(node.elements().next(), Mensagem.class));
+		
+		Mensagem mensagemNova = new Mensagem("Continue de olho na sua cidade... " + System.currentTimeMillis(), "Segunda mensagem", "Ministério da Justiça");
+		assertEquals(CREATED, route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(mensagemNova))).status());
+		
+		result = Helpers.route(controllers.routes.CoachingController.getMensagens(1L));
+		
+		assertEquals(OK, result.status());
+		node = Json.parse(Helpers.contentAsString(result));
+		assertTrue(node.isArray());
+		assertTrue(node.elements().hasNext());
+		Mensagem mensagem = Json.fromJson(node.elements().next(), Mensagem.class);
+		
+		assertNotEquals(mensagemAntiga.getId(), mensagem.getId());
+		assertEquals(mensagemNova.getId(), mensagem.getId());
 	}
 }

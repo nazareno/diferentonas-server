@@ -2,18 +2,15 @@ package models;
 
 import java.util.List;
 
-import javax.persistence.PersistenceContext;
+import play.db.jpa.JPA;
+import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import play.db.jpa.JPA;
-import play.db.jpa.JPAApi;
-
 @Singleton
 public class CidadeDAO {
 	
-	@PersistenceContext
 	private JPAApi jpaAPI;
 
 	@Inject
