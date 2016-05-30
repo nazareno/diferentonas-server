@@ -10,6 +10,7 @@ import models.Iniciativa;
 import models.Mensagem;
 import module.MainModule;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -30,6 +31,7 @@ public class IniciativaControllerTest extends WithApplication {
 	}
 
 	@Test
+	@Ignore
 	public void deveriaRetornarIniciativasSimilares() {
 
 		long id = 797935L;
