@@ -6,9 +6,9 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
@@ -25,11 +25,11 @@ public class MensagemDAO {
 	}
 	
     /**
-     * Create an Mensagem
+     * Cria uma nova mensagem
      *
-     * @param Mensagem model
+     * @param Mensagem nova mensagem
      *
-     * @return Mensagem
+     * @return Mensagem mensagem com ID gerado pelo banco de dados.
      */
     public Mensagem create (Mensagem model) {
         EntityManager entityManager = jpaAPI.em();
@@ -39,43 +39,50 @@ public class MensagemDAO {
     }
 
     /**
-     * Find an Mensagem by id
+     * Procura mensagem pelo {@link UUID}
      *
-     * @param Integer id
+     * @param UUID id identificador da mensagem.
      *
-     * @return Mensagem
+     * @return {@link Mensagem} referente ao id ou <code>null</code> caso não exista mensagem associada a esse ID.
      */
     public Mensagem find(UUID id) {
         return jpaAPI.em().find(Mensagem.class, id);
     }
 
     /**
-     * Update an Mensagem
+     * Atualiza uma mensagem no banco de dados.
      *
-     * @param Mensagem model
+     * @param mensagem atualizada
      *
-     * @return Mensagem
+     * @return {@link Mensagem} atualizada
      */
-    public Mensagem update(Mensagem model) {
-        return jpaAPI.em().merge(model);
+    public Mensagem update(Mensagem mensagem) {
+        return jpaAPI.em().merge(mensagem);
     }
 
     /**
-     * Delete an Mensagem by id
+     * Remove uma mensagem do banco de dados.
      *
-     * @param Integer id
+     * @param mensagem a remover.
      */
     public void delete(Mensagem mensagem) {
         jpaAPI.em().remove(mensagem);
     }
 
     /**
-     * Get all Mensagems
+     * Retorna todas as mensagens no banco de dados ordenada da mais recente para mais antiga
      *
      * @return List<Mensagem>
      */
     public List<Mensagem> all() {
-        return jpaAPI.em().createQuery("SELECT m FROM " + Mensagem.TABLE + " m ORDER BY id", Mensagem.class).getResultList();
+    	EntityManager em = jpaAPI.em();
+		CriteriaBuilder builder = em.getCriteriaBuilder();
+		
+		CriteriaQuery<Mensagem> query = builder.createQuery(Mensagem.class);
+		Root<Mensagem> m = query.from(Mensagem.class);
+		query = query.orderBy(builder.desc(m.get("id")));
+		
+    	return em.createQuery(query).getResultList();
     }
 
     /**
@@ -98,11 +105,22 @@ public class MensagemDAO {
     }
 
     /**
-     * Get the number of total row
+     * Retorna a quantidade de mensagens no banco de dados. 
      *
-     * @return Long
+     * @return o número de mensagens.
      */
     public Long count() {
-        return JPA.em().createQuery("SELECT count(m) FROM " + Mensagem.TABLE + " m", Long.class).getSingleResult();
+        return jpaAPI.em().createQuery("SELECT count(m) FROM " + Mensagem.TABLE + " m", Long.class).getSingleResult();
     }
+
+	/**
+	 * FIXME select * from mensagem m where m.id > id;
+	 * 
+	 * @param ultimaLida
+	 * @return
+	 */
+	public List<Mensagem> findMaisRecentesQue(UUID ultimaLida) {
+		
+    	return all();
+	}
 }

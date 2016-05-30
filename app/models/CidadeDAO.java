@@ -2,6 +2,8 @@ package models;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
 
@@ -25,11 +27,10 @@ public class CidadeDAO {
      * @return Cidade
      */
     public Cidade create(Cidade model) {
-//        model.emptyToNull();
-        jpaAPI.em().persist(model);
-        // Flush and refresh for check
-        JPA.em().flush();
-        JPA.em().refresh(model);
+        EntityManager em = jpaAPI.em();
+		em.persist(model);
+        em.flush();
+        em.refresh(model);
         return model;
     }
 

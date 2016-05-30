@@ -5,7 +5,7 @@ import static play.libs.Json.toJson;
 import java.util.UUID;
 
 import models.Mensagem;
-import models.MensagemService;
+import models.MensagemDAO;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
@@ -13,31 +13,38 @@ import play.mvc.Result;
 
 import com.google.inject.Inject;
 
-public class CoachingController extends Controller {
+public class MensagemController extends Controller {
 	
-	private MensagemService service;
+	private MensagemDAO dao;
 	private FormFactory formFactory;
 
 	@Inject
-	public CoachingController(MensagemService service, FormFactory formFactory) {
-		this.service = service;
+	public MensagemController(MensagemDAO dao, FormFactory formFactory) {
+		this.dao = dao;
 		this.formFactory = formFactory;
 	}
 	
     @Transactional(readOnly = true)
     public Result getMensagens(Long size) {
-    	return ok(toJson(service.paginate(0, size.intValue())));
+    	return ok(toJson(dao.paginate(0, size.intValue())));
+    }
+	
+    @Transactional(readOnly = true)
+    public Result getMensagensNaoLidas(UUID ultimaLida) {
+    	return ok(toJson(dao.findMaisRecentesQue(ultimaLida)));
     }
 	
     @Transactional
     public Result save() {
-    	Mensagem mensagem = service.create(formFactory.form(Mensagem.class).bindFromRequest().get());
+    	Mensagem mensagem = dao.create(formFactory.form(Mensagem.class).bindFromRequest().get());
     	return created(toJson(mensagem)); 
     }
 
     @Transactional
     public Result delete(String id) {
-    	if(service.delete(UUID.fromString(id))){
+    	Mensagem mensagem = dao.find(UUID.fromString(id));
+    	if(mensagem != null){
+    		dao.delete(mensagem);
     		return ok(toJson("Deleted: " + id)); 
     	}else{
     		return notFound(toJson("id : " + id ));

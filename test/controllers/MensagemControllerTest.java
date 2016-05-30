@@ -2,7 +2,6 @@ package controllers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.CREATED;
@@ -29,15 +28,17 @@ import play.test.WithApplication;
 import com.fasterxml.jackson.databind.JsonNode;
 
 /**
- * Testes do controller.
+ * Testes para {@link MensagemController}.
+ * 
+ * @author ricardo
  */
-public class CoachingControllerTest extends WithApplication {
+public class MensagemControllerTest extends WithApplication {
 	
 	private Mensagem primeiraMensagem;
 	private Mensagem segundaMensagem;
 
 	@Before
-	public void setUp(){
+	public void criaMensagensSemID(){
 		this.primeiraMensagem = new Mensagem();
 		this.primeiraMensagem.setTitulo("Primeira mensagem");
 		this.primeiraMensagem.setConteudo("Miga, lá vem a dezembrada!!!");
@@ -50,13 +51,13 @@ public class CoachingControllerTest extends WithApplication {
 	}
 	
 	@After
-	public void tearDown(){
-//		if(primeiraMensagem.getId() != null){
-//			Helpers.route(controllers.routes.CoachingController.delete(primeiraMensagem.getId().toString()));
-//		}
-//		if(segundaMensagem.getId() != null){
-//			Helpers.route(controllers.routes.CoachingController.delete(segundaMensagem.getId().toString()));
-//		}
+	public void limpaBancoAposTeste(){
+		if(primeiraMensagem.getId() != null){
+			Helpers.route(controllers.routes.MensagemController.delete(primeiraMensagem.getId().toString()));
+		}
+		if(segundaMensagem.getId() != null){
+			Helpers.route(controllers.routes.MensagemController.delete(segundaMensagem.getId().toString()));
+		}
 	}
 	
 	@Override
@@ -66,8 +67,8 @@ public class CoachingControllerTest extends WithApplication {
 	}
 
 	@Test
-	public void testGetMensagensComBancoVazio() {
-		Result result = Helpers.route(controllers.routes.CoachingController.getMensagens(10L));
+	public void deveRetornarNenhumaMensagem() {
+		Result result = Helpers.route(controllers.routes.MensagemController.getMensagens(10L));
 		assertEquals(OK, result.status());
 		assertNotNull(Helpers.contentAsString(result));
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
@@ -75,47 +76,55 @@ public class CoachingControllerTest extends WithApplication {
 	}
 
 	@Test
-	public void testSaveMensagem() {
-		Result result = route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(primeiraMensagem)));
+	public void deveAdicionarUmaMensagem() {
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(primeiraMensagem)));
 		
+		// insere
 		assertEquals(CREATED, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
 		assertFalse("deveria retornar mensagem no JSON de resposta", node.isNull());
 		
 		Mensagem mensagemCriada = Json.fromJson(node, Mensagem.class);
 		
+		// id foi gerado?
 		assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
 		assertEquals(primeiraMensagem.getTitulo(), mensagemCriada.getTitulo());
 		this.primeiraMensagem = mensagemCriada;
 	}
 
 	@Test
-	public void testGetEmOrdem() {
+	public void deveRetornarMensagensOrdenadasPelaMaisRecente() {
 		Result result = null;
 		
-		result = route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(primeiraMensagem)));
+		// insere primeira
+		result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(primeiraMensagem)));
 		assertEquals(CREATED, result.status());
 		this.primeiraMensagem = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 		assertNotNull("mensagem deveria conter um UUID gerado pelo BD", this.primeiraMensagem.getId());
 
-		result = route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(segundaMensagem)));
+		// insere segunda
+		result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(segundaMensagem)));
 		assertEquals(CREATED, result.status());
 		this.segundaMensagem = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 		assertNotNull("mensagem deveria conter um UUID gerado pelo BD", this.segundaMensagem.getId());
 		
-		
-		result = Helpers.route(controllers.routes.CoachingController.getMensagens(10L));
+		// recupera mensagens
+		result = Helpers.route(controllers.routes.MensagemController.getMensagens(10L));
 		
 		assertEquals(OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
 		assertTrue(node.isArray());
+		
 		Iterator<JsonNode> elements = node.elements();
+		
+		// mais recente == segunda
 		assertTrue(elements.hasNext());
 		Mensagem segunda = Json.fromJson(elements.next(), Mensagem.class);
+		assertEquals(this.segundaMensagem, segunda);
+		
+		// mais antiga == primeira
 		assertTrue(elements.hasNext());
 		Mensagem primeira = Json.fromJson(elements.next(), Mensagem.class);
-		
-		assertEquals(this.segundaMensagem, segunda);
 		assertEquals(this.primeiraMensagem, primeira);
 	}
 
