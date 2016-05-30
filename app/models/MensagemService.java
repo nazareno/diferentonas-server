@@ -1,6 +1,7 @@
 package models;
 
 import java.util.List;
+import java.util.UUID;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -44,7 +45,7 @@ public class MensagemService {
 	 *
 	 * @return Mensagem
 	 */
-	public Mensagem find(Long id) {
+	public Mensagem find(UUID id) {
 		return dao.find(id);
 	}
 
@@ -53,10 +54,10 @@ public class MensagemService {
 	 *
 	 * @param Integer id
 	 */
-	public Boolean delete(Long id) {
+	public Boolean delete(UUID id) {
 		Mensagem mensagem = dao.find(id);
 		if (mensagem != null) {
-			dao.delete(id);
+			dao.delete(mensagem);
 			return true;
 		} else {
 			return false;

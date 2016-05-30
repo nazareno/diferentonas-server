@@ -9,9 +9,14 @@ import static play.mvc.Http.Status.CREATED;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.fakeRequest;
 import static play.test.Helpers.route;
+
+import java.util.Iterator;
+
 import models.Mensagem;
 import module.MainModule;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import play.Application;
@@ -27,6 +32,32 @@ import com.fasterxml.jackson.databind.JsonNode;
  * Testes do controller.
  */
 public class CoachingControllerTest extends WithApplication {
+	
+	private Mensagem primeiraMensagem;
+	private Mensagem segundaMensagem;
+
+	@Before
+	public void setUp(){
+		this.primeiraMensagem = new Mensagem();
+		this.primeiraMensagem.setTitulo("Primeira mensagem");
+		this.primeiraMensagem.setConteudo("Miga, lá vem a dezembrada!!!");
+		this.primeiraMensagem.setAutor("Ministério da Justiça");
+		
+		this.segundaMensagem = new Mensagem();
+		this.segundaMensagem.setTitulo("Segunda Mensagem");
+		this.segundaMensagem.setConteudo("Continue de olho na sua cidade... ");
+		this.segundaMensagem.setAutor("Ministério da Justiça");
+	}
+	
+	@After
+	public void tearDown(){
+//		if(primeiraMensagem.getId() != null){
+//			Helpers.route(controllers.routes.CoachingController.delete(primeiraMensagem.getId().toString()));
+//		}
+//		if(segundaMensagem.getId() != null){
+//			Helpers.route(controllers.routes.CoachingController.delete(segundaMensagem.getId().toString()));
+//		}
+	}
 	
 	@Override
 	protected Application provideApplication() {
@@ -45,9 +76,7 @@ public class CoachingControllerTest extends WithApplication {
 
 	@Test
 	public void testSaveMensagem() {
-		Mensagem mensagem = new Mensagem("Fica de olho na sua cidade...", "Miga, lá vem a dezembrada!!!", "Ministério da Justiça");
-		
-		Result result = route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(mensagem)));
+		Result result = route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(primeiraMensagem)));
 		
 		assertEquals(CREATED, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
@@ -56,37 +85,38 @@ public class CoachingControllerTest extends WithApplication {
 		Mensagem mensagemCriada = Json.fromJson(node, Mensagem.class);
 		
 		assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
-		assertEquals(mensagem.getTitulo(), mensagemCriada.getTitulo());
+		assertEquals(primeiraMensagem.getTitulo(), mensagemCriada.getTitulo());
+		this.primeiraMensagem = mensagemCriada;
 	}
 
 	@Test
-	public void testGetUltimaMensagem() {
-		Json.parse(Helpers.contentAsString(Helpers.route(controllers.routes.CoachingController.getMensagens(10L))));
+	public void testGetEmOrdem() {
+		Result result = null;
 		
-		Mensagem mensagemAntiga = new Mensagem("Fique de olho na sua cidade... " + System.currentTimeMillis(), "Primeira mensagem", "Ministério da Justiça");
-		assertEquals(CREATED, route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(mensagemAntiga))).status());
+		result = route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(primeiraMensagem)));
+		assertEquals(CREATED, result.status());
+		this.primeiraMensagem = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
+		assertNotNull("mensagem deveria conter um UUID gerado pelo BD", this.primeiraMensagem.getId());
 
-		Result result = Helpers.route(controllers.routes.CoachingController.getMensagens(1L));
+		result = route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(segundaMensagem)));
+		assertEquals(CREATED, result.status());
+		this.segundaMensagem = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
+		assertNotNull("mensagem deveria conter um UUID gerado pelo BD", this.segundaMensagem.getId());
+		
+		
+		result = Helpers.route(controllers.routes.CoachingController.getMensagens(10L));
 		
 		assertEquals(OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
 		assertTrue(node.isArray());
-		assertTrue(node.elements().hasNext());
+		Iterator<JsonNode> elements = node.elements();
+		assertTrue(elements.hasNext());
+		Mensagem segunda = Json.fromJson(elements.next(), Mensagem.class);
+		assertTrue(elements.hasNext());
+		Mensagem primeira = Json.fromJson(elements.next(), Mensagem.class);
 		
-		assertEquals(mensagemAntiga, Json.fromJson(node.elements().next(), Mensagem.class));
-		
-		Mensagem mensagemNova = new Mensagem("Continue de olho na sua cidade... " + System.currentTimeMillis(), "Segunda mensagem", "Ministério da Justiça");
-		assertEquals(CREATED, route(fakeRequest(controllers.routes.CoachingController.save()).bodyJson(Json.toJson(mensagemNova))).status());
-		
-		result = Helpers.route(controllers.routes.CoachingController.getMensagens(1L));
-		
-		assertEquals(OK, result.status());
-		node = Json.parse(Helpers.contentAsString(result));
-		assertTrue(node.isArray());
-		assertTrue(node.elements().hasNext());
-		Mensagem mensagem = Json.fromJson(node.elements().next(), Mensagem.class);
-		
-		assertNotEquals(mensagemAntiga.getId(), mensagem.getId());
-		assertEquals(mensagemNova.getId(), mensagem.getId());
+		assertEquals(this.segundaMensagem, segunda);
+		assertEquals(this.primeiraMensagem, primeira);
 	}
+
 }

@@ -1,6 +1,9 @@
 package controllers;
 
 import static play.libs.Json.toJson;
+
+import java.util.UUID;
+
 import models.Mensagem;
 import models.MensagemService;
 import play.data.FormFactory;
@@ -30,5 +33,14 @@ public class CoachingController extends Controller {
     public Result save() {
     	Mensagem mensagem = service.create(formFactory.form(Mensagem.class).bindFromRequest().get());
     	return created(toJson(mensagem)); 
+    }
+
+    @Transactional
+    public Result delete(String id) {
+    	if(service.delete(UUID.fromString(id))){
+    		return ok(toJson("Deleted: " + id)); 
+    	}else{
+    		return notFound(toJson("id : " + id ));
+    	}
     }
 }

@@ -19,9 +19,9 @@ GET        /cidade/:id/convenios        controllers.CidadeController.getIniciati
 # < deprecated route
 
 # Mensagens do Governo
-GET        /mensagem                    controllers.CoachingController.getMensagens(id: Long ?= 10)
-POST       /mensagem                    controllers.CoachingController.save()
-
+GET        /mensagens                   controllers.CoachingController.getMensagens(id: Long ?= 10)
+POST       /mensagens                   controllers.CoachingController.save()
+DELETE     /mensagens/:id               controllers.CoachingController.delete(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                controllers.Assets.at(path="/public", file)

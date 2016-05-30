@@ -1,6 +1,7 @@
 package models;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -44,7 +45,7 @@ public class MensagemDAO {
      *
      * @return Mensagem
      */
-    public Mensagem find(Long id) {
+    public Mensagem find(UUID id) {
         return jpaAPI.em().find(Mensagem.class, id);
     }
 
@@ -56,7 +57,7 @@ public class MensagemDAO {
      * @return Mensagem
      */
     public Mensagem update(Mensagem model) {
-        return JPA.em().merge(model);
+        return jpaAPI.em().merge(model);
     }
 
     /**
@@ -64,9 +65,8 @@ public class MensagemDAO {
      *
      * @param Integer id
      */
-    public void delete(Long id) {
-        Mensagem model = JPA.em().getReference(Mensagem.class, id);
-        JPA.em().remove(model);
+    public void delete(Mensagem mensagem) {
+        jpaAPI.em().remove(mensagem);
     }
 
     /**
@@ -92,7 +92,7 @@ public class MensagemDAO {
 		
 		CriteriaQuery<Mensagem> query = builder.createQuery(Mensagem.class);
 		Root<Mensagem> m = query.from(Mensagem.class);
-		query.orderBy(builder.desc(m.get("id")));
+		query = query.orderBy(builder.desc(m.get("id")));
 		
     	return em.createQuery(query).setFirstResult(page*size).setMaxResults(size).getResultList();
     }

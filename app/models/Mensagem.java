@@ -7,7 +7,11 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 
 /**
@@ -25,6 +29,17 @@ public class Mensagem implements Serializable {
 	public static final String TABLE = "Mensagem";
 	
 	@Id
+	@GeneratedValue( generator="uuid2" )
+	@GenericGenerator(
+			name="uuid2",
+			strategy="org.hibernate.id.UUIDGenerator",
+			parameters = {
+					@Parameter(
+							name="uuid_gen_strategy_class",
+							value="org.hibernate.id.uuid.CustomVersionOneStrategy"
+					)
+			}
+	)
 	private UUID id;
 	private String conteudo;
 	private String titulo;
@@ -32,16 +47,8 @@ public class Mensagem implements Serializable {
 
 	
 	public Mensagem() {
-		this.id = java.util.UUID.fromString(new com.eaio.uuid.UUID().toString());
 	}
 	
-	public Mensagem(String conteudo, String titulo, String autor) {
-		this();
-		this.conteudo = conteudo;
-		this.titulo = titulo;
-		this.autor = autor;
-	}
-
 	public UUID getId() {
 		return id;
 	}
