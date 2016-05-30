@@ -11,21 +11,20 @@ import com.google.inject.Singleton;
 @Singleton
 public class CidadeDAO {
 	
-	private JPAApi jpaAPI;
+    private JPAApi jpaAPI;
 
-	@Inject
-	public CidadeDAO(JPAApi jpaAPI) {
-		this.jpaAPI = jpaAPI;
-	}
-	
+    @Inject
+    public CidadeDAO(JPAApi jpaAPI) {
+        this.jpaAPI = jpaAPI;
+    }
+
     /**
      * Create an Cidade
      *
      * @param Cidade model
-     *
      * @return Cidade
      */
-    public Cidade create (Cidade model) {
+    public Cidade create(Cidade model) {
 //        model.emptyToNull();
         jpaAPI.em().persist(model);
         // Flush and refresh for check
@@ -38,7 +37,6 @@ public class CidadeDAO {
      * Find an Cidade by id
      *
      * @param Integer id
-     *
      * @return Cidade
      */
     public Cidade find(Long id) {
@@ -49,7 +47,6 @@ public class CidadeDAO {
      * Update an Cidade
      *
      * @param Cidade model
-     *
      * @return Cidade
      */
     public Cidade update(Cidade model) {
@@ -80,11 +77,10 @@ public class CidadeDAO {
      *
      * @param Integer page
      * @param Integer size
-     *
      * @return List<Cidade>
      */
     public List<Cidade> paginate(Integer page, Integer size) {
-        return JPA.em().createQuery("SELECT m FROM " + Cidade.TABLE + " m ORDER BY id", Cidade.class).setFirstResult(page*size).setMaxResults(size).getResultList();
+        return JPA.em().createQuery("SELECT m FROM " + Cidade.TABLE + " m ORDER BY id", Cidade.class).setFirstResult(page * size).setMaxResults(size).getResultList();
     }
 
     /**

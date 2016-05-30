@@ -4,13 +4,21 @@
 
 # Home page
 GET        /                            controllers.CidadeController.index()
+
+# Cidade
+GET        /cidades                     controllers.CidadeController.getCidades()
 GET        /cidade/:id                  controllers.CidadeController.get(id: Long)
 GET        /cidade/:id/similares        controllers.CidadeController.getSimilares(id: Long)
-# > deprecated route
-GET        /cidade/:id/convenios        controllers.CidadeController.getIniciativas(id: Long) 
-# < deprecated route
 GET        /cidade/:id/iniciativas      controllers.CidadeController.getIniciativas(id: Long)
-GET        /cidades                     controllers.CidadeController.getCidades()
+# .. Opiniões
+POST       /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.addOpiniao(iniciativa: Long)
+GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int, tamanhoPagina: Int)
+
+# > deprecated route
+GET        /cidade/:id/convenios        controllers.CidadeController.getIniciativas(id: Long)
+# < deprecated route
+
+# Mensagens do Governo
 GET        /mensagem                    controllers.CoachingController.getMensagens(id: Long ?= 10)
 POST       /mensagem                    controllers.CoachingController.save()
 

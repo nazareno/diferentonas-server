@@ -2,10 +2,12 @@ package models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
@@ -34,15 +36,20 @@ public class Iniciativa implements Serializable {
 	private Date dataConclusaoMunicipio;	// dataTerminoVigencia
 	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
     private Date dataConclusaoGovernoFederal;	// dataLimitePrestacaoContas
-    
 
-    public Iniciativa(){
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
+	@JsonBackReference
+	private List<Opiniao> opinioes;
 
+
+	public Iniciativa(){
+		opinioes = new LinkedList<>();
     }
     
     public Iniciativa(Long id, Integer ano, String titulo, String programa, String area, String fonte, String concedente,
     				  String status, Boolean temAditivo, Float verbaGovernoFederal, Float verbaMunicipio, Date dataInicio,
     				  Date dataConclusaoMunicipio) {
+		this();
 		this.id = id;
 		this.ano = ano;
 		this.titulo = titulo;
@@ -179,5 +186,18 @@ public class Iniciativa implements Serializable {
 
 	public void setTemAditivo(Boolean temAditivo) {
 		this.temAditivo = temAditivo;
+	}
+
+	public List<Opiniao> getOpinioes() {
+		return opinioes;
+	}
+
+	public void addOpiniao(Opiniao opiniao) {
+		this.opinioes.add(opiniao);
+		opiniao.setIniciativa(this);
+	}
+
+	public boolean removeOpiniao(Opiniao paraRemover) {
+		return this.opinioes.remove(paraRemover);
 	}
 }

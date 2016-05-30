@@ -34,9 +34,6 @@ public class CoachingControllerTest extends WithApplication {
 		.build();
 	}
 
-	/**
-	 * Test method for {@link controllers.CoachingController#getMensagens(Long)}.
-	 */
 	@Test
 	public void testGetMensagensComBancoVazio() {
 		Result result = Helpers.route(controllers.routes.CoachingController.getMensagens(10L));
@@ -46,9 +43,6 @@ public class CoachingControllerTest extends WithApplication {
 		assertTrue(node.isArray());
 	}
 
-	/**
-	 * Test method for {@link controllers.CoachingController#getMensagens(Long)}.
-	 */
 	@Test
 	public void testSaveMensagem() {
 		Mensagem mensagem = new Mensagem("Fica de olho na sua cidade...", "Miga, lá vem a dezembrada!!!", "Ministério da Justiça");
@@ -65,9 +59,6 @@ public class CoachingControllerTest extends WithApplication {
 		assertEquals(mensagem.getTitulo(), mensagemCriada.getTitulo());
 	}
 
-	/**
-	 * Test method for {@link controllers.CoachingController#getMensagens(Long)}.
-	 */
 	@Test
 	public void testGetUltimaMensagem() {
 		Json.parse(Helpers.contentAsString(Helpers.route(controllers.routes.CoachingController.getMensagens(10L))));

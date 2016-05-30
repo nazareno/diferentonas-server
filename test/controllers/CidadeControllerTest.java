@@ -40,18 +40,12 @@ public class CidadeControllerTest extends WithApplication {
 		assertTrue(contentAsString(result).contains("Olar"));
 	}
 
-	/**
-	 * Test method for {@link controllers.CidadeController#getCidades()}.
-	 */
 	@Test
 	public void testGetCidadeInexistente() {
 		Result result = Helpers.route(controllers.routes.CidadeController.get(0L));
 		assertEquals(NOT_FOUND, result.status());
 	}
 
-	/**
-	 * Test method for {@link controllers.CidadeController#getCidades()}.
-	 */
 	@Test
 	public void testGetCidadeExistente() {
 		Result result = Helpers.route(controllers.routes.CidadeController.get(2513406L));
