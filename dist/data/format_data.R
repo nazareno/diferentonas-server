@@ -1,48 +1,26 @@
 #Formata as tabelas e separa os dados por anos
 
 idhm<- read.csv("idhm-completo.csv", header=T,sep=";", dec=",",encoding="latin1")
+
+# remove linha do total do Brasil
 idhm <- idhm[2:nrow(idhm), ]
 
-idhm[,1]<-as.character(idhm[,1])
-idhm$UF <- substr(idhm[,1],nchar(idhm[,1])-2,nchar(idhm[,1])-1)
-idhm[,1] <- substr(idhm[,1],1,nchar(idhm[,1])-5)
+# filtra colunas importantes
+idhm <- idhm %>% select(c(2, 5, 8, 11, 14))
+colnames(idhm) <- c("cod6", "idhm","idhm_renda","idhm_longev","idhm_edu")
 
 
-populacao <- read.csv("populacao.csv", header=T,sep=";")
-colnames(populacao) <- c("UF","COD.IBGE","Lugar","POP1991","POP1996","POP2000","POP2007","POP2010","x")
+populacao <- read.csv("populacao.csv", header=T,sep=";") %>% select(c(1,2,3,8))
+colnames(populacao) <- c("UF","cod7","municipio","pop")
+populacao <- populacao %>% mutate(cod6 = substr(cod7, 1, nchar(cod7)-1))
 
-populacao$codigo.original = populacao$COD.IBGE
-populacao$COD.IBGE <- substr(populacao$COD.IBGE, 1, nchar(populacao$COD.IBGE)-1)
+data <- merge(idhm, populacao, by=("cod6"))
 
-merge_data <- merge(idhm, populacao, by=("COD.IBGE"))
+coordenadas <- read.csv("coordenadas.csv", header = T)
+colnames(coordenadas) <- c("cod7","long","lat","alt")
 
-idhm91 <- as.data.frame(cbind(merge_data$Lugar,merge_data$COD.IBGE.x,
-                              merge_data$IDHM..1991.,merge_data$IDHM.Renda..1991.,merge_data$IDHM.Longevidade..1991.,
-                              merge_data$IDHM.Educação..1991.,merge_data$POP1991))
+data <- merge(data, coordenadas, by=("cod7"))
 
-colnames(idhm91) <- c("municipio","cod","idhm","idhm_renda","idhm_longev","idhm_edu","pop")
+data <- data[, c("cod6", "cod7", "municipio", "UF", "idhm","idhm_renda","idhm_longev","idhm_edu","pop","lat","long","alt")]
 
-idhm00 <- as.data.frame(cbind(merge_data$Lugar,merge_data$COD.IBGE.x,
-                              merge_data$IDHM..2000.,merge_data$IDHM.Renda..2000.,merge_data$IDHM.Longevidade..2000.,
-                              merge_data$IDHM.Educação..2000.,merge_data$POP2000))
-
-colnames(idhm00) <- c("municipio","cod","idhm","idhm_renda","idhm_longev","idhm_edu","pop")
-
-idhm10 = merge_data %>% 
-  select(COD.IBGE, codigo.original, Lugar.x, UF.x, 
-         IDHM..2010., IDHM.Renda..2010., IDHM.Longevidade..2010., IDHM.Educação..2010., 
-         POP2010) %>% 
-  mutate(COD.IBGE = as.character(COD.IBGE), 
-         codigo.original = as.character(codigo.original))
-
-names(idhm10) <- c("cod6", 
-                      "cod7", 
-                      "municipio", 
-                      "UF", 
-                      "idhm",
-                      "idhm_renda",
-                      "idhm_longev",
-                      "idhm_edu",
-                      "pop")
-
-write.csv(idhm10,"dados2010.csv",row.names = F)
+write.csv(data,"dados2010.csv",row.names = F)
