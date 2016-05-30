@@ -189,7 +189,10 @@ public class InitialData {
                             resultSet.getFloat(6),
                             resultSet.getFloat(7),
                             resultSet.getFloat(8),
-                            resultSet.getLong(9));
+                            resultSet.getLong(9), 
+                            resultSet.getFloat(10),
+                            resultSet.getFloat(11),
+                            resultSet.getFloat(12));
 
                     jpaAPI.em().persist(cidade);
 

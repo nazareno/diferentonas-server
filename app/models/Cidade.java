@@ -33,6 +33,9 @@ public class Cidade implements Serializable {
     private Float idhmLongevidade;
     private Float idhmEducacao;
     private Long populacao;
+    private Float latitude;
+    private Float longitude;
+    private Float altitude;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "cidades_similares",
@@ -54,7 +57,7 @@ public class Cidade implements Serializable {
     }
 
     public Cidade(Long id, String nome, String uf, Float idhm, Float idhmRenda,
-                  Float idhmLongevidade, Float idhmEducacao, Long populacao) {
+                  Float idhmLongevidade, Float idhmEducacao, Long populacao, Float latitude, Float longitude, Float altitude) {
         this();
         this.id = id;
         this.nome = nome;
@@ -64,6 +67,9 @@ public class Cidade implements Serializable {
         this.idhmLongevidade = idhmLongevidade;
         this.idhmEducacao = idhmEducacao;
         this.populacao = populacao;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.altitude = altitude;
     }
 
     public Cidade(String nome) {
@@ -134,8 +140,32 @@ public class Cidade implements Serializable {
     public void setPopulacao(Long populacao) {
         this.populacao = populacao;
     }
+    
+    public Float getLatitude() {
+		return latitude;
+	}
 
-    public List<Cidade> getSimilares() {
+	public void setLatitude(Float latitude) {
+		this.latitude = latitude;
+	}
+
+	public Float getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(Float longitude) {
+		this.longitude = longitude;
+	}
+
+	public Float getAltitude() {
+		return altitude;
+	}
+
+	public void setAltitude(Float altitude) {
+		this.altitude = altitude;
+	}
+
+	public List<Cidade> getSimilares() {
         return similares;
     }
 
@@ -162,12 +192,13 @@ public class Cidade implements Serializable {
 
 
     @Override
-    public String toString() {
-        return "Cidade [id=" + id + ", nome=" + nome + ", uf=" + uf + ", idhm="
-                + idhm + ", idhmRenda=" + idhmRenda + ", idhmLongevidade="
-                + idhmLongevidade + ", idhmEducacao=" + idhmEducacao
-                + ", populacao=" + populacao + ", similares=" + similares.size() + "]";
-    }
+	public String toString() {
+		return "Cidade [id=" + id + ", nome=" + nome + ", uf=" + uf + ", idhm="
+				+ idhm + ", idhmRenda=" + idhmRenda + ", idhmLongevidade="
+				+ idhmLongevidade + ", idhmEducacao=" + idhmEducacao
+				+ ", populacao=" + populacao + ", latitude=" + latitude
+				+ ", longitude=" + longitude + ", altitude=" + altitude + "]";
+	}
 
     @Override
     public int hashCode() {
