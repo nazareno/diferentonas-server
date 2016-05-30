@@ -2,9 +2,8 @@ package controllers;
 
 import static play.libs.Json.toJson;
 import models.Cidade;
-import models.CidadeService;
+import models.CidadeDAO;
 import play.Logger;
-import play.db.jpa.JPA;
 import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -15,16 +14,16 @@ import com.google.inject.Inject;
 
 public class CidadeController extends Controller {
 	
-	private CidadeService service;
+	private CidadeDAO dao;
 
 	@Inject
-	public CidadeController(CidadeService service) {
-		this.service = service;
+	public CidadeController(CidadeDAO dao) {
+		this.dao = dao;
 	}
 	
     @Transactional(readOnly = true)
     public Result getIniciativas(Long id) {
-        Cidade cidade = JPA.em().find(Cidade.class, id);
+    	Cidade cidade = dao.find(id);
 
         if(cidade == null) {
             return notFound();
@@ -36,7 +35,7 @@ public class CidadeController extends Controller {
 
     @Transactional(readOnly = true)
     public Result get(Long id) {
-    	Cidade cidade = service.find(id);
+    	Cidade cidade = dao.find(id);
 
         if(cidade == null) {
             ObjectNode result = Json.newObject();
@@ -52,7 +51,7 @@ public class CidadeController extends Controller {
     @Transactional(readOnly = true)
     public Result getCidades() {
     	
-        return ok(toJson(service.all()));
+        return ok(toJson(dao.all()));
     }
 
     public Result index() {
@@ -62,7 +61,7 @@ public class CidadeController extends Controller {
     @Transactional(readOnly = true)
     public Result getSimilares(Long id) {
     	
-        Cidade cidade = service.find(id);
+        Cidade cidade = dao.find(id);
         if(cidade == null) {
             ObjectNode result = Json.newObject();
             result.put("error", "Not found " + id);
