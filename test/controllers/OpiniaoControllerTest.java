@@ -2,7 +2,6 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import models.Opiniao;
 import module.MainModule;
 import org.junit.After;
 import org.junit.Before;
@@ -29,7 +28,7 @@ import static play.test.Helpers.route;
  */
 public class OpiniaoControllerTest extends WithApplication {
 
-    // TODO pagination
+    // TODO data da postagem
 
     private OpiniaoController controller;
 
@@ -44,13 +43,13 @@ public class OpiniaoControllerTest extends WithApplication {
         this.jpaAPI = app.injector().instanceOf(JPAApi.class);
     }
 
-    // TODO Essa forma seria mais limpa? Não funciona (ConcurrentModificationException)
-//    @After
-//    public void tearDown() {
-//        jpaAPI.withTransaction(() -> {
-//            Result result = controller.removeOpinioes(iniciativaExemplo);
-//        });
-//    }
+    // TODO Efeito colateral: não estarão opiniões no BD após esses testes.
+    @After
+    public void tearDown() {
+        jpaAPI.withTransaction(() -> {
+            Result result = controller.removeOpinioes(iniciativaExemplo);
+        });
+    }
 
     @Override
     protected Application provideApplication() {
@@ -67,7 +66,7 @@ public class OpiniaoControllerTest extends WithApplication {
     public void deveRetornar404EmCidadeInexistente() {
         jpaAPI.withTransaction(() -> {
             long inexistente = -1L;
-            Result result = controller.getOpinioes(inexistente);
+            Result result = controller.getOpinioes(inexistente, 0, 100);
             assertEquals(NOT_FOUND, result.status());
             assertEquals("Iniciativa não encontrada", Helpers.contentAsString(result));
         });
@@ -91,7 +90,7 @@ public class OpiniaoControllerTest extends WithApplication {
 
         // agora deve haver uma
         jpaAPI.withTransaction(() -> {
-            Result result = controller.getOpinioes(iniciativaExemplo);
+            Result result = controller.getOpinioes(iniciativaExemplo, 0, 100);
             JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
             Iterator<JsonNode> elementosIt = respostaJson.elements();
             assertTrue(elementosIt.hasNext()); // há elemento
@@ -101,9 +100,6 @@ public class OpiniaoControllerTest extends WithApplication {
             opiniaoId[0] = node.get("id").asText();
             assertNotNull(opiniaoId[0]);
         });
-
-        // impiedosamente apagamos ela para não deixar rastro
-        removeOpiniaoDoBD(opiniaoId[0]);
     }
 
     @Test
@@ -126,9 +122,60 @@ public class OpiniaoControllerTest extends WithApplication {
                 fail(e.getMessage());
             }
         });
-
-        removeOpiniaoDoBD(opiniaoId[0]);
     }
+
+    @Test
+    public void devePaginarOpinioes() throws IOException {
+        jpaAPI.withTransaction(() -> {
+            // 3 opiniões
+            String opiniao1 = "Excelente!",
+                    opiniao2 = "Top!!!",
+                    opiniao3 = "Não concordo com tudo";
+            try {
+                enviaPOSTAddOpiniao(opiniao1);
+                enviaPOSTAddOpiniao(opiniao2);
+                enviaPOSTAddOpiniao(opiniao3);
+            } catch (IOException e) {
+                fail(e.getMessage());
+            }
+        });
+
+        jpaAPI.withTransaction(() -> {
+
+            Result result = controller.getOpinioes(iniciativaExemplo, 0, 2);
+            // Deve haver 2 opiniões
+            JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
+            Iterator<JsonNode> elementosIt = respostaJson.elements();
+            assertTrue(elementosIt.hasNext()); // há elemento
+            elementosIt.next();
+            assertTrue(elementosIt.hasNext()); // há 2 elementos
+            elementosIt.next();
+            assertFalse(elementosIt.hasNext()); // só há 2 elementos
+
+            // pag 2
+            result = controller.getOpinioes(iniciativaExemplo, 1, 2);
+            // Deve haver 1 opiniões
+            respostaJson = Json.parse(Helpers.contentAsString(result));
+            elementosIt = respostaJson.elements();
+            assertTrue(elementosIt.hasNext()); // há elemento
+            elementosIt.next();
+            assertFalse(elementosIt.hasNext()); // só há 2 elementos
+
+
+            // pag 3
+            result = controller.getOpinioes(iniciativaExemplo, 3, 2);
+            // Deve haver 0 opiniões
+            respostaJson = Json.parse(Helpers.contentAsString(result));
+            elementosIt = respostaJson.elements();
+            assertFalse(elementosIt.hasNext()); // há 0 elementos
+
+        });
+
+        jpaAPI.withTransaction(() -> {
+            controller.removeOpinioes(iniciativaExemplo);
+        });
+    }
+
 
     @Test
     public void deveImpedirPostsMuitoGrandes() throws IOException {
@@ -197,7 +244,7 @@ public class OpiniaoControllerTest extends WithApplication {
      */
     private void failSeHaOpinioes(Long idIniciativa) {
         jpaAPI.withTransaction(() -> {
-            Result result = controller.getOpinioes(idIniciativa);
+            Result result = controller.getOpinioes(idIniciativa, 0, 100);
             assertEquals(OK, result.status());
             assertTrue(temZeroElementosJson(result));
         });
@@ -213,7 +260,7 @@ public class OpiniaoControllerTest extends WithApplication {
             Result result = controller.removeOpiniao(idOpiniao);
             assertEquals(OK, result.status());
 
-            Result result2 = controller.getOpinioes(iniciativaExemplo);
+            Result result2 = controller.getOpinioes(iniciativaExemplo, 0, 100);
             assertTrue(temZeroElementosJson(result2));
         });
     }

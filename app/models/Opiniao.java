@@ -14,6 +14,8 @@ import java.util.UUID;
 @Entity
 public class Opiniao implements Serializable {
 
+    public static final String TABLE = "Opiniao";
+
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")

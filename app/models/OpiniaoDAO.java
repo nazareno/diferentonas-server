@@ -1,11 +1,14 @@
 package models;
 
 import com.google.inject.Inject;
+import play.Logger;
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
 
 import javax.inject.Singleton;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import java.util.List;
 import java.util.UUID;
 
 @Singleton
@@ -26,5 +29,14 @@ public class OpiniaoDAO {
 
     public void delete(Opiniao paraRemover) {
         jpaAPI.em().remove(paraRemover);
+    }
+
+    public List<Opiniao> findByIniciativa(Long idIniciativa, int pagina, int tamanhoPagina) {
+        TypedQuery<Opiniao> query = jpaAPI.em().createQuery(
+                "SELECT o FROM Opiniao o WHERE o.iniciativa.id = :id", Opiniao.class)
+                .setParameter("id", idIniciativa)
+                .setFirstResult(pagina * tamanhoPagina)
+                .setMaxResults(tamanhoPagina);
+        return query.getResultList();
     }
 }
