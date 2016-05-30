@@ -1,19 +1,16 @@
 package controllers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.OK;
 
 import java.util.Iterator;
 
 import models.Iniciativa;
-import models.Mensagem;
 import module.MainModule;
 
-import org.junit.Ignore;
 import org.junit.Test;
-
-import com.fasterxml.jackson.databind.JsonNode;
 
 import play.Application;
 import play.inject.guice.GuiceApplicationBuilder;
@@ -21,6 +18,8 @@ import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class IniciativaControllerTest extends WithApplication {
 
@@ -31,11 +30,10 @@ public class IniciativaControllerTest extends WithApplication {
 	}
 
 	@Test
-	@Ignore
 	public void deveriaRetornarIniciativasSimilares() {
 
 		long id = 797935L;
-		Result result = Helpers.route(controllers.routes.IniciativaController.similares(id, 10L));
+		Result result = Helpers.route(controllers.routes.IniciativaController.similares(id, 5L));
 		assertEquals(OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
 		assertTrue(node.isArray());
@@ -44,8 +42,13 @@ public class IniciativaControllerTest extends WithApplication {
 		
 		// mais similar é a própria iniciativa
 		assertTrue(elements.hasNext());
-		Iniciativa similar = Json.fromJson(elements.next(), Iniciativa.class);
-		assertEquals(id, similar.getId());
+
+		assertEquals(804599, Json.fromJson(elements.next(), Iniciativa.class).getId());
+		assertEquals(797931, Json.fromJson(elements.next(), Iniciativa.class).getId());
+		assertEquals(790448, Json.fromJson(elements.next(), Iniciativa.class).getId());
+		assertEquals(822969, Json.fromJson(elements.next(), Iniciativa.class).getId());
+		assertEquals(796377, Json.fromJson(elements.next(), Iniciativa.class).getId());
+		assertFalse(elements.hasNext());
 	}
 
 }

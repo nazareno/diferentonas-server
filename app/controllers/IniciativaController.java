@@ -2,7 +2,6 @@ package controllers;
 
 import static play.libs.Json.toJson;
 import models.IniciativaDAO;
-import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;

@@ -1,20 +1,17 @@
 package models;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import javax.persistence.Query;
+
+import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
-import play.db.jpa.JPAApi;
-
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-
 @Singleton
 public class IniciativaDAO {
 
-    @PersistenceContext
     private JPAApi jpaAPI;
 
     @Inject
@@ -32,13 +29,14 @@ public class IniciativaDAO {
     
     public List<Iniciativa> findSimilares(Long id, Long quantidade) {
     	Iniciativa outro = find(id);
-    	    	
-        Query query = jpaAPI.em().createNativeQuery("SELECT i.* "
-        		+ "FROM iniciativa AS i, TS_RANK(TO_TSVECTOR('portuguese', i.titulo ), PLAINTO_TSQUERY('portuguese',?)) AS rank "
-        		+ "WHERE TO_TSVECTOR('portuguese', i.titulo ) @@ PLAINTO_TSQUERY('portuguese',?) ORDER BY rank DESC"
+    	
+        Query query = jpaAPI.em().createNativeQuery("SELECT iniciativa.* "
+        		+ "FROM iniciativa, TO_TSVECTOR('portuguese', titulo ) as titulo_v, TO_TSQUERY('portuguese',?) as query, TS_RANK(titulo_v, query) AS rank "
+        		+ "WHERE titulo_v @@ query AND id != ? ORDER BY rank DESC"
         		, Iniciativa.class)
-        		.setParameter(1, outro.getTitulo())
-        		.setParameter(2, outro.getTitulo());
+        		.setParameter(1, String.join(" | ", outro.getTitulo().split(" +")))
+        		.setParameter(2, id)
+        		;
 		return query.setMaxResults(quantidade.intValue()).getResultList();
     }
 
