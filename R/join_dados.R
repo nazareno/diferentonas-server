@@ -50,8 +50,8 @@ municipios = inner_join(municipios,
                         by = c("cod7" = "Código"))
 
 # TODO só temos códigos para ~5300 municípios. Faltam uns 300 mais para todos do Brasil. Nos SICONV temos ~15 a mais que esse número.
-NROW(levels(municipios$municipio))
-NROW(levels(convenios.d$NM_MUNICIPIO_PROPONENTE))
+NROW(unique(municipios$cod7))
+NROW(unique(paste(convenios.d$NM_MUNICIPIO_PROPONENTE, convenios.d$UF_PROPONENTE)))
 
 m.ids = municipios %>% select(nome, cod7, UF)
 
