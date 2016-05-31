@@ -1,11 +1,13 @@
 package models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.hibernate.annotations.GenericGenerator;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -35,6 +37,13 @@ public class Opiniao implements Serializable {
     @Constraints.Required(message = "Campo necessário")
     @Constraints.Pattern("^(bomba|coracao|coracao_partido)$")
     private String tipo;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy,HH:00", timezone="BRT")
+    private Date criadaEm;
+
+    public Opiniao(){
+        this.criadaEm = new Date();
+    }
 
     public UUID getId() {
         return id;
@@ -68,4 +77,11 @@ public class Opiniao implements Serializable {
         this.tipo = tipo;
     }
 
+    public Date getCriadaEm() {
+        return criadaEm;
+    }
+
+    public void setCriadaEm(Date criadaEm) {
+        this.criadaEm = criadaEm;
+    }
 }

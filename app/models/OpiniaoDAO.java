@@ -33,7 +33,7 @@ public class OpiniaoDAO {
 
     public List<Opiniao> findByIniciativa(Long idIniciativa, int pagina, int tamanhoPagina) {
         TypedQuery<Opiniao> query = jpaAPI.em().createQuery(
-                "SELECT o FROM Opiniao o WHERE o.iniciativa.id = :id", Opiniao.class)
+                "SELECT o FROM Opiniao o WHERE o.iniciativa.id = :id ORDER BY criadaEm desc", Opiniao.class)
                 .setParameter("id", idIniciativa)
                 .setFirstResult(pagina * tamanhoPagina)
                 .setMaxResults(tamanhoPagina);

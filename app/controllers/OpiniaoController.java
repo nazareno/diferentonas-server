@@ -3,7 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
 import models.Iniciativa;
-import models.IniciativaService;
+import models.IniciativaDAO;
 import models.Opiniao;
 import models.OpiniaoDAO;
 import play.Logger;
@@ -24,13 +24,13 @@ import static play.mvc.Results.*;
  */
 public class OpiniaoController {
 
-    private IniciativaService iniciativaService;
+    private IniciativaDAO iniciativaDAO;
     private OpiniaoDAO opiniaoDAO;
     private FormFactory formFactory;
 
     @Inject
-    public OpiniaoController(IniciativaService service, OpiniaoDAO opiniaoDAO, FormFactory formFactory) {
-        this.iniciativaService = service;
+    public OpiniaoController(IniciativaDAO dao, OpiniaoDAO opiniaoDAO, FormFactory formFactory) {
+        this.iniciativaDAO = dao;
         this.opiniaoDAO = opiniaoDAO;
         this.formFactory = formFactory;
     }
@@ -42,7 +42,7 @@ public class OpiniaoController {
                     "Tamannho de página deve ser menor ou igual a 500.");
         }
 
-        Iniciativa iniciativa = iniciativaService.find(idIniciativa);
+        Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
         if (iniciativa == null) {
             return notFound("Iniciativa não encontrada");
         }
@@ -67,7 +67,7 @@ public class OpiniaoController {
         }
         Opiniao opiniao = comDados.get();
 
-        Iniciativa iniciativa = iniciativaService.find(idIniciativa);
+        Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
         if (iniciativa == null) {
             return notFound("Iniciativa não encontrada");
         }
@@ -76,7 +76,7 @@ public class OpiniaoController {
 
         iniciativa.addOpiniao(opiniao);
         opiniao.setIniciativa(iniciativa);
-        iniciativaService.flush(); // para que a opinião seja retornada com id
+        iniciativaDAO.flush(); // para que a opinião seja retornada com id
         return ok(toJson(opiniao));
     }
 
@@ -108,7 +108,7 @@ public class OpiniaoController {
      */
     @Transactional
     public Result removeOpinioes(Long idIniciativa) {
-        Iniciativa iniciativa = iniciativaService.find(idIniciativa);
+        Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
         Iterator<Opiniao> it = iniciativa.getOpinioes().iterator();
         while (it.hasNext()){
             Opiniao o = it.next();
