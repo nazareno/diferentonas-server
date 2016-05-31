@@ -1,5 +1,6 @@
 package module;
 
+import models.Cidadao;
 import util.InitialData;
 
 import com.google.inject.AbstractModule;
@@ -12,5 +13,8 @@ public class MainModule extends AbstractModule{
 	@Override
 	protected void configure() {
 		bind(InitialData.class).asEagerSingleton();
+		Cidadao admin = new Cidadao();
+		admin.setLogin("Dilma");
+		bind(Cidadao.class).toInstance(admin);
 	}
 }
