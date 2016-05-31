@@ -191,15 +191,18 @@ public class OpiniaoControllerTest extends WithApplication {
 
     @Test
     public void deveRetornarPrimeiroMaisRecentes() throws IOException {
-        JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\"}");
-        Result result = enviaPOSTAddOpiniao(json);
-        assertEquals(BAD_REQUEST, result.status());
-        assertEquals("{\"conteudo\":[\"Campo necessário\"]}", Helpers.contentAsString(result));
+        JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\", \"conteudo\": \"Topíssimo\"}");
+        JsonNode json2 = new ObjectMapper().readTree("{\"tipo\": \"coracao\", \"conteudo\": \"Eu quero que você se top top top\"}");
+        enviaPOSTAddOpiniao(json);
+        enviaPOSTAddOpiniao(json2);
 
-        JsonNode json2 = new ObjectMapper().readTree("{\"conteudo\": \"Topíssimo\"}");
-        Result result2 = enviaPOSTAddOpiniao(json2);
-        assertEquals(BAD_REQUEST, result2.status());
-        assertEquals("{\"tipo\":[\"Campo necessário\"]}", Helpers.contentAsString(result2));
+        Result result = Helpers.route(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 2));
+        JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
+        Iterator<JsonNode> elementosIt = respostaJson.elements();
+        assertTrue(elementosIt.hasNext()); // há elemento
+        assertEquals("coracao", elementosIt.next().get("tipo").asText());
+        assertTrue(elementosIt.hasNext()); // há 2 elementos
+        assertEquals("bomba", elementosIt.next().get("tipo").asText());
     }
 
     /**
