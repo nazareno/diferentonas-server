@@ -30,11 +30,11 @@ public class Iniciativa implements Serializable {
     private Boolean temAditivo;			// in aditivo sn
     private Float verbaGovernoFederal;	// repasse
 	private Float verbaMunicipio;		// contrapartida
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy", timezone="UTC")
 	private Date dataInicio;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy", timezone="UTC")
 	private Date dataConclusaoMunicipio;	// dataTerminoVigencia
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy")
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy", timezone="UTC")
     private Date dataConclusaoGovernoFederal;	// dataLimitePrestacaoContas
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
@@ -45,11 +45,12 @@ public class Iniciativa implements Serializable {
 	public Iniciativa(){
 		opinioes = new LinkedList<>();
     }
-    
-    public Iniciativa(Long id, Integer ano, String titulo, String programa, String area, String fonte, String concedente,
-    				  String status, Boolean temAditivo, Float verbaGovernoFederal, Float verbaMunicipio, Date dataInicio,
-    				  Date dataConclusaoMunicipio) {
-		this();
+   
+
+    public Iniciativa(Long id, Integer ano, String titulo, String programa, String area, String fonte,
+			String concedente, String status, Boolean temAditivo, Float verbaGovernoFederal, Float verbaMunicipio,
+			Date dataInicio, Date dataConclusaoMunicipio, Date dataConclusaoGovernoFederal) {
+		super();
 		this.id = id;
 		this.ano = ano;
 		this.titulo = titulo;
@@ -63,51 +64,11 @@ public class Iniciativa implements Serializable {
 		this.verbaMunicipio = verbaMunicipio;
 		this.dataInicio = dataInicio;
 		this.dataConclusaoMunicipio = dataConclusaoMunicipio;
-//		this.dataConclusaoGovernoFederal = dataConclusaoGovernoFederal;
-		
+		this.dataConclusaoGovernoFederal = dataConclusaoGovernoFederal;
 	}
 
-    public long getId() {
-        return id;
-    }
 
-    public int getAno() {
-        return ano;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public String getPrograma() {
-        return programa;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setAno(int ano) {
-        this.ano = ano;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public void setPrograma(String programa) {
-        this.programa = programa;
-    }
-
-	public Date getDataInicio() {
-		return dataInicio;
-	}
-
-	public void setDataInicio(Date dataInicio) {
-		this.dataInicio = dataInicio;
-	}
-
-    @Override
+	@Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -132,62 +93,6 @@ public class Iniciativa implements Serializable {
         return true;
     }
 
-	public String getTitulo() {
-		return titulo;
-	}
-
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
-	}
-
-	public String getArea() {
-		return area;
-	}
-
-	public void setArea(String area) {
-		this.area = area;
-	}
-
-	public String getFonte() {
-		return fonte;
-	}
-
-	public void setFonte(String fonte) {
-		this.fonte = fonte;
-	}
-
-	public String getConcedente() {
-		return concedente;
-	}
-
-	public void setConcedente(String concedente) {
-		this.concedente = concedente;
-	}
-
-	public Float getVerbaGovernoFederal() {
-		return verbaGovernoFederal;
-	}
-
-	public void setVerbaGovernoFederal(Float verbaGovernoFederal) {
-		this.verbaGovernoFederal = verbaGovernoFederal;
-	}
-
-	public Float getVerbaMunicipio() {
-		return verbaMunicipio;
-	}
-
-	public void setVerbaMunicipio(Float verbaMunicipio) {
-		this.verbaMunicipio = verbaMunicipio;
-	}
-
-	public Boolean getTemAditivo() {
-		return temAditivo;
-	}
-
-	public void setTemAditivo(Boolean temAditivo) {
-		this.temAditivo = temAditivo;
-	}
-
 	public List<Opiniao> getOpinioes() {
 		return opinioes;
 	}
@@ -200,4 +105,179 @@ public class Iniciativa implements Serializable {
 	public boolean removeOpiniao(Opiniao paraRemover) {
 		return this.opinioes.remove(paraRemover);
 	}
+
+
+
+	public Long getId() {
+		return id;
+	}
+
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+
+	public Integer getAno() {
+		return ano;
+	}
+
+
+
+	public void setAno(Integer ano) {
+		this.ano = ano;
+	}
+
+
+
+	public String getTitulo() {
+		return titulo;
+	}
+
+
+
+	public void setTitulo(String titulo) {
+		this.titulo = titulo;
+	}
+
+
+
+	public String getPrograma() {
+		return programa;
+	}
+
+
+
+	public void setPrograma(String programa) {
+		this.programa = programa;
+	}
+
+
+
+	public String getArea() {
+		return area;
+	}
+
+
+
+	public void setArea(String area) {
+		this.area = area;
+	}
+
+
+
+	public String getFonte() {
+		return fonte;
+	}
+
+
+
+	public void setFonte(String fonte) {
+		this.fonte = fonte;
+	}
+
+
+
+	public String getConcedente() {
+		return concedente;
+	}
+
+
+
+	public void setConcedente(String concedente) {
+		this.concedente = concedente;
+	}
+
+
+
+	public String getStatus() {
+		return status;
+	}
+
+
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+
+
+	public Boolean getTemAditivo() {
+		return temAditivo;
+	}
+
+
+
+	public void setTemAditivo(Boolean temAditivo) {
+		this.temAditivo = temAditivo;
+	}
+
+
+
+	public Float getVerbaGovernoFederal() {
+		return verbaGovernoFederal;
+	}
+
+
+
+	public void setVerbaGovernoFederal(Float verbaGovernoFederal) {
+		this.verbaGovernoFederal = verbaGovernoFederal;
+	}
+
+
+
+	public Float getVerbaMunicipio() {
+		return verbaMunicipio;
+	}
+
+
+
+	public void setVerbaMunicipio(Float verbaMunicipio) {
+		this.verbaMunicipio = verbaMunicipio;
+	}
+
+
+
+	public Date getDataInicio() {
+		return dataInicio;
+	}
+
+
+
+	public void setDataInicio(Date dataInicio) {
+		this.dataInicio = dataInicio;
+	}
+
+
+
+	public Date getDataConclusaoMunicipio() {
+		return dataConclusaoMunicipio;
+	}
+
+
+
+	public void setDataConclusaoMunicipio(Date dataConclusaoMunicipio) {
+		this.dataConclusaoMunicipio = dataConclusaoMunicipio;
+	}
+
+
+
+	public Date getDataConclusaoGovernoFederal() {
+		return dataConclusaoGovernoFederal;
+	}
+
+
+
+	public void setDataConclusaoGovernoFederal(Date dataConclusaoGovernoFederal) {
+		this.dataConclusaoGovernoFederal = dataConclusaoGovernoFederal;
+	}
+
+
+
+	public void setOpinioes(List<Opiniao> opinioes) {
+		this.opinioes = opinioes;
+	}
+
 }

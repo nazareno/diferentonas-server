@@ -5,7 +5,9 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
@@ -20,7 +22,6 @@ import models.Score;
 import org.h2.tools.Csv;
 
 import play.Logger;
-import play.api.Environment;
 import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
@@ -197,9 +198,18 @@ public class InitialData {
 				while (resultSet.next()) {
 					Long cidade = resultSet.getLong(63);
 					long idIniciativa = resultSet.getLong(3);
+					
 					float verbaGovernoFederal = resultSet.getString(29).contains("NA") ? 0f : resultSet.getFloat(29); // repasse
 					float verbaMunicipio = resultSet.getString(30).contains("NA") ? 0f : resultSet.getFloat(30);	// contrapartida
-					DateFormat dateFormat = new SimpleDateFormat("dd/mm/yyyy");
+					
+					DateFormat formatter = new SimpleDateFormat("dd/mm/yyyy");
+					Date dataConclusao = formatter.parse(resultSet.getString(19));
+					
+					// Adicionando 2 meses para o prazo de prestação de contas
+					Calendar cal = GregorianCalendar.getInstance();
+					cal.setTime(dataConclusao);
+					cal.add(GregorianCalendar.MONTH, 2);
+					Date dataConclusaoGovernoFederal = cal.getTime();
 					Iniciativa iniciativa = new Iniciativa(
 							idIniciativa,				// id
 							resultSet.getInt(2), 		// ano
@@ -212,9 +222,9 @@ public class InitialData {
 							resultSet.getBoolean(50),	// temAditivo
 							verbaGovernoFederal,		// verba do governo federal
 							verbaMunicipio,				// verba do municipio
-							(Date) dateFormat.parse(resultSet.getString(18)),		// data de inicio
-							(Date) dateFormat.parse(resultSet.getString(19))	// data de conclusao municipio
-							);
+							formatter.parse(resultSet.getString(18)),		// data de inicio
+							dataConclusao,	// data de conclusao municipio
+							dataConclusaoGovernoFederal);
 
 
 					try {
