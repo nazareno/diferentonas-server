@@ -49,6 +49,7 @@ por.municipio = jp %>%
             documentos.liquidacao = n(), 
             pjs.favorecidos = n_distinct(CD_IDENTIF_FAVORECIDO_DL))
 
+# % dispensas
 dispensas = jp %>% 
   group_by(NM_MUNICIPIO_CONVENENTE, cod7, dispensa) %>% 
   summarise(total.d = sum(VL_BRUTO_DL)) %>% 
@@ -58,8 +59,10 @@ dispensas = jp %>%
   dcast(NM_MUNICIPIO_CONVENENTE + cod7 ~ dispensa, value.var = "prop", fill = 0) %>% 
   select(-3)
 names(dispensas)[3] = "dispensa"
-
+# join
 por.municipio = full_join(por.municipio, dispensas)
+
+# % beneficiários que receberam acima de 1M
 
 beneficiarios = jp %>% 
   group_by (NM_MUNICIPIO_CONVENENTE, cod7, NM_IDENTIF_FAVORECIDO_DL) %>% 
@@ -67,7 +70,7 @@ beneficiarios = jp %>%
   arrange(-recebido) %>%
   summarise(beneficiarios.pjs = n(), 
             acima10K = sum(recebido > 1e4), 
-            acima1M = sum(recebido > 1e6), 
+            acima1M = sum(recebido > 1e6) / n(), 
             top10pc.quanto = sum(recebido[1:max(1,n()/10)]) / sum(recebido))
 
 por.municipio = full_join(por.municipio, beneficiarios)

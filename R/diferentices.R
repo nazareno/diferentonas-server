@@ -32,14 +32,17 @@ write.csv(r2, "dist/data/diferencas-cidades.csv", row.names = FALSE)
 
 # Explorando:  
 x = cria_df_comparacao(convenios, vizinhos, 2503209)
-
+  
 x %>%
   ggplot(aes(x = funcao.imputada, y = total, colour = NM_MUNICIPIO_PROPONENTE)) + 
   geom_point() + theme_bw() + coord_flip()
 
-x %>%
-  ggplot(aes(x = funcao.imputada, y = zscore, colour = NM_MUNICIPIO_PROPONENTE)) + 
-  geom_point() + theme_bw() + coord_flip()
+resultado %>%
+  ggplot(aes(x = funcao.imputada, y = zscore)) + 
+  geom_violin(alpha = .4) + 
+  geom_point(size = .2, alpha = .2, position = position_jitter(width = .1)) + 
+  theme_bw() + 
+  coord_flip()
 
 
 # Emas : 2505907
