@@ -35,8 +35,7 @@ public class IniciativaDAO {
         		+ "WHERE titulo_v @@ query AND id != ? ORDER BY rank DESC"
         		, Iniciativa.class)
         		.setParameter(1, String.join(" | ", outro.getTitulo().split(" +")))
-        		.setParameter(2, id)
-        		;
+        		.setParameter(2, id);
 		return query.setMaxResults(quantidade.intValue()).getResultList();
     }
 

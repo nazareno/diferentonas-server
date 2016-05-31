@@ -43,7 +43,7 @@ public class OpiniaoControllerTest extends WithApplication {
         this.jpaAPI = app.injector().instanceOf(JPAApi.class);
     }
 
-    // TODO Efeito colateral: não estarão opiniões no BD após esses testes.
+    // TODO Efeito colateral: não restarão opiniões em iniciativaExemplo no BD após esses testes.
     @After
     public void tearDown() {
         jpaAPI.withTransaction(() -> {
