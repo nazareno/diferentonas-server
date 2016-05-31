@@ -12,7 +12,7 @@ GET        /cidade/:id/similares        controllers.CidadeController.getSimilare
 GET        /cidade/:id/iniciativas      controllers.CidadeController.getIniciativas(id: Long)
 # .. Opiniões
 POST       /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.addOpiniao(iniciativa: Long)
-GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int, tamanhoPagina: Int)
+GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
 # > deprecated route
 GET        /cidade/:id/convenios        controllers.CidadeController.getIniciativas(id: Long)
