@@ -15,6 +15,8 @@ import java.util.stream.LongStream;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 
+import models.Cidadao;
+import models.CidadaoDAO;
 import models.Cidade;
 import models.Iniciativa;
 import models.Score;
@@ -37,14 +39,20 @@ public class InitialData {
 	 * @param jpaAPI
 	 */
 	@Inject
-	public InitialData(JPAApi jpaAPI) throws SQLException {
+	public InitialData(JPAApi jpaAPI, CidadaoDAO dao) throws SQLException {
 		Logger.info("Na inicialização da aplicação.");
+		
+		jpaAPI.withTransaction(() -> {
+			Cidadao admin = dao.findByLogin("admin");
+			if(admin == null){
+				admin = dao.create(new Cidadao("admin"));
+			}
+		});
+		
 
 		List<Cidade> cidades = jpaAPI.withTransaction(entityManager -> {
 			return entityManager.createQuery("FROM Cidade", Cidade.class).setMaxResults(2).getResultList();
 		});
-
-
 
 		if (cidades.isEmpty()) {
 			Logger.info("Populando BD");

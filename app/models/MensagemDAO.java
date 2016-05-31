@@ -93,7 +93,7 @@ public class MensagemDAO {
      *
      * @return List<Mensagem>
      */
-    public List<Mensagem> paginate(Integer page, Integer size) {
+    public List<Mensagem> paginate(Integer pagina, Integer quantidade) {
     	EntityManager em = jpaAPI.em();
 		CriteriaBuilder builder = em.getCriteriaBuilder();
 		
@@ -101,7 +101,7 @@ public class MensagemDAO {
 		Root<Mensagem> m = query.from(Mensagem.class);
 		query = query.orderBy(builder.desc(m.get("id")));
 		
-    	return em.createQuery(query).setFirstResult(page*size).setMaxResults(size).getResultList();
+    	return em.createQuery(query).setFirstResult(pagina*quantidade).setMaxResults(quantidade).getResultList();
     }
 
     /**
