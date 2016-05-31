@@ -25,8 +25,8 @@ public class MensagemController extends Controller {
 	}
 	
     @Transactional(readOnly = true)
-    public Result getMensagens(Long size) {
-    	return ok(toJson(dao.paginate(0, size.intValue())));
+    public Result getMensagens(Long quantidade) {
+    	return ok(toJson(dao.paginate(0, quantidade.intValue())));
     }
 	
     @Transactional(readOnly = true)

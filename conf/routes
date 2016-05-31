@@ -19,7 +19,7 @@ GET        /cidade/:id/convenios        controllers.CidadeController.getIniciati
 # < deprecated route
 
 # Mensagens do Governo
-GET        /mensagens                   controllers.MensagemController.getMensagens(id: Long ?= 10)
+GET        /mensagens                   controllers.MensagemController.getMensagens(quantidade: Long ?= 10)
 POST       /mensagens                   controllers.MensagemController.save()
 DELETE     /mensagens/:id               controllers.MensagemController.delete(id: String)
 
