@@ -6,7 +6,6 @@ import java.util.UUID;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import play.db.jpa.JPAApi;
@@ -94,14 +93,10 @@ public class MensagemDAO {
      * @return List<Mensagem>
      */
     public List<Mensagem> paginate(Integer pagina, Integer quantidade) {
-    	EntityManager em = jpaAPI.em();
-		CriteriaBuilder builder = em.getCriteriaBuilder();
-		
-		CriteriaQuery<Mensagem> query = builder.createQuery(Mensagem.class);
-		Root<Mensagem> m = query.from(Mensagem.class);
-		query = query.orderBy(builder.desc(m.get("id")));
-		
-    	return em.createQuery(query).setFirstResult(pagina*quantidade).setMaxResults(quantidade).getResultList();
+    	
+		return jpaAPI.em().createNamedQuery("all", Mensagem.class)
+				.setFirstResult(pagina * quantidade).setMaxResults(quantidade)
+				.getResultList();
     }
 
     /**
@@ -116,11 +111,13 @@ public class MensagemDAO {
 	/**
 	 * FIXME select * from mensagem m where m.id > id;
 	 * 
-	 * @param ultimaLida
+	 * @param idDaUltimaLida
 	 * @return
 	 */
-	public List<Mensagem> findMaisRecentesQue(UUID ultimaLida) {
+	public List<Mensagem> findMaisRecentesQue(UUID idDaUltimaLida) {
 		
-    	return all();
+		Mensagem ultimaLida = find(idDaUltimaLida);
+		return jpaAPI.em().createNamedQuery("naolidas", Mensagem.class)
+                .setParameter("dataDaUltimaLida", ultimaLida.getCriadaEm()).getResultList();
 	}
 }

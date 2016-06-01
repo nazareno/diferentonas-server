@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import models.Mensagem;
 import models.MensagemDAO;
+import play.Logger;
+import play.data.Form;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
@@ -36,7 +38,12 @@ public class MensagemController extends Controller {
 	
     @Transactional
     public Result save() {
-    	Mensagem mensagem = dao.create(formFactory.form(Mensagem.class).bindFromRequest().get());
+    	Form<Mensagem> form = formFactory.form(Mensagem.class).bindFromRequest();
+    	if(form.hasErrors()){
+            Logger.debug("Submissão com erros: " + Controller.request().body().asJson().toString() + "; Erros: " + form.errorsAsJson());
+    		return badRequest(form.errorsAsJson());
+    	}
+		Mensagem mensagem = dao.create(form.get());
     	return created(toJson(mensagem)); 
     }
 

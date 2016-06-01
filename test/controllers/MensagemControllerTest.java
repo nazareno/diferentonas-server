@@ -43,11 +43,13 @@ public class MensagemControllerTest extends WithApplication {
 		this.primeiraMensagem.setTitulo("Primeira mensagem");
 		this.primeiraMensagem.setConteudo("Miga, lá vem a dezembrada!!!");
 		this.primeiraMensagem.setAutor("Ministério da Justiça");
+		this.primeiraMensagem.setCriadaEm(null);
 		
 		this.segundaMensagem = new Mensagem();
 		this.segundaMensagem.setTitulo("Segunda Mensagem");
 		this.segundaMensagem.setConteudo("Continue de olho na sua cidade... ");
 		this.segundaMensagem.setAutor("Ministério da Justiça");
+		this.segundaMensagem.setCriadaEm(null);
 	}
 	
 	@After

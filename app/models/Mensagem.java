@@ -4,14 +4,22 @@
 package models;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import play.data.validation.Constraints;
 
 
 /**
@@ -19,6 +27,9 @@ import org.hibernate.annotations.Parameter;
  *
  */
 @Entity
+@NamedQueries({
+		@NamedQuery(name = "all", query = "SELECT m FROM Mensagem m ORDER BY criadaEm desc"),
+		@NamedQuery(name = "naolidas", query = "SELECT m FROM Mensagem m WHERE m.criadaEm > :dataDaUltimaLida ORDER BY criadaEm desc") })
 public class Mensagem implements Serializable {
 	
 	/**
@@ -29,25 +40,35 @@ public class Mensagem implements Serializable {
 	public static final String TABLE = "Mensagem";
 	
 	@Id
-	@GeneratedValue( generator="uuid2" )
-	@GenericGenerator(
-			name="uuid2",
-			strategy="org.hibernate.id.UUIDGenerator",
-			parameters = {
-					@Parameter(
-							name="uuid_gen_strategy_class",
-							value="org.hibernate.id.uuid.CustomVersionOneStrategy"
-					)
-			}
-	)
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
 	private UUID id;
-	private String conteudo;
-	private String titulo;
-	private String autor;
-
 	
-	public Mensagem() {
-	}
+	
+    @Column(length = 1000)
+    @Constraints.MaxLength(value = 1000,message = "Mensagens devem ter 1000 caracteres ou menos")
+    @Constraints.Required(message = "Campo necessário")
+    @Constraints.MinLength(1)
+    private String conteudo;
+    
+    @Column(length = 100)
+    @Constraints.MaxLength(value = 100,message = "Títulos devem ter 1000 caracteres ou menos")
+    @Constraints.Required(message = "Campo necessário")
+    @Constraints.MinLength(1)
+	private String titulo;
+
+    @Column(length = 1000)
+    @Constraints.MaxLength(value = 1000,message = "Mensagens devem ter 1000 caracteres ou menos")
+    @Constraints.Required(message = "Campo necessário")
+    @Constraints.MinLength(1)
+    private String autor;
+
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy,HH:00", timezone="BRT")
+    private Date criadaEm;
+
+    public Mensagem(){
+        this.criadaEm = new Date();
+    }
 	
 	public UUID getId() {
 		return id;
@@ -79,6 +100,14 @@ public class Mensagem implements Serializable {
 
 	public void setAutor(String autor) {
 		this.autor = autor;
+	}
+	
+	public Date getCriadaEm() {
+		return criadaEm;
+	}
+
+	public void setCriadaEm(Date criadaEm) {
+		this.criadaEm = criadaEm;
 	}
 
 	@Override
