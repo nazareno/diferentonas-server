@@ -2,8 +2,10 @@ package models;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.*;
 
@@ -40,10 +42,14 @@ public class Iniciativa implements Serializable {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
 	@JsonBackReference
 	private List<Opiniao> opinioes;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	private Set<Cidadao> inscritos;
 
 
 	public Iniciativa(){
 		opinioes = new LinkedList<>();
+		inscritos = new HashSet<>();
     }
    
 
@@ -278,6 +284,15 @@ public class Iniciativa implements Serializable {
 
 	public void setOpinioes(List<Opiniao> opinioes) {
 		this.opinioes = opinioes;
+	}
+
+
+	public boolean adicionaInscrito(Cidadao cidadao) {
+		return this.inscritos.add(cidadao);
+	}
+
+	public boolean removeInscrito(Cidadao cidadao) {
+		return this.inscritos.remove(cidadao);
 	}
 
 }

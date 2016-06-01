@@ -37,38 +37,40 @@ public class IniciativaDAO {
 	 * @return Uma lista de {@link Iniciativa}s.
 	 */
 	public List<Iniciativa> findSimilares(Long id, Long quantidade) {
-		Iniciativa outro = find(id);
-		Query query = jpaAPI
-				.em()
-				.createNativeQuery(
-						"with similares AS ("
-								+ "SELECT i.* FROM iniciativa AS i, "
-								+ "TO_TSVECTOR('portuguese', i.titulo ) AS titulo_v, "
-								+ "TO_TSQUERY('portuguese', ?) AS query, "
-								+ "TS_RANK(titulo_v, query) AS rank "
-								+ "WHERE titulo_v @@ query AND i.id != ? "
-								+ "ORDER BY rank DESC limit ?), "
-								+ "distancias AS ( "
-								+ "SELECT i.id AS i, c.id AS c, point(c.longitude, c.latitude) AS p "
-								+ "FROM cidade c "
-								+ "INNER JOIN cidade_iniciativa ci on c.id = ci.cidade_id "
-								+ "INNER JOIN similares i on ci.iniciativas_id = i.id), "
-								+ "escolhida AS ( SELECT i.id AS i, c.id AS c, point(c.longitude, c.latitude) AS p "
-								+ "FROM cidade c "
-								+ "INNER JOIN cidade_iniciativa ci on c.id = ci.cidade_id "
-								+ "INNER JOIN iniciativa i on ci.iniciativas_id = i.id "
-								+ "WHERE i.id = ?) "
-								+ "SELECT ini.* AS id "
-								+ "FROM distancias d, escolhida e, iniciativa ini "
-								+ "WHERE ini.id = d.i "
-								+ "ORDER BY (d.p <@> e.p) asc, ini.id asc limit ?",
-						Iniciativa.class)
-				.setParameter(1,String.join(" | ", outro.getTitulo().split(" +")))
-				.setParameter(2, id )
-				.setParameter(3, LIMITE_DE_SIMILARES)
-				.setParameter(4, id)
-				.setParameter(5, quantidade.intValue());
-		return query.getResultList();
+		return jpaAPI.withTransaction(()->{
+			Iniciativa outro = find(id);
+			Query query = jpaAPI
+					.em()
+					.createNativeQuery(
+							"with similares AS ("
+									+ "SELECT i.* FROM iniciativa AS i, "
+									+ "TO_TSVECTOR('portuguese', i.titulo ) AS titulo_v, "
+									+ "TO_TSQUERY('portuguese', ?) AS query, "
+									+ "TS_RANK(titulo_v, query) AS rank "
+									+ "WHERE titulo_v @@ query AND i.id != ? "
+									+ "ORDER BY rank DESC limit ?), "
+									+ "distancias AS ( "
+									+ "SELECT i.id AS i, c.id AS c, point(c.longitude, c.latitude) AS p "
+									+ "FROM cidade c "
+									+ "INNER JOIN cidade_iniciativa ci on c.id = ci.cidade_id "
+									+ "INNER JOIN similares i on ci.iniciativas_id = i.id), "
+									+ "escolhida AS ( SELECT i.id AS i, c.id AS c, point(c.longitude, c.latitude) AS p "
+									+ "FROM cidade c "
+									+ "INNER JOIN cidade_iniciativa ci on c.id = ci.cidade_id "
+									+ "INNER JOIN iniciativa i on ci.iniciativas_id = i.id "
+									+ "WHERE i.id = ?) "
+									+ "SELECT ini.* AS id "
+									+ "FROM distancias d, escolhida e, iniciativa ini "
+									+ "WHERE ini.id = d.i "
+									+ "ORDER BY (d.p <@> e.p) asc, ini.id asc limit ?",
+									Iniciativa.class)
+									.setParameter(1,String.join(" | ", outro.getTitulo().split(" +")))
+									.setParameter(2, id )
+									.setParameter(3, LIMITE_DE_SIMILARES)
+									.setParameter(4, id)
+									.setParameter(5, quantidade.intValue());
+			return (List<Iniciativa>) query.getResultList();
+		});
 	}
 
 }

@@ -35,6 +35,8 @@ public class Cidadao implements Serializable {
 	private UUID id;
 	private String login;
 	
+	
+	
 	public Cidadao() {
 		// TODO Auto-generated constructor stub
 	}

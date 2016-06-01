@@ -1,8 +1,13 @@
 package controllers;
 
 import static play.libs.Json.toJson;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+
 import models.Cidadao;
 import models.CidadaoDAO;
+import models.Iniciativa;
 import models.IniciativaDAO;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
@@ -27,8 +32,35 @@ public class IniciativaController extends Controller {
     }
 
     @Transactional(readOnly = true)
-    public Result similares(Long id, Long quantidade) {
-    	return ok(toJson(iniciativaDAO.findSimilares(id, quantidade)));
+    public CompletionStage<Result> similares(Long id, Long quantidade) {
+		return CompletableFuture.supplyAsync(
+				() -> iniciativaDAO.findSimilares(id, quantidade)).thenApply(
+				(i) -> ok(toJson(i)));
+    }
+    
+    @Transactional
+    public Result adicionaInscrito(Long id) {
+    	Iniciativa iniciativa = iniciativaDAO.find(id);
+    	if(iniciativa == null){
+    		return notFound();
+    	}
+    	Cidadao cidadao = getCidadaoAtual();
+		boolean resultado = iniciativa.adicionaInscrito(cidadao);
+		iniciativaDAO.flush();
+		return resultado? ok(): status(CONFLICT);
+    }
+    
+    @Transactional
+    public Result removeInscrito(Long id) {
+    	Iniciativa iniciativa = iniciativaDAO.find(id);
+    	if(iniciativa == null){
+    		return notFound();
+    	}
+    	Cidadao cidadao = getCidadaoAtual();
+    	
+		boolean resultado = iniciativa.removeInscrito(cidadao);
+		iniciativaDAO.flush();
+		return resultado? ok(): notFound("Cidadão nunca esteve inscrito nessa iniciativa");
     }
     
     /**
@@ -37,8 +69,11 @@ public class IniciativaController extends Controller {
      * 
      * @return o Cidadao da sessão
      */
-    private Cidadao getCidadaoAtual(String accessToken){
+    private Cidadao getCidadaoAtual(){
+    	
     	// não faz nada com o access-token
+    	// String loginDoCidadao = session("cidadao"); 
+    	//TODO podemos precisar disso depois do login...
     	return cidadaoDAO.findByLogin("admin");
     }
     
