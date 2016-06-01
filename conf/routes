@@ -14,10 +14,6 @@ GET        /cidade/:id/iniciativas      controllers.CidadeController.getIniciati
 POST       /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.addOpiniao(iniciativa: Long)
 GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
-# > deprecated route
-GET        /cidade/:id/convenios        controllers.CidadeController.getIniciativas(id: Long)
-# < deprecated route
-
 # Mensagens do Governo
 GET        /mensagens                   controllers.MensagemController.getMensagens(quantidade: Long ?= 10)
 POST       /mensagens                   controllers.MensagemController.save()
