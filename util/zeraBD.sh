@@ -5,7 +5,9 @@ set -e
 # Destroi e cria um BD local limpo.
 db_name="diferentonas"
 
-dropdb $db_name
-createdb $db_name
+psql -d $db_name -c 'drop schema public cascade;
+create schema public;
+create extension cube;
+create extension earthdistance;'
 
 echo "BD " $db_name " limpo"
