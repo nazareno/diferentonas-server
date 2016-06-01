@@ -30,8 +30,7 @@ POST       /iniciativas/:id/inscritos		 controllers.IniciativaController.adicion
 DELETE     /iniciativas/:id/inscritos		 controllers.IniciativaController.removeInscrito(id: Long)
 
 # lista de novidades () com links para o item
-#GET			/cidadao/:id/linhadotempo		controllers.CidadaoController.getLinhaDoTempo(id: String)
-#GET			/linhadotempo/:id		controllers.CidadaoController.getLinhaDoTempo(id: String)
+GET			/linhadotempo		    controllers.FeedController.getNovidades(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
 # Map static resources from the /public folder to the /assets URL path
 GET        /assets/*file                controllers.Assets.at(path="/public", file)

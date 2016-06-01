@@ -29,8 +29,6 @@ import static play.test.Helpers.route;
  */
 public class OpiniaoControllerTest extends WithApplication {
 
-    // TODO data da postagem
-
     private OpiniaoController controller;
 
     private JPAApi jpaAPI;

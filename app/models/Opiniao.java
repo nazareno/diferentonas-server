@@ -38,7 +38,7 @@ public class Opiniao implements Serializable {
     @Constraints.Pattern("^(bomba|coracao|coracao_partido)$")
     private String tipo;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy,HH:00", timezone="BRT")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy,HH:mm", timezone="BRT")
     private Date criadaEm;
 
     public Opiniao(){

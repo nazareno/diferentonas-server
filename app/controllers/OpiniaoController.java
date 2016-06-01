@@ -75,7 +75,6 @@ public class OpiniaoController {
         Logger.debug("Add opinião na iniciativa " + iniciativa.getId());
 
         iniciativa.addOpiniao(opiniao);
-        opiniao.setIniciativa(iniciativa);
         iniciativaDAO.flush(); // para que a opinião seja retornada com id
         return ok(toJson(opiniao));
     }
