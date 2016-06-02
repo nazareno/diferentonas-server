@@ -4,6 +4,7 @@ import models.Cidadao;
 import models.CidadaoDAO;
 import models.Novidade;
 import models.NovidadeDAO;
+import org.hibernate.Hibernate;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -36,6 +37,5 @@ public class FeedController extends Controller {
         List<Novidade> notificacoes = dao.find(cidadao.getId(), pagina, tamanhoPagina);
         return ok(toJson(notificacoes));
     }
-
 
 }

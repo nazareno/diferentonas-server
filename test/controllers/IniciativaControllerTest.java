@@ -81,6 +81,7 @@ public class IniciativaControllerTest extends WithApplication {
 	}
 
 	@Test
+	@Ignore("Executar ao implementar seguir iniciativa")
 	public void deveriaFalharNaRemocaoDaInscricaoNumaIniciativaInexistente() {
 
 		Result result = Helpers.route(controllers.routes.IniciativaController.removeInscrito(0L));
@@ -88,6 +89,7 @@ public class IniciativaControllerTest extends WithApplication {
 	}
 
 	@Test
+	@Ignore("Executar ao implementar seguir iniciativa")
 	public void deveriaFalharAoRemoverCidadaoNaoInscritoNaIniciativa() {
 
 		long id = 797935L;
@@ -96,6 +98,7 @@ public class IniciativaControllerTest extends WithApplication {
 	}
 
 	@Test
+	@Ignore("Executar ao implementar seguir iniciativa")
 	public void deveriaRemoverCidadaoJaInscritoNumaIniciativa() {
 
 		long id = 797935L;

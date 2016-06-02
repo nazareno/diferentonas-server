@@ -2,17 +2,14 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.*;
 import module.MainModule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import play.Application;
-import play.Logger;
 import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
-import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
@@ -20,6 +17,7 @@ import play.test.WithApplication;
 import java.io.IOException;
 import java.util.Iterator;
 
+import static controllers.util.ControllersTestUtils.*;
 import static org.junit.Assert.*;
 import static play.mvc.Http.Status.*;
 import static play.test.Helpers.route;
@@ -46,7 +44,7 @@ public class OpiniaoControllerTest extends WithApplication {
     @After
     public void tearDown() {
         jpaAPI.withTransaction(() -> {
-            Result result = controller.removeOpinioes(iniciativaExemplo);
+            controller.removeOpinioes(iniciativaExemplo);
         });
     }
 
@@ -77,7 +75,7 @@ public class OpiniaoControllerTest extends WithApplication {
         failSeHaOpinioes(iniciativaExemplo);
 
         // criar opinião
-        Result result2 = enviaPOSTAddOpiniao(conteudoExemplo);
+        Result result2 = enviaPOSTAddOpiniao(conteudoExemplo, iniciativaExemplo);
         assertEquals(OK, result2.status());
 
         // agora deve haver uma
@@ -94,7 +92,7 @@ public class OpiniaoControllerTest extends WithApplication {
 
     @Test
     public void devePostarConteudoDaOpiniao() throws IOException {
-        Result result = enviaPOSTAddOpiniao(conteudoExemplo);
+        Result result = enviaPOSTAddOpiniao(conteudoExemplo, iniciativaExemplo);
 
         assertEquals(OK, result.status());
         JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
@@ -112,9 +110,9 @@ public class OpiniaoControllerTest extends WithApplication {
         String opiniao1 = "Excelente!",
                 opiniao2 = "Top!!!",
                 opiniao3 = "Não concordo com tudo";
-        enviaPOSTAddOpiniao(opiniao1);
-        enviaPOSTAddOpiniao(opiniao2);
-        enviaPOSTAddOpiniao(opiniao3);
+        enviaPOSTAddOpiniao(opiniao1, iniciativaExemplo);
+        enviaPOSTAddOpiniao(opiniao2, iniciativaExemplo);
+        enviaPOSTAddOpiniao(opiniao3, iniciativaExemplo);
 
         Result result = Helpers.route(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 2));
         // Deve haver 2 opiniões
@@ -158,7 +156,7 @@ public class OpiniaoControllerTest extends WithApplication {
         // 1001 caracteres.
         conteudo += "x";
 
-        Result result = enviaPOSTAddOpiniao(conteudo);
+        Result result = enviaPOSTAddOpiniao(conteudo, iniciativaExemplo);
         assertEquals(BAD_REQUEST, result.status());
         // é preciso ter limites
         assertEquals("{\"conteudo\":[\"Opiniões devem ter 1000 caracteres ou menos\"]}", Helpers.contentAsString(result));
@@ -168,7 +166,7 @@ public class OpiniaoControllerTest extends WithApplication {
     public void deveImpedirPostsVazios() throws IOException {
         String conteudo = "";
 
-        Result result = enviaPOSTAddOpiniao(conteudo);
+        Result result = enviaPOSTAddOpiniao(conteudo, iniciativaExemplo);
         assertEquals(BAD_REQUEST, result.status());
         // é preciso ter limites
         assertEquals("{\"conteudo\":[\"Campo necessário\"]}", Helpers.contentAsString(result));
@@ -177,12 +175,12 @@ public class OpiniaoControllerTest extends WithApplication {
     @Test
     public void deveExigirCampos() throws IOException {
         JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\"}");
-        Result result = enviaPOSTAddOpiniao(json);
+        Result result = enviaPOSTAddOpiniao(json, iniciativaExemplo);
         assertEquals(BAD_REQUEST, result.status());
         assertEquals("{\"conteudo\":[\"Campo necessário\"]}", Helpers.contentAsString(result));
 
         JsonNode json2 = new ObjectMapper().readTree("{\"conteudo\": \"Topíssimo\"}");
-        Result result2 = enviaPOSTAddOpiniao(json2);
+        Result result2 = enviaPOSTAddOpiniao(json2, iniciativaExemplo);
         assertEquals(BAD_REQUEST, result2.status());
         assertEquals("{\"tipo\":[\"Campo necessário\"]}", Helpers.contentAsString(result2));
     }
@@ -191,8 +189,8 @@ public class OpiniaoControllerTest extends WithApplication {
     public void deveRetornarPrimeiroMaisRecentes() throws IOException {
         JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\", \"conteudo\": \"Topíssimo\"}");
         JsonNode json2 = new ObjectMapper().readTree("{\"tipo\": \"coracao\", \"conteudo\": \"Eu quero que você se top top top\"}");
-        enviaPOSTAddOpiniao(json);
-        enviaPOSTAddOpiniao(json2);
+        enviaPOSTAddOpiniao(json, iniciativaExemplo);
+        enviaPOSTAddOpiniao(json2, iniciativaExemplo);
 
         Result result = Helpers.route(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 2));
         JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
@@ -218,33 +216,4 @@ public class OpiniaoControllerTest extends WithApplication {
         JsonNode node = Json.parse(Helpers.contentAsString(result));
         return !node.elements().hasNext();
     }
-
-    private void removeOpiniaoDoBD(String idOpiniao) {
-        jpaAPI.withTransaction(() -> {
-            Result result = controller.removeOpiniao(idOpiniao);
-            assertEquals(OK, result.status());
-
-            Result result2 = controller.getOpinioes(iniciativaExemplo, 0, 100);
-            assertTrue(temZeroElementosJson(result2));
-        });
-    }
-
-    private JsonNode criaJsonDaRequisicao(String conteudo) throws IOException {
-        return (new ObjectMapper()).readTree("{ \"conteudo\": \"" + conteudo + "\", " +
-                "\"tipo\": \"coracao\"}");
-    }
-
-    private Result enviaPOSTAddOpiniao(String conteudo) throws IOException {
-        JsonNode json = criaJsonDaRequisicao(conteudo);
-        return enviaPOSTAddOpiniao(json);
-    }
-
-    private Result enviaPOSTAddOpiniao(JsonNode json) {
-        Logger.debug("Requisição para add opinião: " + json.toString());
-        Http.RequestBuilder request = new Http.RequestBuilder().method("POST")
-                .bodyJson(json)
-                .uri(controllers.routes.OpiniaoController.addOpiniao(iniciativaExemplo).url());
-        return route(request);
-    }
-
 }

@@ -2,10 +2,7 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
-import models.Iniciativa;
-import models.IniciativaDAO;
-import models.Opiniao;
-import models.OpiniaoDAO;
+import models.*;
 import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
@@ -24,16 +21,14 @@ import static play.mvc.Results.*;
  */
 public class OpiniaoController {
 
-    private IniciativaDAO iniciativaDAO;
-    private OpiniaoDAO opiniaoDAO;
-    private FormFactory formFactory;
-
     @Inject
-    public OpiniaoController(IniciativaDAO dao, OpiniaoDAO opiniaoDAO, FormFactory formFactory) {
-        this.iniciativaDAO = dao;
-        this.opiniaoDAO = opiniaoDAO;
-        this.formFactory = formFactory;
-    }
+    private CidadaoDAO cidadaoDAO;
+    @Inject
+    private IniciativaDAO iniciativaDAO;
+    @Inject
+    private OpiniaoDAO opiniaoDAO;
+    @Inject
+    private FormFactory formFactory;
 
     @Transactional(readOnly = true)
     public Result getOpinioes(Long idIniciativa, int pagina, int tamanhoPagina) {
@@ -67,6 +62,8 @@ public class OpiniaoController {
         }
         Opiniao opiniao = comDados.get();
 
+        opiniao.setAutor(getUsuarioLogado());
+
         Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
         if (iniciativa == null) {
             return notFound("Iniciativa não encontrada");
@@ -77,6 +74,10 @@ public class OpiniaoController {
         iniciativa.addOpiniao(opiniao);
         iniciativaDAO.flush(); // para que a opinião seja retornada com id
         return ok(toJson(opiniao));
+    }
+
+    private Cidadao getUsuarioLogado() {
+        return cidadaoDAO.findByLogin("admin");
     }
 
     /**

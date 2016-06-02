@@ -11,6 +11,7 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Created by nazareno on 24/04/16.
@@ -40,16 +41,16 @@ public class Iniciativa implements Serializable {
     private Date dataConclusaoGovernoFederal;	// dataLimitePrestacaoContas
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
-	@JsonBackReference
+	//@JsonBackReference
+	@JsonIgnore
 	private List<Opiniao> opinioes;
-	
-	@ManyToMany(fetch = FetchType.LAZY)
-	private Set<Cidadao> inscritos;
 
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
+	@JsonIgnore
+	private List<Novidade> novidades;
 
 	public Iniciativa(){
 		opinioes = new LinkedList<>();
-		inscritos = new HashSet<>();
     }
    
 
@@ -106,6 +107,9 @@ public class Iniciativa implements Serializable {
 	public void addOpiniao(Opiniao opiniao) {
 		this.opinioes.add(opiniao);
 		opiniao.setIniciativa(this);
+		opiniao.getAutor().inscreverEm(this);
+
+		this.novidades.add(new Novidade(opiniao));
 	}
 
 	public boolean removeOpiniao(Opiniao paraRemover) {
@@ -284,15 +288,6 @@ public class Iniciativa implements Serializable {
 
 	public void setOpinioes(List<Opiniao> opinioes) {
 		this.opinioes = opinioes;
-	}
-
-
-	public boolean adicionaInscrito(Cidadao cidadao) {
-		return this.inscritos.add(cidadao);
-	}
-
-	public boolean removeInscrito(Cidadao cidadao) {
-		return this.inscritos.remove(cidadao);
 	}
 
 }

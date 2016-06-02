@@ -2,6 +2,7 @@ package models;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import play.data.validation.Constraints;
 
@@ -25,7 +26,7 @@ public class Opiniao implements Serializable {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "iniciativa")
-    @JsonBackReference
+    @JsonIgnore
     private Iniciativa iniciativa;
 
     @Column(length = 1000)
@@ -40,6 +41,7 @@ public class Opiniao implements Serializable {
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy,HH:mm", timezone="BRT")
     private Date criadaEm;
+    private Cidadao autor;
 
     public Opiniao(){
         this.criadaEm = new Date();
@@ -83,5 +85,13 @@ public class Opiniao implements Serializable {
 
     public void setCriadaEm(Date criadaEm) {
         this.criadaEm = criadaEm;
+    }
+
+    public Cidadao getAutor() {
+        return autor;
+    }
+
+    public void setAutor(Cidadao autor) {
+        this.autor = autor;
     }
 }

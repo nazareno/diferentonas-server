@@ -44,10 +44,7 @@ public class IniciativaController extends Controller {
     	if(iniciativa == null){
     		return notFound();
     	}
-    	Cidadao cidadao = getCidadaoAtual();
-		boolean resultado = iniciativa.adicionaInscrito(cidadao);
-		iniciativaDAO.flush();
-		return resultado? ok(): status(CONFLICT);
+		return ok();
     }
     
     @Transactional
@@ -56,11 +53,7 @@ public class IniciativaController extends Controller {
     	if(iniciativa == null){
     		return notFound();
     	}
-    	Cidadao cidadao = getCidadaoAtual();
-    	
-		boolean resultado = iniciativa.removeInscrito(cidadao);
-		iniciativaDAO.flush();
-		return resultado? ok(): notFound("Cidadão nunca esteve inscrito nessa iniciativa");
+		return ok();
     }
     
     /**
@@ -69,7 +62,7 @@ public class IniciativaController extends Controller {
      * 
      * @return o Cidadao da sessão
      */
-    private Cidadao getCidadaoAtual(){
+    protected Cidadao getCidadaoAtual(){
     	
     	// não faz nada com o access-token
     	// String loginDoCidadao = session("cidadao"); 

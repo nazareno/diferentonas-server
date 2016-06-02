@@ -1,14 +1,11 @@
 package models;
 
 import java.io.Serializable;
-import java.util.UUID;
+import java.util.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
@@ -16,29 +13,22 @@ import org.hibernate.annotations.Parameter;
 @NamedQueries({ @NamedQuery(name = "findByLogin", query = "SELECT c FROM Cidadao c WHERE c.login = :paramlogin") })
 public class Cidadao implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -8912114826094647736L;
+
 	@Id
-	@GeneratedValue( generator="uuid2" )
-	@GenericGenerator(
-			name="uuid2",
-			strategy="org.hibernate.id.UUIDGenerator",
-			parameters = {
-					@Parameter(
-							name="uuid_gen_strategy_class",
-							value="org.hibernate.id.uuid.CustomVersionOneStrategy"
-					)
-			}
-	)
+	@GeneratedValue(generator = "uuid2")
+	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	private UUID id;
 	private String login;
-	
-	
-	
+
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Set<Iniciativa> iniciativasAcompanhadas;
+
+
 	public Cidadao() {
-		// TODO Auto-generated constructor stub
+		this.iniciativasAcompanhadas = new HashSet<>();
 	}
 	
 	public Cidadao(String login) {
@@ -86,5 +76,9 @@ public class Cidadao implements Serializable {
 	@Override
 	public String toString() {
 		return "Cidadao [id=" + id + ", nome=" + login + "]";
+	}
+
+	public void inscreverEm(Iniciativa iniciativa) {
+		this.iniciativasAcompanhadas.add(iniciativa);
 	}
 }
