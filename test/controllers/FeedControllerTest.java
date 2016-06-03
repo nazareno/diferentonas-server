@@ -3,11 +3,15 @@ package controllers;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import models.Mensagem;
 import models.Novidade;
 import module.MainModule;
+
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
+
 import play.Application;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
@@ -69,7 +73,7 @@ public class FeedControllerTest extends WithApplication {
 
         Novidade aNovidade = novidades.get(0);
         assertEquals(Novidade.TIPO_OPINIAO, aNovidade.getTipo());
-        assertEquals(iniciativaUsada, aNovidade.getIniciativa().getId());
+        assertEquals(iniciativaUsada, aNovidade.getOpiniao().getIniciativa().getId());
         // assertEquals(iniciativaUsada, aNovidade.getIniciativa());
     }
 

@@ -1,19 +1,18 @@
 package controllers;
 
+import static play.libs.Json.toJson;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
 import models.Cidadao;
 import models.CidadaoDAO;
 import models.Novidade;
 import models.NovidadeDAO;
-import org.hibernate.Hibernate;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
-
-import javax.inject.Inject;
-import java.util.List;
-import java.util.UUID;
-
-import static play.libs.Json.toJson;
 
 /**
  * Controller da linha do tempo dos cidadãos.

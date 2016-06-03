@@ -1,13 +1,14 @@
 package models;
 
-import com.google.inject.Inject;
-import play.Logger;
-import play.db.jpa.JPAApi;
+import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Singleton;
 import javax.persistence.TypedQuery;
-import java.util.List;
-import java.util.UUID;
+
+import play.db.jpa.JPAApi;
+
+import com.google.inject.Inject;
 
 /**
  * DAO da Novidade
@@ -24,10 +25,12 @@ public class NovidadeDAO {
 
     public List<Novidade> find(UUID cidadao, int pagina, int tamanhoPagina) {
         TypedQuery<Novidade> query = jpaAPI.em()
-                .createQuery("SELECT n FROM Novidade n " +
-                        "WHERE n.iniciativa in (" +
-                        "SELECT elements(iniciativasAcompanhadas) FROM Cidadao c where c.id = :cidadao_id)" +
-                        "ORDER BY criadaEm desc", Novidade.class)
+                .createQuery("SELECT n "
+                		+ "FROM Cidadao c "
+                		+ "JOIN c.iniciativasAcompanhadas as acompanhadas "
+                		+ "JOIN acompanhadas.novidades as n "
+                		+ "WHERE c.id = :cidadao_id " 
+                		+ "ORDER BY n.criadaEm DESC", Novidade.class)
                 .setParameter("cidadao_id", cidadao)
                 .setFirstResult(pagina * tamanhoPagina)
                 .setMaxResults(tamanhoPagina);

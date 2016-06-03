@@ -1,22 +1,32 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.GenericGenerator;
-import play.data.validation.Constraints;
-
-import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
+
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Um acontecimento (visto ou não) na linha do tempo de um cidadão.
  */
 @Entity
-public class Novidade {
+public class Novidade implements Serializable{
 
-    public static final String TIPO_OPINIAO = "opiniao";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = -6390884039407731417L;
+
+	public static final String TIPO_OPINIAO = "opiniao";
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -28,9 +38,9 @@ public class Novidade {
 
     private String tipo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "iniciativa")
-    private Iniciativa iniciativa;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "iniciativa")
+//    private Iniciativa iniciativa;
 
     private Opiniao opiniao;
 
@@ -45,7 +55,7 @@ public class Novidade {
         this();
         this.opiniao = opiniao;
         this.tipo = TIPO_OPINIAO;
-        this.iniciativa = opiniao.getIniciativa();
+//        this.iniciativa = opiniao.getIniciativa();
     }
 
 
@@ -69,11 +79,25 @@ public class Novidade {
         return tipo;
     }
 
-    public Iniciativa getIniciativa() {
-        return iniciativa;
-    }
+//    public Iniciativa getIniciativa() {
+//        return iniciativa;
+//    }
+//
+//    public void setIniciativa(Iniciativa iniciativa) {
+//        this.iniciativa = iniciativa;
+//    }
 
-    public void setIniciativa(Iniciativa iniciativa) {
-        this.iniciativa = iniciativa;
-    }
+	public Opiniao getOpiniao() {
+		return opiniao;
+	}
+
+	public void setOpiniao(Opiniao opiniao) {
+		this.opiniao = opiniao;
+	}
+
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
+    
+    
 }

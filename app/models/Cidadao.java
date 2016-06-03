@@ -1,13 +1,22 @@
 package models;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
 
 @Entity
 @NamedQueries({ @NamedQuery(name = "findByLogin", query = "SELECT c FROM Cidadao c WHERE c.login = :paramlogin") })
@@ -48,6 +57,14 @@ public class Cidadao implements Serializable {
 		this.login = login;
 	}
 	
+	public Set<Iniciativa> getIniciativasAcompanhadas() {
+		return iniciativasAcompanhadas;
+	}
+
+	public void setIniciativasAcompanhadas(Set<Iniciativa> iniciativasAcompanhadas) {
+		this.iniciativasAcompanhadas = iniciativasAcompanhadas;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

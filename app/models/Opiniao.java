@@ -1,15 +1,23 @@
 package models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.GenericGenerator;
-import play.data.validation.Constraints;
-
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.GenericGenerator;
+
+import play.data.validation.Constraints;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Opinião de um cidadão sobre uma iniciativa de uma cidade.
@@ -17,7 +25,12 @@ import java.util.UUID;
 @Entity
 public class Opiniao implements Serializable {
 
-    public static final String TABLE = "Opiniao";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 237406949191520501L;
+
+	public static final String TABLE = "Opiniao";
 
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -41,6 +54,7 @@ public class Opiniao implements Serializable {
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy,HH:mm", timezone="BRT")
     private Date criadaEm;
+    
     private Cidadao autor;
 
     public Opiniao(){
@@ -94,4 +108,6 @@ public class Opiniao implements Serializable {
     public void setAutor(Cidadao autor) {
         this.autor = autor;
     }
+    
+    
 }
