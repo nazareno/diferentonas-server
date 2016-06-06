@@ -12,12 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import play.data.validation.Constraints;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Opinião de um cidadão sobre uma iniciativa de uma cidade.
@@ -37,9 +35,11 @@ public class Opiniao implements Serializable {
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "iniciativa")
-    @JsonIgnore
+    //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+    //@JsonIdentityReference(alwaysAsId=true)
+    //@JsonIgnoreProperties({"name", "description" })
     private Iniciativa iniciativa;
 
     @Column(length = 1000)

@@ -9,8 +9,9 @@ set -e
 
 echo "DESTRUINDO BD atual no Heroku e enviando o local para lá"
 heroku pg:reset DATABASE --confirm diferentonas
-pg_dump diferentonas -f diferentonas.db
-heroku pg:psql -a diferentonas < diferentonas.db
+heroku pg:push diferentonas DATABASE_URL --app diferentonas
+#pg_dump diferentonas -f diferentonas.db
+#heroku pg:psql -a diferentonas < diferentonas.db
 
 echo "Reiniciando todos os dynos"
 heroku restart

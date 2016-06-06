@@ -39,4 +39,18 @@ public class OpiniaoDAO {
                 .setMaxResults(tamanhoPagina);
         return query.getResultList();
     }
+
+    public List<Opiniao> findRecentes(UUID cidadaoId, int pagina, int tamanhoDaPagina) {
+        TypedQuery<Opiniao> query = jpaAPI.em()
+                .createQuery("SELECT n "
+                        + "FROM Cidadao c "
+                        + "JOIN c.iniciativasAcompanhadas as acompanhadas "
+                        + "JOIN acompanhadas.opinioes as n "
+                        + "WHERE c.id = :cidadao_id "
+                        + "ORDER BY n.criadaEm DESC", Opiniao.class)
+                .setParameter("cidadao_id", cidadaoId)
+                .setFirstResult(pagina * tamanhoDaPagina)
+                .setMaxResults(tamanhoDaPagina);
+        return query.getResultList();
+    }
 }

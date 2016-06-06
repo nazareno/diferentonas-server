@@ -15,7 +15,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
- * Created by nazareno on 24/04/16.
+ * Uma iniciativa de um município em conjunto com o governo federal, realizada através de convênio.
  */
 @Entity
 public class Iniciativa implements Serializable {
@@ -25,58 +25,54 @@ public class Iniciativa implements Serializable {
     @Id
     private Long id;
     private Integer ano;
-    private String titulo;				// objeto
-    private String programa;	
-    private String area;				// funcao
-    private String fonte;				// orgaoSuperior
+    private String titulo;                // objeto
+    private String programa;
+    private String area;                // funcao
+    private String fonte;                // orgaoSuperior
     private String concedente;
-    private String status;				// situacao
-    private Boolean temAditivo;			// in aditivo sn
-    private Float verbaGovernoFederal;	// repasse
-	private Float verbaMunicipio;		// contrapartida
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy", timezone="UTC")
-	private Date dataInicio;
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy", timezone="UTC")
-	private Date dataConclusaoMunicipio;	// dataTerminoVigencia
-	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy", timezone="UTC")
-    private Date dataConclusaoGovernoFederal;	// dataLimitePrestacaoContas
+    private String status;                // situacao
+    private Boolean temAditivo;            // in aditivo sn
+    private Float verbaGovernoFederal;    // repasse
+    private Float verbaMunicipio;        // contrapartida
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "UTC")
+    private Date dataInicio;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "UTC")
+    private Date dataConclusaoMunicipio;    // dataTerminoVigencia
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "UTC")
+    private Date dataConclusaoGovernoFederal;    // dataLimitePrestacaoContas
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
-	//@JsonBackReference
-	@JsonIgnore
-	private List<Opiniao> opinioes;
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
+    //@JsonBackReference
+    @JsonIgnore
+    private List<Opiniao> opinioes;
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	@JsonIgnore
-	private List<Novidade> novidades;
-
-	public Iniciativa(){
-		opinioes = new LinkedList<>();
+    public Iniciativa() {
+        opinioes = new LinkedList<>();
     }
-   
+
 
     public Iniciativa(Long id, Integer ano, String titulo, String programa, String area, String fonte,
-			String concedente, String status, Boolean temAditivo, Float verbaGovernoFederal, Float verbaMunicipio,
-			Date dataInicio, Date dataConclusaoMunicipio, Date dataConclusaoGovernoFederal) {
-		super();
-		this.id = id;
-		this.ano = ano;
-		this.titulo = titulo;
-		this.programa = programa;
-		this.area = area;
-		this.fonte = fonte;
-		this.concedente = concedente;
-		this.status = status;
-		this.temAditivo = temAditivo;
-		this.verbaGovernoFederal = verbaGovernoFederal;
-		this.verbaMunicipio = verbaMunicipio;
-		this.dataInicio = dataInicio;
-		this.dataConclusaoMunicipio = dataConclusaoMunicipio;
-		this.dataConclusaoGovernoFederal = dataConclusaoGovernoFederal;
-	}
+                      String concedente, String status, Boolean temAditivo, Float verbaGovernoFederal, Float verbaMunicipio,
+                      Date dataInicio, Date dataConclusaoMunicipio, Date dataConclusaoGovernoFederal) {
+        super();
+        this.id = id;
+        this.ano = ano;
+        this.titulo = titulo;
+        this.programa = programa;
+        this.area = area;
+        this.fonte = fonte;
+        this.concedente = concedente;
+        this.status = status;
+        this.temAditivo = temAditivo;
+        this.verbaGovernoFederal = verbaGovernoFederal;
+        this.verbaMunicipio = verbaMunicipio;
+        this.dataInicio = dataInicio;
+        this.dataConclusaoMunicipio = dataConclusaoMunicipio;
+        this.dataConclusaoGovernoFederal = dataConclusaoGovernoFederal;
+    }
 
 
-	@Override
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
@@ -101,194 +97,163 @@ public class Iniciativa implements Serializable {
         return true;
     }
 
-	public List<Opiniao> getOpinioes() {
-		return opinioes;
-	}
+    public List<Opiniao> getOpinioes() {
+        return opinioes;
+    }
 
-	public void addOpiniao(Opiniao opiniao) {
-		this.opinioes.add(opiniao);
-		opiniao.setIniciativa(this);
-		opiniao.getAutor().inscreverEm(this);
+    public void addOpiniao(Opiniao opiniao) {
+        this.opinioes.add(opiniao);
+        opiniao.setIniciativa(this);
+        opiniao.getAutor().inscreverEm(this);
+    }
 
-		this.novidades.add(new Novidade(opiniao));
-	}
+    public boolean removeOpiniao(Opiniao paraRemover) {
+        return this.opinioes.remove(paraRemover);
+    }
 
-	public boolean removeOpiniao(Opiniao paraRemover) {
-		return this.opinioes.remove(paraRemover);
-	}
 
+    public Long getId() {
+        return id;
+    }
 
 
-	public Long getId() {
-		return id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
 
+    public Integer getAno() {
+        return ano;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
 
+    public void setAno(Integer ano) {
+        this.ano = ano;
+    }
 
 
-	public Integer getAno() {
-		return ano;
-	}
+    public String getTitulo() {
+        return titulo;
+    }
 
 
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
-	public void setAno(Integer ano) {
-		this.ano = ano;
-	}
 
+    public String getPrograma() {
+        return programa;
+    }
 
 
-	public String getTitulo() {
-		return titulo;
-	}
+    public void setPrograma(String programa) {
+        this.programa = programa;
+    }
 
 
+    public String getArea() {
+        return area;
+    }
 
-	public void setTitulo(String titulo) {
-		this.titulo = titulo;
-	}
 
+    public void setArea(String area) {
+        this.area = area;
+    }
 
 
-	public String getPrograma() {
-		return programa;
-	}
+    public String getFonte() {
+        return fonte;
+    }
 
 
+    public void setFonte(String fonte) {
+        this.fonte = fonte;
+    }
 
-	public void setPrograma(String programa) {
-		this.programa = programa;
-	}
 
+    public String getConcedente() {
+        return concedente;
+    }
 
 
-	public String getArea() {
-		return area;
-	}
+    public void setConcedente(String concedente) {
+        this.concedente = concedente;
+    }
 
 
+    public String getStatus() {
+        return status;
+    }
 
-	public void setArea(String area) {
-		this.area = area;
-	}
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
 
-	public String getFonte() {
-		return fonte;
-	}
+    public Boolean getTemAditivo() {
+        return temAditivo;
+    }
 
 
+    public void setTemAditivo(Boolean temAditivo) {
+        this.temAditivo = temAditivo;
+    }
 
-	public void setFonte(String fonte) {
-		this.fonte = fonte;
-	}
 
+    public Float getVerbaGovernoFederal() {
+        return verbaGovernoFederal;
+    }
 
 
-	public String getConcedente() {
-		return concedente;
-	}
+    public void setVerbaGovernoFederal(Float verbaGovernoFederal) {
+        this.verbaGovernoFederal = verbaGovernoFederal;
+    }
 
 
+    public Float getVerbaMunicipio() {
+        return verbaMunicipio;
+    }
 
-	public void setConcedente(String concedente) {
-		this.concedente = concedente;
-	}
 
+    public void setVerbaMunicipio(Float verbaMunicipio) {
+        this.verbaMunicipio = verbaMunicipio;
+    }
 
 
-	public String getStatus() {
-		return status;
-	}
+    public Date getDataInicio() {
+        return dataInicio;
+    }
 
 
+    public void setDataInicio(Date dataInicio) {
+        this.dataInicio = dataInicio;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
 
+    public Date getDataConclusaoMunicipio() {
+        return dataConclusaoMunicipio;
+    }
 
 
-	public Boolean getTemAditivo() {
-		return temAditivo;
-	}
+    public void setDataConclusaoMunicipio(Date dataConclusaoMunicipio) {
+        this.dataConclusaoMunicipio = dataConclusaoMunicipio;
+    }
 
 
+    public Date getDataConclusaoGovernoFederal() {
+        return dataConclusaoGovernoFederal;
+    }
 
-	public void setTemAditivo(Boolean temAditivo) {
-		this.temAditivo = temAditivo;
-	}
 
+    public void setDataConclusaoGovernoFederal(Date dataConclusaoGovernoFederal) {
+        this.dataConclusaoGovernoFederal = dataConclusaoGovernoFederal;
+    }
 
 
-	public Float getVerbaGovernoFederal() {
-		return verbaGovernoFederal;
-	}
-
-
-
-	public void setVerbaGovernoFederal(Float verbaGovernoFederal) {
-		this.verbaGovernoFederal = verbaGovernoFederal;
-	}
-
-
-
-	public Float getVerbaMunicipio() {
-		return verbaMunicipio;
-	}
-
-
-
-	public void setVerbaMunicipio(Float verbaMunicipio) {
-		this.verbaMunicipio = verbaMunicipio;
-	}
-
-
-
-	public Date getDataInicio() {
-		return dataInicio;
-	}
-
-
-
-	public void setDataInicio(Date dataInicio) {
-		this.dataInicio = dataInicio;
-	}
-
-
-
-	public Date getDataConclusaoMunicipio() {
-		return dataConclusaoMunicipio;
-	}
-
-
-
-	public void setDataConclusaoMunicipio(Date dataConclusaoMunicipio) {
-		this.dataConclusaoMunicipio = dataConclusaoMunicipio;
-	}
-
-
-
-	public Date getDataConclusaoGovernoFederal() {
-		return dataConclusaoGovernoFederal;
-	}
-
-
-
-	public void setDataConclusaoGovernoFederal(Date dataConclusaoGovernoFederal) {
-		this.dataConclusaoGovernoFederal = dataConclusaoGovernoFederal;
-	}
-
-
-
-	public void setOpinioes(List<Opiniao> opinioes) {
-		this.opinioes = opinioes;
-	}
+    public void setOpinioes(List<Opiniao> opinioes) {
+        this.opinioes = opinioes;
+    }
 
 }
