@@ -10,6 +10,7 @@ import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
+import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
 
@@ -37,6 +38,7 @@ public class MensagemController extends Controller {
     }
 	
     @Transactional
+    @BodyParser.Of(BodyParser.Json.class)
     public Result save() {
     	Form<Mensagem> form = formFactory.form(Mensagem.class).bindFromRequest();
     	if(form.hasErrors()){
