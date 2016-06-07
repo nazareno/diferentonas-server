@@ -62,7 +62,7 @@ public class Mensagem implements Serializable {
     @Constraints.MinLength(1)
     private String autor;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm", timezone="BRT")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm", timezone="America/Recife")
     private Date criadaEm;
 
     public Mensagem(){

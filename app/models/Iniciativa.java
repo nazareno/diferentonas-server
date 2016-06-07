@@ -34,11 +34,11 @@ public class Iniciativa implements Serializable {
     private Boolean temAditivo;            // in aditivo sn
     private Float verbaGovernoFederal;    // repasse
     private Float verbaMunicipio;        // contrapartida
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "America/Recife")
     private Date dataInicio;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "America/Recife")
     private Date dataConclusaoMunicipio;    // dataTerminoVigencia
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "UTC")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "America/Recife")
     private Date dataConclusaoGovernoFederal;    // dataLimitePrestacaoContas
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
