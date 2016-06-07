@@ -95,7 +95,10 @@ public class Cidadao implements Serializable {
 		return "Cidadao [id=" + id + ", nome=" + login + "]";
 	}
 
-	public void inscreverEm(Iniciativa iniciativa) {
-		this.iniciativasAcompanhadas.add(iniciativa);
+	public boolean inscreverEm(Iniciativa iniciativa) {return this.iniciativasAcompanhadas.add(iniciativa);
+	}
+
+	public boolean desinscreverDe(Iniciativa iniciativa) {
+		return this.iniciativasAcompanhadas.remove(iniciativa);
 	}
 }

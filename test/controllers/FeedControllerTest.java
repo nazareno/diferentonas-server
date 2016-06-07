@@ -78,7 +78,6 @@ public class FeedControllerTest extends WithApplication {
         Result result = Helpers.route(controllers.routes.FeedController.getNovidades(0, 10));
         List<Novidade> novidades = jsonToList(contentAsString(result));
 
-        Logger.debug("###" + contentAsString(result));
         // TODO Esse teste só é possível quando tivermos diferentes usuários:
         // assertEquals(1, novidades.size());
         assertEquals(2, novidades.size()); // Temporário

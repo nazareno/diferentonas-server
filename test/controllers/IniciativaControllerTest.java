@@ -3,8 +3,15 @@ package controllers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+
+import models.Cidadao;
+import models.CidadaoDAO;
+import org.junit.AfterClass;
+import org.junit.Before;
+import play.db.jpa.JPAApi;
 import play.mvc.Http.Status;
 
+import java.util.HashSet;
 import java.util.Iterator;
 
 import models.Iniciativa;
@@ -28,6 +35,16 @@ public class IniciativaControllerTest extends WithApplication {
 	protected Application provideApplication() {
 		return new GuiceApplicationBuilder().bindings(new MainModule())
 		.build();
+	}
+
+	@Before
+	public void limpaBancoParaTestes() {
+		CidadaoDAO cidadaoDAO= app.injector().instanceOf(CidadaoDAO.class);
+		JPAApi jpaAPI = app.injector().instanceOf(JPAApi.class);
+		jpaAPI.withTransaction(() -> {
+			Cidadao cidadao = cidadaoDAO.findByLogin("admin");
+			cidadao.setIniciativasAcompanhadas(new HashSet<>());
+		});
 	}
 
 	@Test
@@ -54,24 +71,19 @@ public class IniciativaControllerTest extends WithApplication {
 
 	@Test
 	public void deveriaFalharNaInscricaoNumaIniciativaInexistente() {
-
 		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(0L));
 		assertEquals(Status.NOT_FOUND, result.status());
 	}
 
 	@Test
-	@Ignore("Executar só quando clear do BD de teste estiver implementado")
 	public void deveriaInscreverCidadaoNaIniciativa() {
-
 		long id = 797935L;
 		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
 		assertEquals(Status.OK, result.status());
 	}
 
 	@Test
-	@Ignore("Executar só quando clear do BD de teste estiver implementado")
 	public void deveriaReportarCidadaoJaInscritoNumaIniciativa() {
-
 		long id = 797935L;
 		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
 		assertEquals(Status.OK, result.status());
@@ -81,7 +93,6 @@ public class IniciativaControllerTest extends WithApplication {
 	}
 
 	@Test
-	@Ignore("Executar ao implementar seguir iniciativa")
 	public void deveriaFalharNaRemocaoDaInscricaoNumaIniciativaInexistente() {
 
 		Result result = Helpers.route(controllers.routes.IniciativaController.removeInscrito(0L));
@@ -89,16 +100,13 @@ public class IniciativaControllerTest extends WithApplication {
 	}
 
 	@Test
-	@Ignore("Executar ao implementar seguir iniciativa")
 	public void deveriaFalharAoRemoverCidadaoNaoInscritoNaIniciativa() {
-
 		long id = 797935L;
 		Result result = Helpers.route(controllers.routes.IniciativaController.removeInscrito(id));
 		assertEquals(Status.NOT_FOUND, result.status());
 	}
 
 	@Test
-	@Ignore("Executar ao implementar seguir iniciativa")
 	public void deveriaRemoverCidadaoJaInscritoNumaIniciativa() {
 
 		long id = 797935L;
