@@ -46,7 +46,6 @@ public class IniciativaControllerTest extends WithApplication {
 
 	@Test
 	public void deveriaRetornarIniciativasSimilares() {
-
 		long id = 797935L;
 		Result result = Helpers.route(controllers.routes.IniciativaController.similares(id, 5L));
 		assertEquals(Status.OK, result.status());
@@ -91,7 +90,6 @@ public class IniciativaControllerTest extends WithApplication {
 
 	@Test
 	public void deveriaFalharNaRemocaoDaInscricaoNumaIniciativaInexistente() {
-
 		Result result = Helpers.route(controllers.routes.IniciativaController.removeInscrito(0L));
 		assertEquals(Status.NOT_FOUND, result.status());
 	}
@@ -105,7 +103,6 @@ public class IniciativaControllerTest extends WithApplication {
 
 	@Test
 	public void deveriaRemoverCidadaoJaInscritoNumaIniciativa() {
-
 		long id = 797935L;
 		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
 		assertEquals(Status.OK, result.status());

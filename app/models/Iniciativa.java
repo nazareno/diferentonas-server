@@ -44,12 +44,14 @@ public class Iniciativa implements Serializable {
     private Date dataConclusaoGovernoFederal;    // dataLimitePrestacaoContas
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
-    //@JsonBackReference
     @JsonIgnore
     private List<Opiniao> opinioes;
-    
+
+    /* Adicionados para facilitar no json retornado para o cliente:    */
     @Transient
     private Map<String, Long> sumario;
+    @Transient
+    private boolean seguidaPeloRequisitante;
 
     public Iniciativa() {
         opinioes = new LinkedList<>();
@@ -270,4 +272,12 @@ public class Iniciativa implements Serializable {
 	public void setSumario(Map<String, Long> sumario) {
 		this.sumario = sumario;
 	}
+
+    public void setSeguidaPeloRequisitante(boolean seguidaPeloRequisitante) {
+        this.seguidaPeloRequisitante = seguidaPeloRequisitante;
+    }
+
+    public boolean isSeguidaPeloRequisitante() {
+        return seguidaPeloRequisitante;
+    }
 }

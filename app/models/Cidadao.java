@@ -101,4 +101,8 @@ public class Cidadao implements Serializable {
 	public boolean desinscreverDe(Iniciativa iniciativa) {
 		return this.iniciativasAcompanhadas.remove(iniciativa);
 	}
+
+	public boolean isInscritoEm(Iniciativa iniciativa) {
+		return this.iniciativasAcompanhadas.contains(iniciativa);
+	}
 }
