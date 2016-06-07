@@ -3,6 +3,8 @@ package controllers;
 import static play.libs.Json.toJson;
 import models.Cidade;
 import models.CidadeDAO;
+import models.Iniciativa;
+import models.IniciativaDAO;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.libs.Json;
@@ -15,22 +17,28 @@ import com.google.inject.Inject;
 public class CidadeController extends Controller {
 	
 	private CidadeDAO dao;
+	private IniciativaDAO daoIniciativa;
 
 	@Inject
-	public CidadeController(CidadeDAO dao) {
+	public CidadeController(CidadeDAO dao, IniciativaDAO daoIniciativa) {
 		this.dao = dao;
+		this.daoIniciativa = daoIniciativa;
 	}
 	
     @Transactional(readOnly = true)
     public Result getIniciativas(Long id) {
-    	Cidade cidade = dao.find(id);
+    	Cidade cidade = dao.findComIniciativas(id);
+    	
+    	for (Iniciativa iniciativa : cidade.getIniciativas()) {
+			iniciativa.setSumario(daoIniciativa.calculaSumario(iniciativa.getId()));
+		}
 
         if(cidade == null) {
             return notFound();
-        } else {
-            Logger.debug("Iniciativas para " + cidade.getNome() + ": " + cidade.getIniciativas().size());
-            return ok(toJson(cidade.getIniciativas()));
         }
+
+        Logger.debug("Iniciativas para " + cidade.getNome() + ": " + cidade.getIniciativas().size());
+        return ok(toJson(cidade.getIniciativas()));
     }
 
     @Transactional(readOnly = true)

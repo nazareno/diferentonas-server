@@ -45,6 +45,17 @@ public class CidadeDAO {
     }
 
     /**
+     * Find an Cidade by id
+     *
+     * @param Integer id
+     * @return Cidade
+     */
+    public Cidade findComIniciativas(Long id) {
+        return jpaAPI.em().createNamedQuery("findComIniciativas", Cidade.class)
+        		.setParameter("paramId", id).getSingleResult();
+    }
+
+    /**
      * Update an Cidade
      *
      * @param Cidade model

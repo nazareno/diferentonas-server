@@ -4,12 +4,14 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -45,6 +47,9 @@ public class Iniciativa implements Serializable {
     //@JsonBackReference
     @JsonIgnore
     private List<Opiniao> opinioes;
+    
+    @Transient
+    private Map<String, Long> sumario;
 
     public Iniciativa() {
         opinioes = new LinkedList<>();
@@ -256,4 +261,13 @@ public class Iniciativa implements Serializable {
         this.opinioes = opinioes;
     }
 
+
+	public Map<String, Long> getSumario() {
+		return sumario;
+	}
+
+
+	public void setSumario(Map<String, Long> sumario) {
+		this.sumario = sumario;
+	}
 }

@@ -1,6 +1,8 @@
 package models;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Query;
 
@@ -71,6 +73,18 @@ public class IniciativaDAO {
 									.setParameter(5, quantidade.intValue());
 			return (List<Iniciativa>) query.getResultList();
 		});
+	}
+
+	public Map<String, Long> calculaSumario(Long id) {
+		HashMap<String, Long> hashMap = new HashMap<String, Long>();
+		Query query = jpaAPI.em().createQuery("SELECT o.tipo as tipo, count(id) as quantidade FROM Opiniao o "
+				+ "WHERE o.iniciativa.id = :paramId "
+				+ "GROUP BY o.tipo").setParameter("paramId", id);
+		List<Object[]> resultList = query.getResultList();
+		for (Object[] objects : resultList) {
+			hashMap.put((String)objects[0], (Long)objects[1]);
+		}
+		return hashMap;
 	}
 
 }

@@ -28,6 +28,7 @@ public class IniciativaController extends Controller {
 
     @Transactional(readOnly = true)
     public Result get(Long id) {
+    	iniciativaDAO.calculaSumario(id);
         return ok(toJson(iniciativaDAO.find(id)));
     }
 

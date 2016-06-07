@@ -50,6 +50,7 @@ public class Opiniao implements Serializable {
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm", timezone="America/Recife")
     private Date criadaEm;
     
+    @ManyToOne(fetch = FetchType.EAGER)
     private Cidadao autor;
 
     public Opiniao(){
