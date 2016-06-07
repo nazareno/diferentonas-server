@@ -15,11 +15,10 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Parameter;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 
 import play.data.validation.Constraints;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 
 /**
@@ -63,7 +62,7 @@ public class Mensagem implements Serializable {
     @Constraints.MinLength(1)
     private String autor;
 
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="DD/mm/yyyy,HH:00", timezone="BRT")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm", timezone="BRT")
     private Date criadaEm;
 
     public Mensagem(){
