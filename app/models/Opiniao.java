@@ -23,9 +23,6 @@ import play.data.validation.Constraints;
 @Entity
 public class Opiniao implements Serializable {
 
-    /**
-	 * 
-	 */
 	private static final long serialVersionUID = 237406949191520501L;
 
 	public static final String TABLE = "Opiniao";
@@ -37,9 +34,6 @@ public class Opiniao implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "iniciativa")
-    //@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-    //@JsonIdentityReference(alwaysAsId=true)
-    //@JsonIgnoreProperties({"name", "description" })
     private Iniciativa iniciativa;
 
     @Column(length = 1000)
