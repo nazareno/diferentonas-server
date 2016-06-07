@@ -15,7 +15,7 @@ POST       /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.ad
 GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
 # Mensagens do Governo
-GET        /mensagens                   controllers.MensagemController.getMensagens(quantidade: Long ?= 10)
+GET        /mensagens                   controllers.MensagemController.getMensagens(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 POST       /mensagens                   controllers.MensagemController.save()
 DELETE     /mensagens/:id               controllers.MensagemController.delete(id: String)
 
