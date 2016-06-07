@@ -98,13 +98,31 @@ public class MensagemControllerTest extends WithApplication {
 	}
 
 	@Test
-	public void deveFalharAoAdicionarUmaMensagemInvalida() {
+	public void deveFalharAoAdicionarUmaMensagemComTituloGigante() {
 		StringBuilder conteudoInvalido = new StringBuilder();
 		for (int i = 0; i < 1000; i++) {
 			conteudoInvalido.append("ASDF ");
 		}
 		
 		templateMensagem.setTitulo(conteudoInvalido.toString());
+
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+		assertEquals(Status.BAD_REQUEST, result.status());
+	}
+
+	@Test
+	public void deveFalharAoAdicionarUmaMensagemComTituloVazio() {
+		
+		templateMensagem.setTitulo("");
+
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+		assertEquals(Status.BAD_REQUEST, result.status());
+	}
+
+	@Test
+	public void deveFalharAoAdicionarUmaMensagemComTituloNull() {
+		
+		templateMensagem.setTitulo(null);
 
 		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
 		assertEquals(Status.BAD_REQUEST, result.status());
