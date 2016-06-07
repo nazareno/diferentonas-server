@@ -1,11 +1,23 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static controllers.util.ControllersTestUtils.enviaPOSTAddOpiniao;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static play.mvc.Http.Status.BAD_REQUEST;
+import static play.mvc.Http.Status.NOT_FOUND;
+import static play.mvc.Http.Status.OK;
+
+import java.io.IOException;
+import java.util.Iterator;
+
 import module.MainModule;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
 import play.Application;
 import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
@@ -14,13 +26,8 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
-import java.io.IOException;
-import java.util.Iterator;
-
-import static controllers.util.ControllersTestUtils.*;
-import static org.junit.Assert.*;
-import static play.mvc.Http.Status.*;
-import static play.test.Helpers.route;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Testa inserção e recuperação de opiniões de usuários nas iniciativas.

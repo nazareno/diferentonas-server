@@ -4,25 +4,22 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import models.Cidadao;
-import models.CidadaoDAO;
-import org.junit.AfterClass;
-import org.junit.Before;
-import play.db.jpa.JPAApi;
-import play.mvc.Http.Status;
-
 import java.util.HashSet;
 import java.util.Iterator;
 
+import models.Cidadao;
+import models.CidadaoDAO;
 import models.Iniciativa;
 import module.MainModule;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 
 import play.Application;
+import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
+import play.mvc.Http.Status;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;

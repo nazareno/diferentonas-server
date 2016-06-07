@@ -1,15 +1,15 @@
 package models;
 
-import com.google.inject.Inject;
-import play.Logger;
-import play.db.jpa.JPA;
-import play.db.jpa.JPAApi;
+import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Singleton;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import java.util.List;
-import java.util.UUID;
+
+import play.db.jpa.JPAApi;
+
+import com.google.inject.Inject;
 
 @Singleton
 public class OpiniaoDAO {

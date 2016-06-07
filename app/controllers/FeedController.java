@@ -7,8 +7,11 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import models.*;
-import org.hibernate.Hibernate;
+import models.Cidadao;
+import models.CidadaoDAO;
+import models.Novidade;
+import models.Opiniao;
+import models.OpiniaoDAO;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;

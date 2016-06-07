@@ -12,10 +12,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import play.data.validation.Constraints;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 /**
  * Opinião de um cidadão sobre uma iniciativa de uma cidade.

@@ -1,20 +1,28 @@
 package controllers;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.inject.Inject;
-import models.*;
+import static play.libs.Json.toJson;
+import static play.mvc.Controller.request;
+import static play.mvc.Results.badRequest;
+import static play.mvc.Results.notFound;
+import static play.mvc.Results.ok;
+
+import java.util.Iterator;
+import java.util.List;
+
+import models.Cidadao;
+import models.CidadaoDAO;
+import models.Iniciativa;
+import models.IniciativaDAO;
+import models.Opiniao;
+import models.OpiniaoDAO;
 import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
 
-import java.util.Iterator;
-import java.util.List;
-
-import static play.libs.Json.toJson;
-import static play.mvc.Controller.request;
-import static play.mvc.Results.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.google.inject.Inject;
 
 /**
  * Controller para ações relacionadas às opiniões dos usuários em iniciativas.

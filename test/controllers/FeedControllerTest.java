@@ -1,21 +1,22 @@
 package controllers;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import static controllers.util.ControllersTestUtils.enviaPOSTAddOpiniao;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static play.mvc.Http.Status.OK;
+import static play.test.Helpers.contentAsString;
 
-import com.google.inject.Inject;
-import models.Mensagem;
+import java.io.IOException;
+import java.util.List;
+
 import models.Novidade;
 import module.MainModule;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import play.Application;
-import play.Logger;
 import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
@@ -23,15 +24,8 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
-import java.io.IOException;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static play.mvc.Http.Status.OK;
-import static controllers.util.ControllersTestUtils.*;
-import static play.test.Helpers.contentAsString;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FeedControllerTest extends WithApplication {
 
