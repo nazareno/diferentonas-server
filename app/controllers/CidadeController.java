@@ -9,6 +9,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
@@ -33,7 +34,9 @@ public class CidadeController extends Controller {
 
         Logger.debug("Acesso a " + cidade.getNome());
 
-        return ok(toJson(cidade));
+        ObjectNode node = (ObjectNode) toJson(cidade);
+        node.set("scores", Json.toJson(cidade.getScores()));
+		return ok(node);
     }
 
     @Transactional(readOnly = true)

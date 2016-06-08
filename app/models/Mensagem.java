@@ -69,6 +69,15 @@ public class Mensagem implements Serializable {
         this.criadaEm = new Date();
     }
 	
+	
+	public Mensagem(String conteudo, String titulo, String autor) {
+		this();
+		this.conteudo = conteudo;
+		this.titulo = titulo;
+		this.autor = autor;
+	}
+
+
 	public UUID getId() {
 		return id;
 	}

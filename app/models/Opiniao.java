@@ -56,8 +56,19 @@ public class Opiniao implements Serializable {
     public Opiniao(){
         this.criadaEm = new Date();
     }
+    
+    public Opiniao(Iniciativa iniciativa, String conteudo, String tipo,
+			Cidadao autor) {
+		this();
+		this.iniciativa = iniciativa;
+		this.conteudo = conteudo;
+		this.tipo = tipo;
+		this.autor = autor;
+	}
 
-    public UUID getId() {
+
+
+	public UUID getId() {
         return id;
     }
 
