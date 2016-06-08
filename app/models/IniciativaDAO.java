@@ -36,9 +36,10 @@ public class IniciativaDAO {
 	 * 
 	 * @param id de uma {@link Iniciativa}
 	 * @param quantidade de iniciativas pra retornar.
+	 * @param cidadao
 	 * @return Uma lista de {@link Iniciativa}s.
 	 */
-	public List<Iniciativa> findSimilares(Long id, Long quantidade) {
+	public List<Iniciativa> findSimilares(Long id, Long quantidade, Cidadao cidadao) {
 		return jpaAPI.withTransaction(()->{
 			Iniciativa outro = find(id);
 			Query query = jpaAPI
@@ -71,8 +72,20 @@ public class IniciativaDAO {
 									.setParameter(3, LIMITE_DE_SIMILARES)
 									.setParameter(4, id)
 									.setParameter(5, quantidade.intValue());
-			return (List<Iniciativa>) query.getResultList();
+
+			List<Iniciativa> retorno = (List<Iniciativa>) query.getResultList();
+
+			return adicionaSumarios(retorno, cidadao);
 		});
+	}
+
+	public List<Iniciativa> adicionaSumarios(List<Iniciativa> retorno, Cidadao cidadao) {
+		for (Iniciativa iniciativa : retorno) {
+            iniciativa.setSumario(this.calculaSumario(iniciativa.getId()));
+            iniciativa.setSeguidaPeloRequisitante(cidadao.isInscritoEm(iniciativa));
+        }
+
+		return retorno;
 	}
 
 	public Map<String, Long> calculaSumario(Long id) {

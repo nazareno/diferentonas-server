@@ -2,13 +2,14 @@ package controllers;
 
 import static play.libs.Json.toJson;
 
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import models.Cidadao;
-import models.CidadaoDAO;
-import models.Iniciativa;
-import models.IniciativaDAO;
+import models.*;
+import org.hibernate.Hibernate;
+import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -19,11 +20,13 @@ public class IniciativaController extends Controller {
 
     private IniciativaDAO iniciativaDAO;
     private CidadaoDAO cidadaoDAO;
+    private CidadeDAO cidadeDAO;
 
     @Inject
-    public IniciativaController(IniciativaDAO iniciativaDAO, CidadaoDAO cidadaoDAO) {
+    public IniciativaController(IniciativaDAO iniciativaDAO, CidadaoDAO cidadaoDAO, CidadeDAO cidadeDAO) {
         this.iniciativaDAO = iniciativaDAO;
         this.cidadaoDAO = cidadaoDAO;
+        this.cidadeDAO = cidadeDAO;
     }
 
     @Transactional(readOnly = true)
@@ -33,10 +36,25 @@ public class IniciativaController extends Controller {
     }
 
     @Transactional(readOnly = true)
+    public Result getIniciativas(Long idCidade) {
+        Cidade cidade = cidadeDAO.findComIniciativas(idCidade);
+        if (cidade == null) {
+            return notFound("Cidade " + idCidade);
+        }
+
+        Logger.debug("Iniciativas para " + cidade.getNome() + ": " + cidade.getIniciativas().size());
+        Cidadao cidadao = cidadaoDAO.findByLogin("admin");
+
+        return ok(toJson(iniciativaDAO.adicionaSumarios(cidade.getIniciativas(), cidadao)));
+    }
+
+    @Transactional(readOnly = true)
     public CompletionStage<Result> similares(Long id, Long quantidade) {
+        Cidadao cidadao = cidadaoDAO.findByLogin("admin");
+        cidadao.getIniciativasAcompanhadas();
         return CompletableFuture.supplyAsync(
-                () -> iniciativaDAO.findSimilares(id, quantidade)).thenApply(
-                (i) -> ok(toJson(i)));
+                () -> (iniciativaDAO.findSimilares(id, quantidade, cidadao)))
+                .thenApply((i) -> ok(toJson(i)));
     }
 
     @Transactional

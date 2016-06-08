@@ -17,37 +17,10 @@ import java.util.List;
 public class CidadeController extends Controller {
 
     private CidadeDAO dao;
-    private IniciativaDAO daoIniciativa;
-    private CidadaoDAO daoCidadao;
 
     @Inject
-    public CidadeController(CidadeDAO dao, IniciativaDAO daoIniciativa, CidadaoDAO daoCidadao) {
+    public CidadeController(CidadeDAO dao) {
         this.dao = dao;
-        this.daoIniciativa = daoIniciativa;
-        this.daoCidadao = daoCidadao;
-    }
-
-    @Transactional(readOnly = true)
-    public Result getIniciativas(Long idCidade) {
-        Cidade cidade = dao.findComIniciativas(idCidade);
-        if (cidade == null) {
-            return notFound("Cidade " + idCidade);
-        }
-
-        adicionaInfoParaView(cidade.getIniciativas());
-
-        Logger.debug("Iniciativas para " + cidade.getNome() + ": " + cidade.getIniciativas().size());
-        return ok(toJson(cidade.getIniciativas()));
-    }
-
-
-    protected void adicionaInfoParaView(List<Iniciativa> iniciativas) {
-        Cidadao cidadao = daoCidadao.findByLogin("admin");
-
-        for (Iniciativa iniciativa : iniciativas) {
-            iniciativa.setSumario(daoIniciativa.calculaSumario(iniciativa.getId()));
-            iniciativa.setSeguidaPeloRequisitante(cidadao.isInscritoEm(iniciativa));
-        }
     }
 
     @Transactional(readOnly = true)

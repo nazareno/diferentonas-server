@@ -7,6 +7,7 @@ import static play.test.Helpers.contentAsString;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import controllers.*;
 import models.Cidade;
 import models.Iniciativa;
 import models.Novidade;
@@ -67,37 +68,6 @@ public class CidadeControllerTest extends WithApplication {
 
         assertEquals(2513406L, cidade.getId().longValue());
         assertEquals("Santa Luzia", cidade.getNome());
-    }
-
-    @Test
-    public void deveRetornarIniciativaComInfoDeSeguidor() throws IOException {
-        long idCidade = 2807402L;
-        long idIniciativa = 797935L;
-        // caso hajs efeitos colaterais
-        Helpers.route(controllers.routes.IniciativaController.removeInscrito(idIniciativa));
-
-        Result result1 = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(idIniciativa));
-        assertEquals(contentAsString(result1), Http.Status.OK, result1.status());
-
-        Result result2 = Helpers.route(controllers.routes.CidadeController.getIniciativas(idCidade));
-        assertEquals(OK, result2.status());
-
-        List<Iniciativa> iniciativas = new ObjectMapper()
-                .readValue(contentAsString(result2), new TypeReference<List<Iniciativa>>() {});
-
-        boolean encontrou = false;
-        for (Iniciativa iniciativa :
-                iniciativas) {
-            if (iniciativa.getId() == idIniciativa) {
-                encontrou = true;
-                assertTrue(iniciativa.isSeguidaPeloRequisitante());
-            } else {
-                assertFalse(iniciativa.isSeguidaPeloRequisitante());
-            }
-        }
-        if (!encontrou) {
-            fail("Não encontrou a iniciativa usada na cidade.");
-        }
     }
 
 }

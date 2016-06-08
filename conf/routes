@@ -9,10 +9,7 @@ GET        /                            controllers.CidadeController.index()
 GET        /cidades                     controllers.CidadeController.getCidades()
 GET        /cidade/:id                  controllers.CidadeController.get(id: Long)
 GET        /cidade/:id/similares        controllers.CidadeController.getSimilares(id: Long)
-GET        /cidade/:id/iniciativas      controllers.CidadeController.getIniciativas(id: Long)
-# .. Opiniões
-POST       /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.addOpiniao(iniciativa: Long)
-GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
+GET        /cidade/:id/iniciativas      controllers.IniciativaController.getIniciativas(id: Long)
 
 # Mensagens do Governo
 GET        /mensagens                   controllers.MensagemController.getMensagens(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
@@ -24,8 +21,11 @@ GET        /iniciativas/:id                  controllers.IniciativaController.ge
 GET        /iniciativas/:id/similares        controllers.IniciativaController.similares(id: Long, quantidade: Long?=10)
 POST       /iniciativas/:id/inscritos		 controllers.IniciativaController.adicionaInscrito(id: Long)
 DELETE     /iniciativas/:id/inscritos		 controllers.IniciativaController.removeInscrito(id: Long)
+# .. Opiniões
+POST       /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.addOpiniao(iniciativa: Long)
+GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
-# lista de novidades () com links para o item
+# lista de novidades com links para o item
 GET			/linhadotempo		    controllers.FeedController.getNovidades(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
 # Map static resources from the /public folder to the /assets URL path
