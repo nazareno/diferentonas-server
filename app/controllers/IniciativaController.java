@@ -51,7 +51,7 @@ public class IniciativaController extends Controller {
     @Transactional(readOnly = true)
     public CompletionStage<Result> similares(Long id, Long quantidade) {
         Cidadao cidadao = cidadaoDAO.findByLogin("admin");
-        cidadao.getIniciativasAcompanhadas();
+        Hibernate.initialize(cidadao.getIniciativasAcompanhadas());
         return CompletableFuture.supplyAsync(
                 () -> (iniciativaDAO.findSimilares(id, quantidade, cidadao)))
                 .thenApply((i) -> ok(toJson(i)));
