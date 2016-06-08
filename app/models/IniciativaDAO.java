@@ -48,7 +48,7 @@ public class IniciativaDAO {
 							"with similares AS ("
 									+ "SELECT i.* FROM iniciativa AS i, "
 									+ "TO_TSVECTOR('portuguese', i.titulo ) AS titulo_v, "
-									+ "TO_TSQUERY('portuguese', ?) AS query, "
+									+ "TO_TSQUERY('portuguese', quote_literal(?)) AS query, "
 									+ "TS_RANK(titulo_v, query) AS rank "
 									+ "WHERE titulo_v @@ query AND i.id != ? "
 									+ "ORDER BY rank DESC limit ?), "
@@ -88,6 +88,9 @@ public class IniciativaDAO {
 
 	public Map<String, Long> calculaSumario(Long id) {
 		HashMap<String, Long> hashMap = new HashMap<String, Long>();
+		hashMap.put("coracao", 0L);
+		hashMap.put("coracao_partido", 0L);
+		hashMap.put("bomba", 0L);
 		Query query = jpaAPI.em().createQuery("SELECT o.tipo as tipo, count(id) as quantidade FROM Opiniao o "
 				+ "WHERE o.iniciativa.id = :paramId "
 				+ "GROUP BY o.tipo").setParameter("paramId", id);

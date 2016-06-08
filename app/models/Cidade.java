@@ -47,11 +47,11 @@ public class Cidade implements Serializable {
     @JsonBackReference
     private List<Cidade> similares;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "cidade")
     @JsonIgnore
     private List<Score> scores;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "cidade", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cidade", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Iniciativa> iniciativas;
 

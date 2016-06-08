@@ -47,6 +47,7 @@ public class Iniciativa implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "cidade")
+    @JsonIgnore
     private Cidade cidade;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
@@ -67,7 +68,7 @@ public class Iniciativa implements Serializable {
     public Iniciativa(Long id, Integer ano, String titulo, String programa, String area, String fonte,
                       String concedente, String status, Boolean temAditivo, Float verbaGovernoFederal, Float verbaMunicipio,
                       Date dataInicio, Date dataConclusaoMunicipio, Date dataConclusaoGovernoFederal) {
-        super();
+        this();
         this.id = id;
         this.ano = ano;
         this.titulo = titulo;

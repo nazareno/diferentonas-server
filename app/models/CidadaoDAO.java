@@ -34,8 +34,9 @@ public class CidadaoDAO {
 
     
     public Cidadao findByLogin(String login) {
-    	List<Cidadao> list = jpaAPI.em().createNamedQuery("findByLogin", Cidadao.class)
-		.setParameter("paramlogin", login).getResultList();
+    	List<Cidadao> list = jpaAPI.em().createQuery("from Cidadao where login = :paramLogin", Cidadao.class).setParameter("paramLogin", login).getResultList();
+//    	List<Cidadao> list = jpaAPI.em().createNamedQuery("findByLogin", Cidadao.class)
+//		.setParameter("paramlogin", login).getResultList();
     	return list.isEmpty()? null: list.get(0);
     }
 }

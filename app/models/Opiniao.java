@@ -57,13 +57,10 @@ public class Opiniao implements Serializable {
         this.criadaEm = new Date();
     }
     
-    public Opiniao(Iniciativa iniciativa, String conteudo, String tipo,
-			Cidadao autor) {
+    public Opiniao(String conteudo, String tipo) {
 		this();
-		this.iniciativa = iniciativa;
 		this.conteudo = conteudo;
 		this.tipo = tipo;
-		this.autor = autor;
 	}
 
 
