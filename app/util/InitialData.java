@@ -103,7 +103,7 @@ public class InitialData {
                 admin.inscreverEm(i);
 				i.addOpiniao(new Opiniao(i, "Prefeitura de parabéns, pedalo lá com minha digníssima todo dia!", "coracao",nazareno));
 				i.addOpiniao(new Opiniao(i, "achei os equipamentos de má qualidade", "coracao-partido",iara));
-				i.addOpiniao(new Opiniao(i, "o local não tem segurança nenhuma, podiam ter feito uma guarita!", "coracao-partigo",mariana));
+				i.addOpiniao(new Opiniao(i, "o local não tem segurança nenhuma, podiam ter feito uma guarita!", "coracao-partido",mariana));
 				i.addOpiniao(new Opiniao(i, "Também pedalo lá...", "coracao",ricardo));
 				
 				
