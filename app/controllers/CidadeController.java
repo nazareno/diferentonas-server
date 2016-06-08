@@ -1,8 +1,8 @@
 package controllers;
 
 import static play.libs.Json.toJson;
-
-import models.*;
+import models.Cidade;
+import models.CidadeDAO;
 import play.Logger;
 import play.db.jpa.Transactional;
 import play.libs.Json;
@@ -11,8 +11,6 @@ import play.mvc.Result;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
-
-import java.util.List;
 
 public class CidadeController extends Controller {
 

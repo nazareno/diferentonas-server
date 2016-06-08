@@ -2,18 +2,27 @@ package controllers;
 
 import static play.libs.Json.toJson;
 
-import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
-import models.*;
+import models.Cidadao;
+import models.CidadaoDAO;
+import models.Cidade;
+import models.CidadeDAO;
+import models.Iniciativa;
+import models.IniciativaDAO;
+
 import org.hibernate.Hibernate;
+
 import play.Logger;
 import play.db.jpa.Transactional;
+import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
 public class IniciativaController extends Controller {
@@ -51,10 +60,18 @@ public class IniciativaController extends Controller {
     @Transactional(readOnly = true)
     public CompletionStage<Result> similares(Long id, Long quantidade) {
         Cidadao cidadao = cidadaoDAO.findByLogin("admin");
-        Hibernate.initialize(cidadao.getIniciativasAcompanhadas());
-        return CompletableFuture.supplyAsync(
-                () -> (iniciativaDAO.findSimilares(id, quantidade, cidadao)))
-                .thenApply((i) -> ok(toJson(i)));
+        Hibernate.initialize(cidadao.getIniciativasAcompanhadas());// TODO isso não devia estar aqui na fachada...
+		return CompletableFuture.supplyAsync(
+				() -> (iniciativaDAO.findSimilares(id, quantidade, cidadao)))
+				.thenApply((iniciativas) -> {
+					ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
+					for (Iniciativa iniciativa : iniciativas) {
+						ObjectNode node = (ObjectNode)Json.toJson(iniciativa);
+						node.set("cidade", Json.toJson(iniciativa.getCidade()));
+						arrayNode.add(node);
+					}
+					return ok(arrayNode);
+				});
     }
 
     @Transactional
