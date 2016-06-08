@@ -80,31 +80,31 @@ public class InitialData {
             Cidadao admin = dao.findByLogin("admin");
             if (admin == null) {
                 admin = dao.create(new Cidadao("admin"));
-                daoMensagem.create(new Mensagem("Fiquem atentos!", "Importante!", "Ministério da Justiça"));
-                daoMensagem.create(new Mensagem("Muitos convênios estão sendo celebrados esse mês... fique de olho na sua cidade", "Atenção!", "Ministério do Planejamento"));
-                daoMensagem.create(new Mensagem("Achou alguma estranha nas iniciativas da sua cidade? Denuncie!", "Denuncie também!", "Ministério da Justiça"));
-                
-                
-                Cidadao iara = dao.create(new Cidadao("Iara"));
-                Cidadao luiz = dao.create(new Cidadao("Luiz"));
-                Cidadao mariana = dao.create(new Cidadao("Mariana"));
-                Cidadao nazareno = dao.create(new Cidadao("Nazareno"));
-                Cidadao ricardo = dao.create(new Cidadao("Ricardo"));
-                
-                Iniciativa i = daoIniciativa.find(816240L);
-                admin.inscreverEm(i);
-				i.addOpiniao(new Opiniao(i, "não gostei...", "coracao_partido",iara));
-				i.addOpiniao(new Opiniao(i, "tá estranho... passei ontem lá e não tinha nada.", "coracao_partido",luiz));
-				i.addOpiniao(new Opiniao(i, "Me disseram que a empresa é fantasma", "bomba",mariana));
-				i.addOpiniao(new Opiniao(i, "Eu conheço o dono da empresa, é verdadeira sim! Mas até agora não iniciaram a obra", "coracao",luiz));
-				i.addOpiniao(new Opiniao(i, "quero mais é ver isso pronto", "coracao_partido",iara));
-				
-                i = daoIniciativa.find(791092L);
-                admin.inscreverEm(i);
-				i.addOpiniao(new Opiniao(i, "Prefeitura de parabéns, pedalo lá com minha digníssima todo dia!", "coracao",nazareno));
-				i.addOpiniao(new Opiniao(i, "achei os equipamentos de má qualidade", "coracao_partido",iara));
-				i.addOpiniao(new Opiniao(i, "o local não tem segurança nenhuma, podiam ter feito uma guarita!", "coracao_partido",mariana));
-				i.addOpiniao(new Opiniao(i, "Também pedalo lá...", "coracao",ricardo));
+//                daoMensagem.create(new Mensagem("Fiquem atentos!", "Importante!", "Ministério da Justiça"));
+//                daoMensagem.create(new Mensagem("Muitos convênios estão sendo celebrados esse mês... fique de olho na sua cidade", "Atenção!", "Ministério do Planejamento"));
+//                daoMensagem.create(new Mensagem("Achou alguma estranha nas iniciativas da sua cidade? Denuncie!", "Denuncie também!", "Ministério da Justiça"));
+//                
+//                
+//                Cidadao iara = dao.create(new Cidadao("Iara"));
+//                Cidadao luiz = dao.create(new Cidadao("Luiz"));
+//                Cidadao mariana = dao.create(new Cidadao("Mariana"));
+//                Cidadao nazareno = dao.create(new Cidadao("Nazareno"));
+//                Cidadao ricardo = dao.create(new Cidadao("Ricardo"));
+//                
+//                Iniciativa i = daoIniciativa.find(816240L);
+//                admin.inscreverEm(i);
+//				i.addOpiniao(new Opiniao(i, "não gostei...", "coracao_partido",iara));
+//				i.addOpiniao(new Opiniao(i, "tá estranho... passei ontem lá e não tinha nada.", "coracao_partido",luiz));
+//				i.addOpiniao(new Opiniao(i, "Me disseram que a empresa é fantasma", "bomba",mariana));
+//				i.addOpiniao(new Opiniao(i, "Eu conheço o dono da empresa, é verdadeira sim! Mas até agora não iniciaram a obra", "coracao",luiz));
+//				i.addOpiniao(new Opiniao(i, "quero mais é ver isso pronto", "coracao_partido",iara));
+//				
+//                i = daoIniciativa.find(791092L);
+//                admin.inscreverEm(i);
+//				i.addOpiniao(new Opiniao(i, "Prefeitura de parabéns, pedalo lá com minha digníssima todo dia!", "coracao",nazareno));
+//				i.addOpiniao(new Opiniao(i, "achei os equipamentos de má qualidade", "coracao_partido",iara));
+//				i.addOpiniao(new Opiniao(i, "o local não tem segurança nenhuma, podiam ter feito uma guarita!", "coracao_partido",mariana));
+//				i.addOpiniao(new Opiniao(i, "Também pedalo lá...", "coracao",ricardo));
 				
 				
 				
