@@ -6,15 +6,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * Uma iniciativa de um município em conjunto com o governo federal, realizada através de convênio.
@@ -42,6 +39,11 @@ public class Iniciativa implements Serializable {
     private Date dataConclusaoMunicipio;    // dataTerminoVigencia
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "America/Recife")
     private Date dataConclusaoGovernoFederal;    // dataLimitePrestacaoContas
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "cidade")
+    @JsonBackReference
+    private Cidade cidade;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa")
     @JsonIgnore
@@ -279,5 +281,13 @@ public class Iniciativa implements Serializable {
 
     public boolean isSeguidaPeloRequisitante() {
         return seguidaPeloRequisitante;
+    }
+
+    public Cidade getCidade() {
+        return cidade;
+    }
+
+    public void setCidade(Cidade cidade) {
+        this.cidade = cidade;
     }
 }

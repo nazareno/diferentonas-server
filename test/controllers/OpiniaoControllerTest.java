@@ -19,6 +19,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import play.Application;
+import play.Logger;
 import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;

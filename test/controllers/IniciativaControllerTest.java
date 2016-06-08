@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import play.Application;
+import play.Logger;
 import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
@@ -133,6 +134,7 @@ public class IniciativaControllerTest extends WithApplication {
 
 		Result result2 = Helpers.route(controllers.routes.IniciativaController.getIniciativas(idCidade));
 		assertEquals(OK, result2.status());
+		Logger.info("%%%% " + contentAsString(result2));
 
 		List<Iniciativa> iniciativas = new ObjectMapper()
 				.readValue(contentAsString(result2), new TypeReference<List<Iniciativa>>() {});

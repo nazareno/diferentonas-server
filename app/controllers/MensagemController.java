@@ -17,46 +17,50 @@ import play.mvc.Result;
 import com.google.inject.Inject;
 
 public class MensagemController extends Controller {
-	
-	private MensagemDAO dao;
-	private FormFactory formFactory;
 
-	@Inject
-	public MensagemController(MensagemDAO dao, FormFactory formFactory) {
-		this.dao = dao;
-		this.formFactory = formFactory;
-	}
-	
+    private MensagemDAO dao;
+    private FormFactory formFactory;
+
+    @Inject
+    public MensagemController(MensagemDAO dao, FormFactory formFactory) {
+        this.dao = dao;
+        this.formFactory = formFactory;
+    }
+
     @Transactional(readOnly = true)
     public Result getMensagens(Integer pagina, Integer tamanhoPagina) {
-    	return ok(toJson(dao.paginate(pagina, tamanhoPagina)));
+        return ok(toJson(dao.paginate(pagina, tamanhoPagina)));
     }
-	
+
     @Transactional(readOnly = true)
     public Result getMensagensNaoLidas(UUID ultimaLida) {
-    	return ok(toJson(dao.findMaisRecentesQue(ultimaLida)));
+        return ok(toJson(dao.findMaisRecentesQue(ultimaLida)));
     }
-	
+
     @Transactional
     @BodyParser.Of(BodyParser.Json.class)
     public Result save() {
-    	Form<Mensagem> form = formFactory.form(Mensagem.class).bindFromRequest();
-    	if(form.hasErrors()){
-            Logger.debug("Submissão com erros: " + Controller.request().body().asJson().toString() + "; Erros: " + form.errorsAsJson());
-    		return badRequest(form.errorsAsJson());
-    	}
-		Mensagem mensagem = dao.create(form.get());
-    	return created(toJson(mensagem)); 
+        Form<Mensagem> form = formFactory.form(Mensagem.class).bindFromRequest();
+        if (form.hasErrors()) {
+            String recebido = Controller.request().body().asJson().toString();
+            if (recebido.length() > 30) {
+                recebido = recebido.substring(0, 30) + "...";
+            }
+            Logger.debug("Submissão com erros: " + recebido + "; Erros: " + form.errorsAsJson());
+            return badRequest(form.errorsAsJson());
+        }
+        Mensagem mensagem = dao.create(form.get());
+        return created(toJson(mensagem));
     }
 
     @Transactional
     public Result delete(String id) {
-    	Mensagem mensagem = dao.find(UUID.fromString(id));
-    	if(mensagem != null){
-    		dao.delete(mensagem);
-    		return ok(toJson("Deleted: " + id)); 
-    	}else{
-    		return notFound(toJson("id : " + id ));
-    	}
+        Mensagem mensagem = dao.find(UUID.fromString(id));
+        if (mensagem != null) {
+            dao.delete(mensagem);
+            return ok(toJson("Deleted: " + id));
+        } else {
+            return notFound(toJson("id : " + id));
+        }
     }
 }

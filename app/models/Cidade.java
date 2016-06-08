@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @NamedQueries({ @NamedQuery(name = "findComIniciativas", query = "SELECT c FROM Cidade c JOIN FETCH c.iniciativas WHERE c.id = :paramId") })
@@ -50,7 +51,8 @@ public class Cidade implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Score> scores;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "cidade", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Iniciativa> iniciativas;
 
     public Cidade() {
