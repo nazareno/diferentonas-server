@@ -48,7 +48,7 @@ public class IniciativaDAO {
 							"with similares AS ("
 									+ "SELECT i.* FROM iniciativa AS i, "
 									+ "TO_TSVECTOR('portuguese', i.titulo ) AS titulo_v, "
-									+ "TO_TSQUERY('portuguese', quote_literal(?)) AS query, "
+									+ "TO_TSQUERY('portuguese', ?) AS query, "
 									+ "TS_RANK(titulo_v, query) AS rank "
 									+ "WHERE titulo_v @@ query AND i.id != ? "
 									+ "ORDER BY rank DESC limit ?), "
@@ -65,7 +65,7 @@ public class IniciativaDAO {
 									+ "WHERE ini.id = d.i "
 									+ "ORDER BY (d.p <@> e.p) asc, ini.id asc limit ?",
 									Iniciativa.class)
-									.setParameter(1,String.join(" | ", outro.getTitulo().split(" +")))
+									.setParameter(1,String.join(" | ", limpaParaConsultaDeTexto(outro.getTitulo()).split(" +")))
 									.setParameter(2, id )
 									.setParameter(3, LIMITE_DE_SIMILARES)
 									.setParameter(4, id)
@@ -75,6 +75,10 @@ public class IniciativaDAO {
 
 			return adicionaSumarios(retorno, cidadao);
 		});
+	}
+
+	private String limpaParaConsultaDeTexto(String titulo) {
+		return titulo.replaceAll("\\(", "\\\\(").replaceAll("\\)", "\\\\)");
 	}
 
 	public List<Iniciativa> adicionaSumarios(List<Iniciativa> retorno, Cidadao cidadao) {
