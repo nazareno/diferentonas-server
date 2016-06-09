@@ -10,6 +10,7 @@ before_script:
 - psql -c 'create database diferentonas;' -U postgres
 - psql -d diferentonas -U postgres -c 'create extension cube;'
 - psql -d diferentonas -U postgres -c 'create extension earthdistance;'
+- psql -U postgres -q -d diferentonas -f diferentonas.db
 deploy:
   provider: heroku
   app: diferentonas
