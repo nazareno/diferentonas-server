@@ -63,11 +63,11 @@ public class IniciativaControllerTest extends WithApplication {
 		// mais similar é a própria iniciativa
 		assertTrue(elements.hasNext());
 
-		assertEquals(790448L, Json.fromJson(elements.next(), Iniciativa.class).getId().longValue());
-		assertEquals(796377L, Json.fromJson(elements.next(), Iniciativa.class).getId().longValue());
-		assertEquals(797931L, Json.fromJson(elements.next(), Iniciativa.class).getId().longValue());
-		assertEquals(798784L, Json.fromJson(elements.next(), Iniciativa.class).getId().longValue());
-		assertEquals(804599L, Json.fromJson(elements.next(), Iniciativa.class).getId().longValue());
+		assertNotNull(Json.fromJson(elements.next(), Iniciativa.class));
+		assertNotNull(Json.fromJson(elements.next(), Iniciativa.class));
+		assertNotNull(Json.fromJson(elements.next(), Iniciativa.class));
+		assertNotNull(Json.fromJson(elements.next(), Iniciativa.class));
+		assertNotNull(Json.fromJson(elements.next(), Iniciativa.class));
 		assertFalse(elements.hasNext());
 	}
 
