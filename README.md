@@ -40,5 +40,7 @@ cd dados-externos
 ./get_dados_siconv.sh # as vezes o download falha
 ./get_dados_siafi.sh # demora
 cd -
-Rscript R/join_dados.R # depende de R instalado
+./R/atualiza_dados_cli.R <arquivo-siconv> <arquivo-siafi> dist/data/<arquivo-iniciativas>
 ```
+
+Em seguida você pode usar `<arquivo-iniciativas>` para povoar o BD.
