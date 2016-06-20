@@ -1,14 +1,29 @@
 #!/usr/bin/env Rscript
-args = commandArgs(trailingOnly=TRUE)
-if(length(args) < 3){
-  stop("Informe caminho para o arquivo de convênios / iniciativas e arquivo de saida")
+args = commandArgs(trailingOnly = TRUE)
+if (length(args) != 5) {
+  stop(
+    "Uso: atualiza_dados_cli.R <arquivo de iniciativas SICONV> <arquivo SIAFI> <arquivo de vizinhos> <arquivo de saida de iniciativas> <arquivo de saida de diferentices>"
+  )
 }
 arquivo_siconv = args[1]
 arquivo_siafi = args[2]
-arquivo_saida = args[3]
+arquivo_vizinhos = args[3]
+arquivo_saida = args[4]
+arquivo_diferentices = args[5]
+
+# Cruza dados do SICONF + SIAFI com dados sobre os municípios:
 source("R/join_dados.R")
 cruza_dados(arquivo_siconv, arquivo_siafi, arquivo_saida)
-message(paste("Dados salvos em", arquivo_saida))
+message(paste("Dados de iniciativa salvos em", arquivo_saida))
+
+# Calcula scores de diferentices das cidades
+source("R/diferentices.R")
+message(paste("Calculando diferentices a partir de", arquivo_saida, "e", arquivo_vizinhos))
+diferentices = calcula_diferentices(arquivo_saida, arquivo_vizinhos)
+write.csv(diferentices,
+          arquivo_diferentices,
+          row.names = FALSE)
+message(paste("Diferentices salvas em", arquivo_diferentices))
 
 # arquivo_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160513.csv"
 # arquivo_siafi = "dados-externos/convenios-siafi-em-201605.csv"

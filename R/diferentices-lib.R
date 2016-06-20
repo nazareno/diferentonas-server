@@ -13,7 +13,7 @@ expande_convenios = function(convenios){
 
 cria_df_comparacao <- function(cod, convenios.expandidos, vizinhos.df, col_origem = 12, cols_vizinhos = 13:22) {
   ids = vizinhos.df[vizinhos.df$origem == cod, c(col_origem, cols_vizinhos)]
-  cs = convenios.expandidos %>% filter(cod7 %in% ids)
+  cs = convenios.expandidos %>% ungroup() %>% filter(cod7 %in% ids)
   cs$cod7 = droplevels(factor(cs$cod7))
   
   score = function(x){

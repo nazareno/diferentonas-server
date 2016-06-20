@@ -32,15 +32,14 @@ k=10
 dist10 <- as.matrix(dist(quantitativos, method="euclidean"))
 vizinhos.euclides = acha_vizinhos(dist10, k, dados2010)
 
-#distancia com cos
-dist10.cos <- as.matrix(dist(quantitativos, method="cosine"))
-vizinhos.cosseno = acha_vizinhos(dist10.cos, k, dados2010)
-
 vizinhos.euclides %>% 
   write.csv("dist/data/vizinhos.euclidiano.csv", row.names = FALSE)
 
-vizinhos.cosseno %>% 
-  write.csv("dist/data/vizinhos.cosseno.csv", row.names = FALSE)
+#distancia com cos - preferimos não usar.
+# dist10.cos <- as.matrix(dist(quantitativos, method="cosine"))
+# vizinhos.cosseno = acha_vizinhos(dist10.cos, k, dados2010)
+# vizinhos.cosseno %>% 
+#   write.csv("dist/data/vizinhos.cosseno.csv", row.names = FALSE)
 
 # library(jsonlite)
 # write(toJSON(select(neighours, origem.nome, origem)), "todasascidades.json")
