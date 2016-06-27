@@ -15,7 +15,12 @@ cria_df_comparacao <- function(cod, convenios.expandidos, vizinhos.df, col_orige
   ids = vizinhos.df[vizinhos.df$origem == cod, c(col_origem, cols_vizinhos)]
   cs = convenios.expandidos %>% ungroup() %>% filter(cod7 %in% ids)
   cs$cod7 = droplevels(factor(cs$cod7))
-  
+
+  if(any(is.na(cs$funcao.imputada))){
+    stop("Função imputada faltando: ", 
+         paste("municipio: ", cs[is.na(cs$funcao.imputada), c("cod7")]))
+  }
+    
   score = function(x){
     if(sd(x) == 0){
       return(0)
@@ -27,15 +32,16 @@ cria_df_comparacao <- function(cod, convenios.expandidos, vizinhos.df, col_orige
   cs = cs %>% 
     group_by(funcao.imputada) %>% 
     mutate(zscore = score(total), 
-           media = mean(total)) 
+           media = mean(total), 
+           sd = sd(total)) 
   cs$origem = cod
-  cs
+  return(cs)
 }
 
 cria_dados_score = function(id, os.convenios, vizinhos.df, col_origem = 12, cols_vizinhos = 13:22){
   cria_df_comparacao(id, os.convenios, vizinhos.df, col_origem, cols_vizinhos) %>% 
     filter(origem == cod7) %>% 
-    select(origem, funcao.imputada, zscore, total, media) 
+    select(origem, funcao.imputada, zscore, total, media, sd) 
 }
 
 computa_scores_para_todos = function(os.convenios, vizinhos.df, col_origem = 12, cols_vizinhos = 13:22){

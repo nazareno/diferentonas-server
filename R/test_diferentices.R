@@ -64,7 +64,7 @@ vizinhos.t = data.frame(origem = levels(as.factor(alguns.convenios$cod7)),
 
 test_that("DF de comparação é corretamente montado", {
   df = cria_df_comparacao(1, expandido, vizinhos.t, col_origem = 1, cols_vizinhos = 2:3)
-  expect_equal(length(df), 9)
+  expect_equal(length(df), 10)
   expect_equal(NROW(df), 9)
   df[with(df, cod7 == 1 & funcao.imputada == "f1"), "total"] %>% expect_equal(data.frame(total = 10))
   expect_equal(df[with(df, cod7 == 1 & funcao.imputada == "f1"), ]$zscore, 1.149932, tolerance = 1e-4)
@@ -88,7 +88,7 @@ test_that("DF de comparação em caso que estava com bug", {
 
 test_that("Scores ok.", {
   scores = cria_dados_score(1, expandido, vizinhos.t, col_origem = 1, cols_vizinhos = 2:3)
-  expect_equal(length(scores), 5)
+  expect_equal(length(scores), 6)
   expect_equal(NROW(scores), 3)
   expect_equal(scores[with(scores, origem == 1 & funcao.imputada == "f2"), ]$zscore, 1, tolerance = 1e-4)
   expect_equal(scores[with(scores, origem == 1 & funcao.imputada == "f2"), ]$total, 20)
@@ -96,7 +96,7 @@ test_that("Scores ok.", {
 
 test_that("Scores ok.", {
   scores = computa_scores_para_todos(expandido, vizinhos.t, col_origem = 1, cols_vizinhos = 2:3)
-  expect_equal(length(scores), 5)
+  expect_equal(length(scores), 6)
   expect_equal(NROW(scores), 9)
   # O restante já foi testado.
 })

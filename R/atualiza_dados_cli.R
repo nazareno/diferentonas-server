@@ -11,12 +11,23 @@ arquivo_vizinhos = args[3]
 arquivo_saida = args[4]
 arquivo_diferentices = args[5]
 
+# Debug / uso interativo: 
+arquivo_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160627.csv"
+arquivo_siafi = "dados-externos/convenios-siafi-20160627.csv"
+arquivo_vizinhos = "dist/data/vizinhos.euclidiano.csv"
+arquivo_saida = "dist/data/iniciativas-20160627.csv"
+arquivo_diferentices = "dist/data/diferentices-20160627.csv"
+
+# -----------------------------------------------------------
 # Cruza dados do SICONF + SIAFI com dados sobre os municípios:
+# -----------------------------------------------------------
 source("R/join_dados.R")
 cruza_dados(arquivo_siconv, arquivo_siafi, arquivo_saida)
 message(paste("Dados de iniciativa salvos em", arquivo_saida))
 
+# -----------------------------------------------------------
 # Calcula scores de diferentices das cidades
+# -----------------------------------------------------------
 source("R/diferentices.R")
 message(paste("Calculando diferentices a partir de", arquivo_saida, "e", arquivo_vizinhos))
 diferentices = calcula_diferentices(arquivo_saida, arquivo_vizinhos)
