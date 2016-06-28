@@ -1,34 +1,24 @@
 package controllers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.contentAsString;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.*;
 import models.Cidade;
-import models.Iniciativa;
-import models.Novidade;
 import module.MainModule;
 
 import org.junit.Test;
 
 import play.Application;
-import play.Logger;
-import play.db.jpa.JPAApi;
 import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
-import play.mvc.Http;
 import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
 import com.fasterxml.jackson.databind.JsonNode;
-
-import java.io.IOException;
-import java.util.List;
 
 /**
  * Testes do controller.
