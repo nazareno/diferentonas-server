@@ -10,9 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -31,7 +31,7 @@ public class Cidadao implements Serializable {
 	private String login;
 
 
-	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonIgnore
 	private Set<Iniciativa> iniciativasAcompanhadas;
 
@@ -41,6 +41,7 @@ public class Cidadao implements Serializable {
 	}
 	
 	public Cidadao(String login) {
+		this();
 		this.login = login;
 	}
 
@@ -95,7 +96,8 @@ public class Cidadao implements Serializable {
 		return "Cidadao [id=" + id + ", nome=" + login + "]";
 	}
 
-	public boolean inscreverEm(Iniciativa iniciativa) {return this.iniciativasAcompanhadas.add(iniciativa);
+	public boolean inscreverEm(Iniciativa iniciativa) {
+		return this.iniciativasAcompanhadas.add(iniciativa);
 	}
 
 	public boolean desinscreverDe(Iniciativa iniciativa) {

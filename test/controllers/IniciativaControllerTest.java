@@ -11,12 +11,14 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import models.Cidadao;
 import models.CidadaoDAO;
 import models.Iniciativa;
 import module.MainModule;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import play.Application;
@@ -83,6 +85,18 @@ public class IniciativaControllerTest extends WithApplication {
 		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
 		assertEquals(Status.OK, result.status());
 	}
+
+	@Test
+	@Ignore
+	public void deveriaInscreverDoisCidadaosNaMesmaIniciativa() {
+		long id = 797935L;
+		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		assertEquals(Status.OK, result.status());
+		
+		//FIXME troca usuário e resubmete
+		result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		assertEquals(Status.OK, result.status());
+}
 
 	@Test
 	public void deveriaReportarCidadaoJaInscritoNumaIniciativa() {

@@ -250,16 +250,17 @@ public class InitialData {
                     
                     em.persist(iniciativa);
                     
-                    for (int i = 0; i < 10; i++) {
+                    int numeroDeOpinioes = 5 + r.nextInt(8);
+					for (int i = 0; i < numeroDeOpinioes; i++) {
                     	Cidadao cidadao = daoCidadao.find(cidadaos.get(r.nextInt(1000)));
                     	Opiniao opiniao = new Opiniao();
                     	int tipo = r.nextInt(3);
 						opiniao.setTipo(tipoOpiniao[tipo]);
                     	opiniao.setConteudo(opinioes[tipo][r.nextInt(5)]);
                     	opiniao.setAutor(cidadao);
-                    	opiniao.setIniciativa(iniciativa);
-                    	em.persist(opiniao);
+                    	iniciativa.addOpiniao(opiniao);
 					}
+                    em.persist(iniciativa);
 
                     count++;
                     if (count % 2000 == 0) {
