@@ -3,6 +3,7 @@ package models;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
@@ -103,4 +104,17 @@ public class CidadeDAO {
     public Long count() {
         return JPA.em().createQuery("SELECT count(m) FROM " + Cidade.TABLE + " m", Long.class).getSingleResult();
     }
+    
+    public List<Novidade> getNovidades(Long id, int pagina, int tamanhoDaPagina) {
+        TypedQuery<Novidade> query = jpaAPI.em()
+                .createQuery("SELECT c.novidades "
+                        + "FROM Cidade c "
+                        + "WHERE c.id = :cidade_id "
+                        + "ORDER BY n.criadaEm DESC", Novidade.class)
+                .setParameter("cidade_id", id)
+                .setFirstResult(pagina * tamanhoDaPagina)
+                .setMaxResults(tamanhoDaPagina);
+        return query.getResultList();
+    }
+
 }

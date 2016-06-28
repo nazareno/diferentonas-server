@@ -33,5 +33,4 @@ public class FeedController extends Controller {
         List<Novidade> novidades = daoCidadao.getNovidadesRecentes(cidadao.getId(), pagina, tamanhoPagina);
 		return ok(toJson(novidades));
     }
-
 }

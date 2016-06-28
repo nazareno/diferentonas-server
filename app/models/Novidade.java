@@ -44,6 +44,9 @@ public class Novidade implements Serializable{
     @ManyToOne(fetch = FetchType.EAGER)
     private Iniciativa iniciativa;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+	private Cidade cidade;
+
 	public Novidade(){
 		this.criadaEm = new Date();
 	}
@@ -54,6 +57,14 @@ public class Novidade implements Serializable{
         this.opiniao = opiniao;
 		this.iniciativa = iniciativa;
     }
+
+	public Novidade(TipoDaNovidade tipo, Cidade cidade,
+			Iniciativa iniciativa) {
+		this();
+		this.tipo = tipo;
+		this.cidade = cidade;
+		this.iniciativa = iniciativa;
+	}
 
 	public UUID getId() {
 		return id;
@@ -93,6 +104,14 @@ public class Novidade implements Serializable{
 
 	public void setIniciativa(Iniciativa iniciativa) {
 		this.iniciativa = iniciativa;
+	}
+	
+	public Cidade getCidade() {
+		return cidade;
+	}
+
+	public void setCidade(Cidade cidade) {
+		this.cidade = cidade;
 	}
 
 	@Override

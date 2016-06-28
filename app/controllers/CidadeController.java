@@ -63,5 +63,23 @@ public class CidadeController extends Controller {
         return ok(toJson(cidade.getSimilares()));
     }
 
+    @Transactional(readOnly = true)
+    public Result getNovidades(Long id, int pagina, int tamanhoPagina) {
+
+        if (pagina < 0 || tamanhoPagina <= 0 || tamanhoPagina > 500) {
+            return badRequest("Página, Tamanho de página e Máximo de resultados devem ser maiores que zero. " +
+                    "Tamannho de página deve ser menor ou igual a 500.");
+        }
+
+        Cidade cidade = dao.find(id);
+        if (cidade == null) {
+            ObjectNode result = Json.newObject();
+            result.put("error", "Not found " + id);
+            return notFound(toJson(result));
+        }
+        
+        return ok(toJson(dao.getNovidades(id, tamanhoPagina, tamanhoPagina)));
+    }
+
 
 }

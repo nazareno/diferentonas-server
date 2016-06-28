@@ -54,11 +54,17 @@ public class Cidade implements Serializable {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cidade", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Iniciativa> iniciativas;
+    
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "cidade", targetEntity=Novidade.class)
+    @JsonIgnore
+    private List<Novidade> novidades;
+
 
     public Cidade() {
         this.similares = new LinkedList<>();
         this.scores = new LinkedList<>();
         this.iniciativas = new LinkedList<>();
+        this.novidades = new LinkedList<>();
     }
 
     public Cidade(Long id, String nome, String uf, Float idhm, Float idhmRenda,
@@ -75,11 +81,6 @@ public class Cidade implements Serializable {
         this.latitude = latitude;
         this.longitude = longitude;
         this.altitude = altitude;
-    }
-
-    public Cidade(String nome) {
-        this.nome = nome;
-        this.similares = new LinkedList<Cidade>();
     }
 
     public Long getId() {
@@ -194,8 +195,20 @@ public class Cidade implements Serializable {
         this.iniciativas = iniciativas;
     }
 
+    public void addIniciativas(Iniciativa iniciativa) {
+        this.iniciativas.add(iniciativa);
+        this.novidades.add(new Novidade(TipoDaNovidade.NOVA_INICIATIVA, this, iniciativa));
+    }
+    
+    public List<Novidade> getNovidades() {
+		return novidades;
+	}
 
-    @Override
+	public void setNovidades(List<Novidade> novidades) {
+		this.novidades = novidades;
+	}
+
+	@Override
 	public String toString() {
 		return "Cidade [id=" + id + ", nome=" + nome + ", uf=" + uf + ", idhm="
 				+ idhm + ", idhmRenda=" + idhmRenda + ", idhmLongevidade="
