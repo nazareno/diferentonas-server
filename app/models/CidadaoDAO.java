@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 import play.db.jpa.JPAApi;
 
@@ -39,4 +40,19 @@ public class CidadaoDAO {
 //		.setParameter("paramlogin", login).getResultList();
     	return list.isEmpty()? null: list.get(0);
     }
+    
+    public List<Novidade> getNovidadesRecentes(UUID cidadaoId, int pagina, int tamanhoDaPagina) {
+        TypedQuery<Novidade> query = jpaAPI.em()
+                .createQuery("SELECT n "
+                        + "FROM Cidadao c "
+                        + "JOIN c.iniciativasAcompanhadas as acompanhadas "
+                        + "JOIN acompanhadas.novidades as n "
+                        + "WHERE c.id = :cidadao_id AND n.tipo = 'NOVA_OPINIAO' "
+                        + "ORDER BY n.criadaEm DESC", Novidade.class)
+                .setParameter("cidadao_id", cidadaoId)
+                .setFirstResult(pagina * tamanhoDaPagina)
+                .setMaxResults(tamanhoDaPagina);
+        return query.getResultList();
+    }
+
 }
