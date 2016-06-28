@@ -32,7 +32,6 @@ carrega_e_filtra_convenios = function(arquivo_siconv){
 #' 
 cruza_dados = function(arquivo_siconv, 
                        arquivo_siafi,
-                       arquivo_saida = "dist/data/convenios-municipio-detalhes-ccodigo.csv", 
                        arquivo_idh = "dist/data/dados2010.csv", 
                        arquivo_populacao = "dist/data/populacao.csv"){
   convenios.d = carrega_e_filtra_convenios(arquivo_siconv)
@@ -87,7 +86,7 @@ cruza_dados = function(arquivo_siconv,
   # PREENCHER FUNÇÃO PARA CONVÊNIOS AUSENTES DO SIAFI
   joined.siafi.imputado = imputa_funcoes_orcamentarias(joined.du.siafi)
   
-  write.csv(joined.siafi.imputado, arquivo_saida, row.names = FALSE)
+  return(joined.siafi.imputado)
 }
 
 cruza_siconv_idh_populacao = function(convenios.d, municipios, populacao){

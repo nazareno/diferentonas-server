@@ -12,17 +12,20 @@ arquivo_saida = args[4]
 arquivo_diferentices = args[5]
 
 # Debug / uso interativo: 
-arquivo_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160627.csv"
-arquivo_siafi = "dados-externos/convenios-siafi-20160627.csv"
-arquivo_vizinhos = "dist/data/vizinhos.euclidiano.csv"
-arquivo_saida = "dist/data/iniciativas-20160627.csv"
-arquivo_diferentices = "dist/data/diferentices-20160627.csv"
+# arquivo_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160627.csv"
+# arquivo_siafi = "dados-externos/convenios-siafi-20160627.csv"
+# arquivo_vizinhos = "dist/data/vizinhos.euclidiano.csv"
+# arquivo_saida = "dist/data/iniciativas-20160627.csv"
+# arquivo_diferentices = "dist/data/diferentices-20160627.csv"
 
 # -----------------------------------------------------------
 # Cruza dados do SICONF + SIAFI com dados sobre os municípios:
 # -----------------------------------------------------------
 source("R/join_dados.R")
-cruza_dados(arquivo_siconv, arquivo_siafi, arquivo_saida)
+source("R/traducao_termos.R")
+iniciativas = cruza_dados(arquivo_siconv, arquivo_siafi)
+iniciativas = traduz_termos(iniciativas)
+write.csv(iniciativas2, arquivo_saida, row.names = FALSE)
 message(paste("Dados de iniciativa salvos em", arquivo_saida))
 
 # -----------------------------------------------------------
