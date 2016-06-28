@@ -15,9 +15,9 @@ O Diferentonas está em pleno desenvolvimento. Mantemos o nossos planos nos issu
 A pilha de tecnologias que usamos para prover a API RESTful do servidor é: 
 
 * Play Framework (2.5) com JPA / Hibernate 
-* Postgres e prover uma API RESTful. 
+* Postgres. 
 
-O pré-processamento dos dados para o BD é feito em R.
+O pré-processamento dos dados para o BD é feito em R + Bash.
  
 ## Para rodar o servidor
 
@@ -33,14 +33,20 @@ Java: `./activator test`
 
 R: `Rscript R/test_diferentices.R`
 
-## Para gerar os dados do BD a partir dos dados públicos
+## Para gerar os dados de criação ou atualização do BD a partir dos dados públicos
+
+É preciso ter os pacotes R necessários instalados. No terminal R: 
+
+```
+pks = c("tidyr", "dplyr", "reshape2")
+install.packages(pks, dependencies = TRUE))
+```
+
+Com os pacotes, no bash:
 
 ```
 cd dados-externos
-./get_dados_siconv.sh # as vezes o download falha
-./get_dados_siafi.sh # demora
-cd -
-./R/atualiza_dados_cli.R <arquivo-siconv> <arquivo-siafi> dist/data/<arquivo-iniciativas>
+./cria_snapshot_completo.sh 
 ```
 
-Em seguida você pode usar `<arquivo-iniciativas>` para povoar o BD.
+O script criará os dois arquivos necessários para povoar ou atualizar o BD: um com as iniciativas dos municípios e outro com os scores de diferentices calculados. 
