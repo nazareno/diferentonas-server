@@ -241,4 +241,20 @@ public class Cidade implements Serializable {
             return false;
         return true;
     }
+
+	public void atualizaScore(Score scoreAtualizado) {
+		for (Score score : scores) {
+			if (score.getArea().equals(scoreAtualizado.getArea())) {
+				if(Math.abs(score.compareTo(scoreAtualizado)) >= 1){
+					novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_SCORE, this, score));
+				}
+				score.atualiza(scoreAtualizado);
+				return;
+			}
+		}
+		
+		scores.add(scoreAtualizado);
+		scoreAtualizado.setCidade(this);
+		novidades.add(new Novidade(TipoDaNovidade.NOVO_SCORE, this, scoreAtualizado));
+	}
 }

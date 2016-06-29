@@ -83,11 +83,16 @@ public class IniciativaDAO {
 
 	public List<Iniciativa> adicionaSumarios(List<Iniciativa> retorno, Cidadao cidadao) {
 		for (Iniciativa iniciativa : retorno) {
-            iniciativa.setSumario(this.calculaSumario(iniciativa.getId()));
-            iniciativa.setSeguidaPeloRequisitante(cidadao.isInscritoEm(iniciativa));
+			adicionaSumarios(iniciativa, cidadao);
         }
 
 		return retorno;
+	}
+
+	public Iniciativa adicionaSumarios(Iniciativa iniciativa, Cidadao cidadao) {
+		iniciativa.setSumario(this.calculaSumario(iniciativa.getId()));
+		iniciativa.setSeguidaPeloRequisitante(cidadao.isInscritoEm(iniciativa));
+		return iniciativa;
 	}
 
 	public Map<String, Long> calculaSumario(Long id) {

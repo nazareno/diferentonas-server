@@ -2,6 +2,7 @@ package models;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,12 +25,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * suas cidades semelhantes.
  */
 @Entity
-public class Score implements Serializable{
+public class Score implements Serializable, Comparable<Score>{
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 392920310936985766L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
@@ -37,14 +39,14 @@ public class Score implements Serializable{
 	private Float valorScore;
 	private Float repasseTotal;
 	private Float mediaCidadesSemelhantes;
+	private Float desvioCidadesSemelhantes;
 	
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cidade")
     @JsonIgnore
     private Cidade cidade;
-    
-    
 	
+    
 	public Cidade getCidade() {
 		return cidade;
 	}
@@ -56,12 +58,13 @@ public class Score implements Serializable{
 	public Score() {
 	}
 
-	public Score(String area, Float valor, Float total, Float media) {
+	public Score(String area, Float valor, Float total, Float media, Float desvio) {
 		super();
 		this.area = area;
 		this.valorScore = valor;
 		this.repasseTotal = total;
 		this.mediaCidadesSemelhantes = media;
+		this.desvioCidadesSemelhantes = desvio;
 	}
 
 
@@ -104,6 +107,27 @@ public class Score implements Serializable{
 	}
 	public void setMediaCidadesSemelhantes(Float media) {
 		this.mediaCidadesSemelhantes = media;
+	}
+	
+	public Float getDesvioCidadesSemelhantes() {
+		return desvioCidadesSemelhantes;
+	}
+
+	public void setDesvioCidadesSemelhantes(Float desvioCidadesSemelhantes) {
+		this.desvioCidadesSemelhantes = desvioCidadesSemelhantes;
+	}
+
+	public void atualiza(Score scoreAtualizado) {
+		this.area = scoreAtualizado.area;
+		this.valorScore = scoreAtualizado.valorScore;
+		this.repasseTotal = scoreAtualizado.repasseTotal;
+		this.mediaCidadesSemelhantes = scoreAtualizado.mediaCidadesSemelhantes;
+		this.desvioCidadesSemelhantes = scoreAtualizado.desvioCidadesSemelhantes;
+	}
+
+	@Override
+	public int compareTo(Score o) {
+		return Double.compare(Math.floor(this.valorScore), Math.floor(o.valorScore));
 	}
 
 	@Override

@@ -40,7 +40,10 @@ public class IniciativaController extends Controller {
 
     @Transactional(readOnly = true)
     public Result get(Long id) {
-    	iniciativaDAO.calculaSumario(id);
+    	
+        Cidadao cidadao = cidadaoDAO.findByLogin("admin");
+
+    	iniciativaDAO.adicionaSumarios(iniciativaDAO.find(id), cidadao);
         return ok(toJson(iniciativaDAO.find(id)));
     }
 

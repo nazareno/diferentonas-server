@@ -38,6 +38,7 @@ public class Opiniao implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "iniciativa")
+    @JsonIgnore
     private Iniciativa iniciativa;
 
     @Column(length = 1000)

@@ -3,6 +3,7 @@ package controllers;
 import static play.libs.Json.toJson;
 
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Inject;
 
@@ -30,6 +31,7 @@ public class FeedController extends Controller {
         }
 
         Cidadao cidadao = daoCidadao.findByLogin("admin");
+//        List<Novidade> novidades = daoCidadao.getNovidadesRecentes(UUID.fromString("65fe8be9-81ea-4f2c-b30c-8c3336107793"), pagina, tamanhoPagina);
         List<Novidade> novidades = daoCidadao.getNovidadesRecentes(cidadao.getId(), pagina, tamanhoPagina);
 		return ok(toJson(novidades));
     }

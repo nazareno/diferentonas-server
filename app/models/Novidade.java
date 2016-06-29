@@ -47,6 +47,9 @@ public class Novidade implements Serializable{
     @ManyToOne(fetch = FetchType.EAGER)
 	private Cidade cidade;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+	private Score score;
+
 	public Novidade(){
 		this.criadaEm = new Date();
 	}
@@ -64,6 +67,13 @@ public class Novidade implements Serializable{
 		this.tipo = tipo;
 		this.cidade = cidade;
 		this.iniciativa = iniciativa;
+	}
+
+	public Novidade(TipoDaNovidade tipo, Cidade cidade,
+			Score score) {
+				this.tipo = tipo;
+				this.cidade = cidade;
+				this.score = score;
 	}
 
 	public UUID getId() {
@@ -112,6 +122,14 @@ public class Novidade implements Serializable{
 
 	public void setCidade(Cidade cidade) {
 		this.cidade = cidade;
+	}
+	
+	public Score getScore() {
+		return score;
+	}
+
+	public void setScore(Score score) {
+		this.score = score;
 	}
 
 	@Override

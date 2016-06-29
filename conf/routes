@@ -10,6 +10,7 @@ GET      /cidades                            controllers.CidadeController.getCid
 GET      /cidade/:id                         controllers.CidadeController.get(id: Long)
 GET      /cidade/:id/similares               controllers.CidadeController.getSimilares(id: Long)
 GET      /cidade/:id/iniciativas             controllers.IniciativaController.getIniciativas(id: Long)
+GET      /cidade/:id/linhadotempo            controllers.CidadeController.getNovidades(id: Long, pagina: Int, tamanhoPagina: Int)
 
 # Mensagens do Governo
 GET      /mensagens                          controllers.MensagemController.getMensagens(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
@@ -33,4 +34,3 @@ GET      /assets/*file                       controllers.Assets.at(path="/public
 
 GET      /atualizacoes                       controllers.AtualizacaoController.getAtualizacoes()
 GET      /atualizacoes/aplica                controllers.AtualizacaoController.aplica()
-GET      /atualizacoes/status                controllers.AtualizacaoController.status()
