@@ -173,7 +173,7 @@ public class InitialData {
     }
 
     private void populaScores(JPAApi jpaAPI) throws SQLException {
-    	String dataPath = "dist/data/diferencas-cidades-tudo.csv";
+    	String dataPath = "dist/data/diferentices-20160513.csv";
     	int count = 0;
     	EntityManager em = jpaAPI.em();
 
@@ -191,11 +191,12 @@ public class InitialData {
     				scoreResultSet.getString(2),
     				scoreResultSet.getFloat(3),
     				scoreResultSet.getFloat(4),
-    				scoreResultSet.getFloat(5));
+    				scoreResultSet.getFloat(5),
+    				scoreResultSet.getFloat(6));
     		
-    		score.setCidade(cidade);
+    		cidade.atualizaScore(score);
     		
-    		em.persist(score);
+    		em.persist(cidade);
     		
     		count++;
     		if (count % 2000 == 0) {
@@ -224,7 +225,6 @@ public class InitialData {
                 String dataPath = "dist/data/iniciativas-detalhadas.csv";
 
                 ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
-                resultSet.next(); // header
                 int count = 0;
                 while (resultSet.next()) {
 
@@ -250,16 +250,18 @@ public class InitialData {
                     
                     em.persist(iniciativa);
                     
-                    for (int i = 0; i < 10; i++) {
+                    int numeroDeOpinioes = 2; // LOCAL ONLY
+//                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
+					for (int i = 0; i < numeroDeOpinioes; i++) {
                     	Cidadao cidadao = daoCidadao.find(cidadaos.get(r.nextInt(1000)));
                     	Opiniao opiniao = new Opiniao();
                     	int tipo = r.nextInt(3);
 						opiniao.setTipo(tipoOpiniao[tipo]);
                     	opiniao.setConteudo(opinioes[tipo][r.nextInt(5)]);
                     	opiniao.setAutor(cidadao);
-                    	opiniao.setIniciativa(iniciativa);
-                    	em.persist(opiniao);
+                    	iniciativa.addOpiniao(opiniao);
 					}
+                    em.persist(iniciativa);
 
                     count++;
                     if (count % 2000 == 0) {

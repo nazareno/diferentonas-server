@@ -1,6 +1,10 @@
 package controllers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.contentAsString;
 
@@ -9,14 +13,13 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import models.Cidadao;
 import models.CidadaoDAO;
 import models.Iniciativa;
 import module.MainModule;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import play.Application;
@@ -30,7 +33,9 @@ import play.mvc.Result;
 import play.test.Helpers;
 import play.test.WithApplication;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class IniciativaControllerTest extends WithApplication {
 
@@ -83,6 +88,18 @@ public class IniciativaControllerTest extends WithApplication {
 		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
 		assertEquals(Status.OK, result.status());
 	}
+
+	@Test
+	@Ignore
+	public void deveriaInscreverDoisCidadaosNaMesmaIniciativa() {
+		long id = 797935L;
+		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		assertEquals(Status.OK, result.status());
+		
+		//FIXME troca usuário e resubmete
+		result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		assertEquals(Status.OK, result.status());
+}
 
 	@Test
 	public void deveriaReportarCidadaoJaInscritoNumaIniciativa() {

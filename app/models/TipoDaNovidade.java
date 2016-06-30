@@ -1,0 +1,8 @@
+package models;
+public enum TipoDaNovidade {
+
+	NOVA_OPINIAO,
+	NOVA_INICIATIVA,
+	ATUALIZACAO_DE_INICIATIVA, 
+	ATUALIZACAO_DE_SCORE, NOVO_SCORE;
+}

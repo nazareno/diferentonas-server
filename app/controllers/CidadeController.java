@@ -9,7 +9,6 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
@@ -62,6 +61,24 @@ public class CidadeController extends Controller {
         Logger.debug("Acesso a " + cidade.getNome());
 
         return ok(toJson(cidade.getSimilares()));
+    }
+
+    @Transactional(readOnly = true)
+    public Result getNovidades(Long id, int pagina, int tamanhoPagina) {
+
+        if (pagina < 0 || tamanhoPagina <= 0 || tamanhoPagina > 500) {
+            return badRequest("Página, Tamanho de página e Máximo de resultados devem ser maiores que zero. " +
+                    "Tamannho de página deve ser menor ou igual a 500.");
+        }
+
+        Cidade cidade = dao.find(id);
+        if (cidade == null) {
+            ObjectNode result = Json.newObject();
+            result.put("error", "Not found " + id);
+            return notFound(toJson(result));
+        }
+        
+        return ok(toJson(dao.getNovidades(id, tamanhoPagina, tamanhoPagina)));
     }
 
 

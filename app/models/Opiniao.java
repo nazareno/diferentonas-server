@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,12 +12,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.GenericGenerator;
 
 import play.data.validation.Constraints;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Opinião de um cidadão sobre uma iniciativa de uma cidade.
@@ -35,6 +38,7 @@ public class Opiniao implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "iniciativa")
+    @JsonIgnore
     private Iniciativa iniciativa;
 
     @Column(length = 1000)
@@ -52,6 +56,10 @@ public class Opiniao implements Serializable {
     
     @ManyToOne(fetch = FetchType.EAGER)
     private Cidadao autor;
+    
+    @OneToOne(mappedBy="opiniao", targetEntity=Novidade.class, cascade=CascadeType.ALL, fetch=FetchType.LAZY)
+    @JsonIgnore
+    private Novidade novidade;
 
     public Opiniao(){
         this.criadaEm = new Date();
@@ -62,8 +70,6 @@ public class Opiniao implements Serializable {
 		this.conteudo = conteudo;
 		this.tipo = tipo;
 	}
-
-
 
 	public UUID getId() {
         return id;
@@ -112,6 +118,15 @@ public class Opiniao implements Serializable {
     public void setAutor(Cidadao autor) {
         this.autor = autor;
     }
+
+	public Novidade getNovidade() {
+		return novidade;
+	}
+
+	public void setNovidade(Novidade novidade) {
+		this.novidade = novidade;
+	}
+    
     
     
 }

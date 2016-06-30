@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 import models.Novidade;
+import models.TipoDaNovidade;
 import module.MainModule;
 
 import org.junit.Before;
@@ -77,8 +78,8 @@ public class FeedControllerTest extends WithApplication {
         assertEquals(2, novidades.size()); // Temporário
 
         Novidade aNovidade = novidades.get(0);
-        assertEquals(Novidade.TIPO_OPINIAO, aNovidade.getTipo());
-        assertEquals(iniciativaUsada, aNovidade.getOpiniao().getIniciativa().getId());
+        assertEquals(TipoDaNovidade.NOVA_OPINIAO, aNovidade.getTipo());
+        assertEquals(iniciativaUsada, aNovidade.getIniciativa().getId());
         // assertEquals(iniciativaUsada, aNovidade.getIniciativa());
     }
 

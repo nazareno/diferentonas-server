@@ -81,6 +81,7 @@ public class OpiniaoController {
 
         iniciativa.addOpiniao(opiniao);
         iniciativaDAO.flush(); // para que a opinião seja retornada com id
+        
         return ok(toJson(opiniao));
     }
 

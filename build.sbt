@@ -11,7 +11,6 @@ PlayKeys.externalizeResources := false
 resolvers += "UUID from eaio.com" at "http://repo.eaio.com/maven2"
 
 libraryDependencies ++= Seq(
-  filters,
   javaJdbc,
   jdbc,
   javaJpa,

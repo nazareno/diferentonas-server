@@ -3,30 +3,34 @@
 # ~~~~
 
 # Home page
-GET        /                            controllers.CidadeController.index()
+GET      /                                   controllers.CidadeController.index()
 
 # Cidade
-GET        /cidades                     controllers.CidadeController.getCidades()
-GET        /cidade/:id                  controllers.CidadeController.get(id: Long)
-GET        /cidade/:id/similares        controllers.CidadeController.getSimilares(id: Long)
-GET        /cidade/:id/iniciativas      controllers.IniciativaController.getIniciativas(id: Long)
+GET      /cidades                            controllers.CidadeController.getCidades()
+GET      /cidade/:id                         controllers.CidadeController.get(id: Long)
+GET      /cidade/:id/similares               controllers.CidadeController.getSimilares(id: Long)
+GET      /cidade/:id/iniciativas             controllers.IniciativaController.getIniciativas(id: Long)
+GET      /cidade/:id/linhadotempo            controllers.CidadeController.getNovidades(id: Long, pagina: Int, tamanhoPagina: Int)
 
 # Mensagens do Governo
-GET        /mensagens                   controllers.MensagemController.getMensagens(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
-POST       /mensagens                   controllers.MensagemController.save()
-DELETE     /mensagens/:id               controllers.MensagemController.delete(id: String)
+GET      /mensagens                          controllers.MensagemController.getMensagens(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
+POST     /mensagens                          controllers.MensagemController.save()
+DELETE   /mensagens/:id                      controllers.MensagemController.delete(id: String)
 
 # Iniciativas
-GET        /iniciativas/:id                  controllers.IniciativaController.get(id: Long)
-GET        /iniciativas/:id/similares        controllers.IniciativaController.similares(id: Long, quantidade: Long?=10)
-POST       /iniciativas/:id/inscritos		 controllers.IniciativaController.adicionaInscrito(id: Long)
-DELETE     /iniciativas/:id/inscritos		 controllers.IniciativaController.removeInscrito(id: Long)
+GET      /iniciativas/:id                    controllers.IniciativaController.get(id: Long)
+GET      /iniciativas/:id/similares          controllers.IniciativaController.similares(id: Long, quantidade: Long?=10)
+POST     /iniciativas/:id/inscritos          controllers.IniciativaController.adicionaInscrito(id: Long)
+DELETE   /iniciativas/:id/inscritos          controllers.IniciativaController.removeInscrito(id: Long)
 # .. Opiniões
-POST       /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.addOpiniao(iniciativa: Long)
-GET        /iniciativas/:iniciativa/opinioes    controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
+POST     /iniciativas/:iniciativa/opinioes   controllers.OpiniaoController.addOpiniao(iniciativa: Long)
+GET      /iniciativas/:iniciativa/opinioes   controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
 # lista de novidades com links para o item
-GET			/linhadotempo		    controllers.FeedController.getNovidades(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
+GET      /linhadotempo                       controllers.FeedController.getNovidades(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
 # Map static resources from the /public folder to the /assets URL path
-GET        /assets/*file                controllers.Assets.at(path="/public", file)
+GET      /assets/*file                       controllers.Assets.at(path="/public", file)
+
+GET      /atualizacoes                       controllers.AtualizacaoController.getAtualizacoes()
+GET      /atualizacoes/aplica                controllers.AtualizacaoController.aplica()

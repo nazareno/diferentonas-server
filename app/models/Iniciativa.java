@@ -54,6 +54,10 @@ public class Iniciativa implements Serializable {
     @JsonIgnore
     private List<Opiniao> opinioes;
 
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "iniciativa", targetEntity=Novidade.class)
+    @JsonIgnore
+    private List<Novidade> novidades;
+
     /* Adicionados para facilitar no json retornado para o cliente:    */
     @Transient
     private Map<String, Long> sumario;
@@ -62,6 +66,7 @@ public class Iniciativa implements Serializable {
 
     public Iniciativa() {
         opinioes = new LinkedList<>();
+        novidades = new LinkedList<>();
     }
 
 
@@ -119,6 +124,7 @@ public class Iniciativa implements Serializable {
         this.opinioes.add(opiniao);
         opiniao.setIniciativa(this);
         opiniao.getAutor().inscreverEm(this);
+        opiniao.setNovidade(new Novidade(TipoDaNovidade.NOVA_OPINIAO, opiniao, this));
     }
 
     public boolean removeOpiniao(Opiniao paraRemover) {
@@ -295,4 +301,16 @@ public class Iniciativa implements Serializable {
     public void setCidade(Cidade cidade) {
         this.cidade = cidade;
     }
+
+
+	public List<Novidade> getNovidades() {
+		return novidades;
+	}
+
+
+	public void setNovidades(List<Novidade> novidades) {
+		this.novidades = novidades;
+	}
+    
+    
 }

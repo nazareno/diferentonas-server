@@ -13,3 +13,4 @@ dist/data/.Rhistory
 .Rproj.user
 /bin/
 /R/.Rhistory
+.DS_Store
