@@ -15,7 +15,7 @@ arquivo_diferentices = args[5]
 # arquivo_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160627.csv"
 # arquivo_siafi = "dados-externos/convenios-siafi-20160627.csv"
 # arquivo_vizinhos = "dist/data/vizinhos.euclidiano.csv"
-# arquivo_saida = "dist/data/iniciativas-20160627.csv-2"
+# arquivo_saida = "dist/data/iniciativas-20160627.csv"
 # arquivo_diferentices = "dist/data/diferentices-20160627.csv"
 
 # -----------------------------------------------------------
