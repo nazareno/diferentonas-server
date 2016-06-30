@@ -1,6 +1,6 @@
 library(dplyr, warn.conflicts = FALSE)
+library(readr)
 source("R/diferentonas-utils.R")
-source("R/load-convenios.R")
 
 #' 
 #' Carrega as iniciativas de um arquivo baixado do siconv e 
@@ -8,7 +8,8 @@ source("R/load-convenios.R")
 #' 
 carrega_e_filtra_convenios = function(arquivo_siconv){
   message(paste("Carregando convênios de", arquivo_siconv))
-  convprog = load_convenios(arquivo_siconv)
+  convprog = readr::read_csv2(arquivo_siconv)
+  convprog = converte_dbls_currency(convprog)
   message(paste("Carreguei", NROW(convprog), "convênios"))
   
   ## seleciona e salva apenas os convênios propostos no âmbito municipal
@@ -47,18 +48,18 @@ cruza_dados = function(arquivo_siconv,
   # 1. Dados dos convênios no SICONV estão já em convenios.d
   
   # 2. Dados do IBGE e IDH
-  municipios = read.csv(arquivo_idh)
+  municipios = read_csv(arquivo_idh)
   message("Carreguei dados do de código e IDH")
   # para pegar as UFs: 
-  populacao = read.csv2(arquivo_populacao)
+  populacao = read_csv2(arquivo_populacao)
   names(populacao)[1:3] = c("Sigla", "Codigo", "Municipio") # lidar com https://github.com/hadley/dplyr/issues/848
   message("Carreguei dados de UF")
   
   # 3. Dados do SIAFI
   message(paste("Carregando dados do SIAFI de", arquivo_siafi))
-  siafi <- read.csv(arquivo_siafi, sep=";")
-  siafi$Número.Convênio = as.integer(as.character(siafi$Número.Convênio))
+  siafi <- read_csv2(arquivo_siafi)
   names(siafi)[1] = "numero.convenio"
+  siafi$numero.convenio = as.integer(siafi$numero.convenio)
   siafi = siafi[!duplicated(select(siafi, 1, 13), fromLast = TRUE),]
 
   # -------------------
@@ -81,7 +82,7 @@ cruza_dados = function(arquivo_siconv,
                                             by = c("NR_CONVENIO" = "numero.convenio"))
   
   message(paste(NROW(joined.du.siafi), " convênios após cruzar com SIAFI"))
-  message(paste(sum(is.na(joined.du.siafi$Nome.Funcao)), " convênios do SICONV sem função orçamentária especificada no SIAFI"))
+  message(paste(sum(is.na(joined.du.siafi$`Nome Funcao`)), " convênios do SICONV sem função orçamentária especificada no SIAFI"))
   
   # PREENCHER FUNÇÃO PARA CONVÊNIOS AUSENTES DO SIAFI
   joined.siafi.imputado = imputa_funcoes_orcamentarias(joined.du.siafi)
@@ -122,21 +123,20 @@ imputa_funcoes_orcamentarias <- function(joined.du.siafi){
   mapa.funcoes = criar_mapa(joined.du.siafi)
   joined.siafi.imputado = left_join(joined.du.siafi, mapa.funcoes)
   
-  if(any(is.na(joined.siafi.imputado$funcao.imputada))){
-    desconhecidos = joined.siafi.imputado %>% 
-      filter(is.na(funcao.imputada)) %>% 
-      select(NM_ORGAO_SUPERIOR) %>% 
-      unique()
-    stop("Ministério para o qual não sabemos gerar área encontrado", desconhecidos$NM_ORGAO_SUPERIOR)
-  }
-  
-  joined.siafi.imputado = joined.siafi.imputado %>% 
-    rowwise() %>% 
-    mutate(funcao.imputada = ifelse(is.na(Nome.Funcao), 
-                                    as.character(funcao.imputada), 
-                                    as.character(Nome.Funcao))) %>%
+  joined.siafi.imputado = joined.siafi.imputado %>%
+    rowwise() %>%
+    mutate(funcao.imputada = ifelse(
+      is.na(`Nome Funcao`),
+      ifelse(
+        is.na(funcao.imputada),
+        "Outros",
+        as.character(funcao.imputada)
+      ),
+      as.character(`Nome Funcao`)
+    )) %>%
     ungroup() %>% 
     mutate(funcao.imputada = as.factor(funcao.imputada))
+  
   return(joined.siafi.imputado)
 }
 
@@ -150,8 +150,8 @@ imputa_funcoes_orcamentarias <- function(joined.du.siafi){
 #' do SICONV.
 criar_mapa = function(df){
   resposta = df %>% 
-    filter(!is.na(Nome.Funcao)) %>%
-    group_by(NM_ORGAO_SUPERIOR, Nome.Funcao) %>% 
+    filter(!is.na(`Nome Funcao`)) %>%
+    group_by(NM_ORGAO_SUPERIOR, `Nome Funcao`) %>% 
     tally() %>% 
     arrange(-n) %>% 
     slice(1) %>% 
@@ -159,13 +159,13 @@ criar_mapa = function(df){
     select(-n)
   # Lidando com ministérios sem convênio com função em nenhum convênio do SIAFI
   resposta = rbind(resposta, 
-                   data.frame(NM_ORGAO_SUPERIOR = c("JUSTICA ELEITORAL", 
+                   data_frame(NM_ORGAO_SUPERIOR = c("JUSTICA ELEITORAL", 
                                                     "MINISTERIO DE MINAS E ENERGIA", 
                                                     "MINISTERIO DOS TRANSPORTES",
                                                     "MINISTÉRIO DA PESCA E AQUICULTURA", 
                                                     "MINISTERIO DAS RELACOES EXTERIORES", 
                                                     "MIN.DAS MULH., DA IG.RACIAL E DOS DIR.HUMANOS"), 
-                              Nome.Funcao = c("Administração", 
+                              `Nome Funcao` = c("Administração", 
                                               "Energia", 
                                               "Transporte", 
                                               "Agricultura", 

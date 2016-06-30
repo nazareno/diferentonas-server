@@ -43,3 +43,19 @@ rm_accent <- function(str,pattern="all") {
   
   return(str)
 }
+
+currency2double <- function(x){
+  x = as.character(x) %>% substr(4, 400); 
+  x = gsub(",", ".", gsub("\\.", "", x));
+  as.double(x)
+}; 
+
+converte_dbls_currency = function(convenios){
+  # Dados do SICONV
+  # convprog <- read.csv(siconvfile, sep=";")
+  convenios2 = convenios %>% 
+    dplyr::mutate(VL_GLOBAL = currency2double(VL_GLOBAL), 
+                  VL_REPASSE = currency2double(VL_REPASSE), 
+                  VL_CONTRAPARTIDA_TOTAL = currency2double(VL_CONTRAPARTIDA_TOTAL))
+  return(convenios2)
+}
