@@ -14,13 +14,13 @@ public class WithBrowserTest extends WithBrowser{
 
     @Test
     public void test() {
-    	browser.goTo("/");
+    	browser.goTo("/api");
     	assertThat(browser.pageSource(), containsString("Olar"));
     }
 
     @Test
     public void testCidadeInexistente() {
-    	browser.goTo("/cidade/0");
+    	browser.goTo("/api/cidade/0");
     	assertThat(browser.pageSource(), containsString("Not found 0"));
     }
 

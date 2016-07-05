@@ -42,7 +42,7 @@ public class HTTPStackTest extends WithServer {
      */
     @Test
     public void testIndex() {
-        String url = "/";
+        String url = "/api";
 
         try (WSClient ws = WS.newClient(this.testServer.port())) {
             CompletionStage<WSResponse> stage = ws.url(url).get();
@@ -58,7 +58,7 @@ public class HTTPStackTest extends WithServer {
      */
     @Test
     public void testCidadeInexistente() {
-        String url = "/cidade/0";
+        String url = "/api/cidade/0";
 
         try (WSClient ws = WS.newClient(this.testServer.port())) {
             CompletionStage<WSResponse> stage = ws.url(url).get();
@@ -74,7 +74,7 @@ public class HTTPStackTest extends WithServer {
      */
     @Test
     public void testCidadeExistenteEmas() throws Exception {
-        String url = "/cidade/2505907";
+        String url = "/api/cidade/2505907";
 
         try (WSClient ws = WS.newClient(this.testServer.port())) {
             CompletionStage<WSResponse> stage = ws.url(url).get();
@@ -92,7 +92,7 @@ public class HTTPStackTest extends WithServer {
      */
     @Test
     public void testCidadesSimilaresAUmaInexistente() throws Exception {
-        String url = "/cidade/0/similares";
+        String url = "/api/cidade/0/similares";
 
         try (WSClient ws = WS.newClient(this.testServer.port())) {
             CompletionStage<WSResponse> stage = ws.url(url).get();
@@ -108,7 +108,7 @@ public class HTTPStackTest extends WithServer {
      */
     @Test
     public void testCidadesSimilaresAEmas() throws Exception {
-        String url = "/cidade/2505907/similares";
+        String url = "/api/cidade/2505907/similares";
 
         try (WSClient ws = WS.newClient(this.testServer.port())) {
             CompletionStage<WSResponse> stage = ws.url(url).get();
@@ -124,7 +124,7 @@ public class HTTPStackTest extends WithServer {
 
     @Test
     public void test404() throws Exception {
-        String url = "http://localhost:" + this.testServer.port() + "/alou";
+        String url = "http://localhost:" + this.testServer.port() + "/api/alou";
 
         try (WSClient ws = WS.newClient(this.testServer.port())) {
             CompletionStage<WSResponse> stage = ws.url(url).get();
@@ -138,7 +138,7 @@ public class HTTPStackTest extends WithServer {
     @Test
     @Ignore
     public void testSaveMensagem() throws Exception {
-    	String url = "/mensagem";
+    	String url = "/api/mensagem";
 
     	WSClient ws = WS.newClient(this.testServer.port());
 
