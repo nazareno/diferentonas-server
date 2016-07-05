@@ -71,9 +71,10 @@ public class Novidade implements Serializable{
 
 	public Novidade(TipoDaNovidade tipo, Cidade cidade,
 			Score score) {
-				this.tipo = tipo;
-				this.cidade = cidade;
-				this.score = score;
+		this();
+		this.tipo = tipo;
+		this.cidade = cidade;
+		this.score = score;
 	}
 
 	public UUID getId() {

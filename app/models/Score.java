@@ -154,6 +154,15 @@ public class Score implements Serializable, Comparable<Score>{
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Score [id=" + id + ", area=" + area + ", valorScore="
+				+ valorScore + ", repasseTotal=" + repasseTotal
+				+ ", mediaCidadesSemelhantes=" + mediaCidadesSemelhantes
+				+ ", desvioCidadesSemelhantes=" + desvioCidadesSemelhantes
+				+ "]";
+	}
 	
 	
 	

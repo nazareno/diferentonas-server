@@ -107,9 +107,9 @@ public class CidadeDAO {
     
     public List<Novidade> getNovidades(Long id, int pagina, int tamanhoDaPagina) {
         TypedQuery<Novidade> query = jpaAPI.em()
-                .createQuery("SELECT c.novidades "
-                        + "FROM Cidade c "
-                        + "WHERE c.id = :cidade_id "
+                .createQuery("SELECT n "
+                        + "FROM Novidade n "
+                        + "WHERE n.cidade.id = :cidade_id "
                         + "ORDER BY n.criadaEm DESC", Novidade.class)
                 .setParameter("cidade_id", id)
                 .setFirstResult(pagina * tamanhoDaPagina)
