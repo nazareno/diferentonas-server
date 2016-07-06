@@ -11,13 +11,15 @@ ARQUIVO_VIZINHOS=dist/data/vizinhos.euclidiano.csv
 
 hoje=`date +'%Y%m%d'`
 # Dados SICONV ------------------
-./get_dados_siconv.sh 01_ConveniosProgramas-${hoje}.csv
+mkdir siconv-$hoje
+./get_dados_siconv.sh siconv-$hoje
 # Dados SIAFI  ------------------
 ./get_dados_siafi.sh 'convenios-siafi-'${hoje}'.csv'
 # Calcula o que queremos --------
 cd ..
 f1=/tmp/iniciativas-${hoje}.csv
 f2=/tmp/diferentices-${hoje}.csv
-./R/atualiza_dados_cli.R dados-externos/siconv/01_ConveniosProgramas-${hoje}.csv dados-externos/convenios-siafi-${hoje}.csv $ARQUIVO_VIZINHOS $f1 $f2
-mv $f1 $f2 dist/data/
+f3=/tmp/historico-${hoje}.csv
+./R/atualiza_dados_cli.R dados-externos/siconv-$hoje dados-externos/convenios-siafi-${hoje}.csv $ARQUIVO_VIZINHOS $f1 $f2
+mv $f1 $f2 $f3 dist/data/
 cd -
