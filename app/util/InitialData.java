@@ -1,5 +1,6 @@
 package util;
 
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -38,6 +39,7 @@ import com.google.inject.Inject;
  */
 public class InitialData {
 	
+	private static final String DIST_DATA = "dist/data/";
 	private String [] tipoOpiniao = {"coracao", "coracao_partido", "bomba"};
 	private String [][] opinioes = {{
 		"Ainda bem que iniciativas como essa estão sendo feitas aqui!",
@@ -128,7 +130,7 @@ public class InitialData {
 				}
 				populaVizinhos(jpaAPI);
 				populaScores(jpaAPI);
-			} catch (SQLException e) {
+			} catch (SQLException | IOException e) {
 				Logger.error(e.getMessage(), e);
 			}
 		});
@@ -172,8 +174,11 @@ public class InitialData {
 		}
     }
 
-    private void populaScores(JPAApi jpaAPI) throws SQLException {
-    	String dataPath = "dist/data/diferentices-20160513.csv";
+    private void populaScores(JPAApi jpaAPI) throws SQLException, IOException {
+    	
+    	List<String> listaAtualizacoes = DadosUtil.listaAtualizacoes(DIST_DATA);
+    	
+    	String dataPath = DIST_DATA + "diferentices-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
     	int count = 0;
     	EntityManager em = jpaAPI.em();
 
@@ -194,9 +199,9 @@ public class InitialData {
     				scoreResultSet.getFloat(5),
     				scoreResultSet.getFloat(6));
     		
-    		cidade.atualizaScore(score);
+    		score.setCidade(cidade);
     		
-    		em.persist(cidade);
+    		em.persist(score);
     		
     		count++;
     		if (count % 2000 == 0) {
@@ -222,7 +227,10 @@ public class InitialData {
             try {
                 EntityManager em = jpaAPI.em();
                 // TODO estou perdendo a primeira linha (?)
-                String dataPath = "dist/data/iniciativas-detalhadas.csv";
+                
+                List<String> listaAtualizacoes = DadosUtil.listaAtualizacoes(DIST_DATA);
+            	
+            	String dataPath = DIST_DATA + "iniciativas-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
 
                 ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
                 int count = 0;
@@ -250,8 +258,8 @@ public class InitialData {
                     
                     em.persist(iniciativa);
                     
-                    int numeroDeOpinioes = 2; // LOCAL ONLY
-//                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
+//                    int numeroDeOpinioes = 2; // LOCAL ONLY
+                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
 					for (int i = 0; i < numeroDeOpinioes; i++) {
                     	Cidadao cidadao = daoCidadao.find(cidadaos.get(r.nextInt(1000)));
                     	Opiniao opiniao = new Opiniao();
@@ -269,7 +277,7 @@ public class InitialData {
                     	em.flush();
                     }
                 }
-            } catch (SQLException  e) {
+            } catch (SQLException | IOException e) {
                 Logger.error("Parando prematuramente a inserção de Iniciativas!!!!!!");
                 Logger.error(e.getMessage(), e);
             }

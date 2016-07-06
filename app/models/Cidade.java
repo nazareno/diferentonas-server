@@ -252,7 +252,6 @@ public class Cidade implements Serializable {
 				return;
 			}
 		}
-		
 		scores.add(scoreAtualizado);
 		scoreAtualizado.setCidade(this);
 		novidades.add(new Novidade(TipoDaNovidade.NOVO_SCORE, this, scoreAtualizado));

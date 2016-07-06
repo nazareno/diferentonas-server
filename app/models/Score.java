@@ -2,7 +2,6 @@ package models;
 
 import java.io.Serializable;
 
-import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -37,6 +36,7 @@ public class Score implements Serializable, Comparable<Score>{
 	private Long id;
 	private String area;
 	private Float valorScore;
+	private Float valorAnteriorScore;
 	private Float repasseTotal;
 	private Float mediaCidadesSemelhantes;
 	private Float desvioCidadesSemelhantes;
@@ -87,11 +87,17 @@ public class Score implements Serializable, Comparable<Score>{
 		this.area = tema;
 	}
 
+	public Float getValorAnteriorScore() {
+		return valorAnteriorScore;
+	}
+
+	public void setValorAnteriorScore(Float valorAnteriorScore) {
+		this.valorAnteriorScore = valorAnteriorScore;
+	}
 
 	public Float getValorScore() {
 		return valorScore;
 	}
-
 
 	public void setValorScore(Float score) {
 		this.valorScore = score;
@@ -119,6 +125,7 @@ public class Score implements Serializable, Comparable<Score>{
 
 	public void atualiza(Score scoreAtualizado) {
 		this.area = scoreAtualizado.area;
+		this.valorAnteriorScore = this.valorScore;
 		this.valorScore = scoreAtualizado.valorScore;
 		this.repasseTotal = scoreAtualizado.repasseTotal;
 		this.mediaCidadesSemelhantes = scoreAtualizado.mediaCidadesSemelhantes;

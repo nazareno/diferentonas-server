@@ -78,7 +78,7 @@ public class CidadeController extends Controller {
             return notFound(toJson(result));
         }
         
-        return ok(toJson(dao.getNovidades(id, tamanhoPagina, tamanhoPagina)));
+        return ok(toJson(dao.getNovidades(id, pagina, tamanhoPagina)));
     }
 
 

@@ -11,6 +11,8 @@ import static play.test.Helpers.contentAsString;
 import java.io.IOException;
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import models.Cidade;
 import models.CidadeDAO;
 import models.Novidade;
@@ -19,7 +21,6 @@ import models.TipoDaNovidade;
 import module.MainModule;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import play.Application;
@@ -92,7 +93,6 @@ public class CidadeControllerTest extends WithApplication {
 
 
     @Test
-    @Ignore
     public void deveRetornarNenhumaNovidade() throws JsonParseException, JsonMappingException, IOException {
         Result result = Helpers.route(controllers.routes.CidadeController.getNovidades(2513406L, 1, 10));
         assertEquals(OK, result.status());
@@ -105,7 +105,6 @@ public class CidadeControllerTest extends WithApplication {
         assertTrue(novidades.isEmpty());
     }
 
-    @Ignore
     @Test
     public void deveRetornarNovidadesDeNovoScore() throws JsonParseException, JsonMappingException, IOException {
     	
@@ -117,13 +116,11 @@ public class CidadeControllerTest extends WithApplication {
     		em.persist(cidade);
     		em.flush();
     		em.refresh(score);
+    		em.refresh(cidade);
     		return score;
     	});
     	
-    	System.out.println(novoScore);
-    	
-    	
-        Result result = Helpers.route(controllers.routes.CidadeController.getNovidades(2513406L, 1, 10));
+        Result result = Helpers.route(controllers.routes.CidadeController.getNovidades(2513406L, 0, 10));
         assertEquals(OK, result.status());
 
         String conteudoResposta = contentAsString(result);
@@ -132,13 +129,65 @@ public class CidadeControllerTest extends WithApplication {
         List<Novidade> novidades = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<Novidade>>() {});
         
         assertFalse(novidades.isEmpty());
-        assertEquals(1, novidades.size());
         Novidade novidade = novidades.get(0);
 		assertEquals(novoScore, novidade.getScore());
         assertEquals(TipoDaNovidade.NOVO_SCORE, novidade.getTipo());
         
     	jpaAPI.withTransaction( () -> {
-    		jpaAPI.em().remove(novoScore);
+    		jpaAPI.em().remove(jpaAPI.em().merge(novidade));
+    		jpaAPI.em().remove(jpaAPI.em().merge(novoScore));
+    	});
+    }
+
+    @Test
+    public void deveRetornarNovidadesDeNovoScoreEScoreAtualizado() throws JsonParseException, JsonMappingException, IOException {
+    	
+    	Score novoScore = jpaAPI.withTransaction( (em) -> {
+    		Cidade cidade = dao.find(2513406L);
+    		Score score = new Score("teste", 0f, 0f, 0f, 0f);
+    		cidade.atualizaScore(score);
+    		em.persist(score);
+    		em.persist(cidade);
+    		em.flush();
+    		em.refresh(score);
+    		em.refresh(cidade);
+    		return score;
+    	});
+    	
+    	float novoValor = 1f;
+    	
+    	jpaAPI.withTransaction( () -> {
+    		Cidade cidade = dao.find(2513406L);
+			Score score = new Score("teste", novoValor, 0f, 0f, 0f);
+    		cidade.atualizaScore(score);
+    		EntityManager em = jpaAPI.em();
+			em .persist(cidade);
+    		em.flush();
+    		em.refresh(cidade);
+    	});
+    	
+        Result result = Helpers.route(controllers.routes.CidadeController.getNovidades(2513406L, 0, 10));
+        assertEquals(OK, result.status());
+
+        String conteudoResposta = contentAsString(result);
+        assertNotNull(conteudoResposta);
+        assertTrue(Json.parse(conteudoResposta).isArray());
+        List<Novidade> novidades = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<Novidade>>() {});
+        
+        assertFalse(novidades.isEmpty());
+        Novidade novidadeDeNovoScore = novidades.get(1);
+		assertEquals(novoScore, novidadeDeNovoScore.getScore());
+        assertEquals(TipoDaNovidade.NOVO_SCORE, novidadeDeNovoScore.getTipo());
+        
+        Novidade novidadeDeScoreAtualizado = novidades.get(0);
+		assertEquals(novoScore, novidadeDeScoreAtualizado.getScore());
+		assertEquals(novoValor, novidadeDeScoreAtualizado.getScore().getValorScore(), 0.0000001);
+        assertEquals(TipoDaNovidade.ATUALIZACAO_DE_SCORE, novidadeDeScoreAtualizado.getTipo());
+        
+    	jpaAPI.withTransaction( () -> {
+    		jpaAPI.em().remove(jpaAPI.em().merge(novidadeDeScoreAtualizado));
+    		jpaAPI.em().remove(jpaAPI.em().merge(novidadeDeNovoScore));
+    		jpaAPI.em().remove(jpaAPI.em().merge(novoScore));
     	});
     }
 

@@ -9,6 +9,7 @@ target
 .cache-tests
 dist/data/.RData
 dist/data/.Rhistory
+dist/data/historico*.csv
 /RUNNING_PID
 .Rproj.user
 /bin/

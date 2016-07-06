@@ -48,8 +48,8 @@ public class AtualizacaoControllerTest extends WithApplication {
         assertTrue(Json.parse(conteudoResposta).isArray());
         List<String> atualizacoes = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<String>>() {});
         assertFalse("devia ter duas atualizações", atualizacoes.isEmpty());
-        assertEquals("20160627", atualizacoes.get(0));
-        assertEquals("20160513", atualizacoes.get(1));
+        assertEquals("20160705", atualizacoes.get(0));
+        assertEquals("20160627", atualizacoes.get(1));
     }
 
     @Test

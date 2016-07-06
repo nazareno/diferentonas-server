@@ -4,14 +4,8 @@ package controllers;
 import static play.libs.Json.toJson;
 
 import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -27,6 +21,7 @@ import play.db.jpa.JPAApi;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
+import util.DadosUtil;
 
 public class AtualizacaoController extends Controller {
 	
@@ -39,40 +34,18 @@ public class AtualizacaoController extends Controller {
     public Result getAtualizacoes(){
     	
     	try{
-    		return ok(toJson(listaAtualizacoes()));
+    		return ok(toJson(DadosUtil.listaAtualizacoes(folder)));
     	}catch(IOException e){
     		return notFound(folder);
     	}
     }
 
-	private List<String> listaAtualizacoes() throws IOException {
-
-		List<String> paths = new ArrayList<>();
-
-		Path dir = Paths.get(folder);
-
-		Logger.debug(dir.toAbsolutePath().toString());
-
-		try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir,
-				"iniciativas-[0-9]*.csv");) {
-
-			for (Path path : ds) {
-				String name = path.getFileName().toString();
-
-				paths.add(name.substring(name.lastIndexOf("-") + 1,
-						name.indexOf(".csv")));
-			}
-
-			Collections.reverse(paths);
-			return paths;
-		}
-	}
 
 	@Transactional
 	public Result aplica(){
 		
 		try {
-			List<String> atualizacoes = listaAtualizacoes();
+			List<String> atualizacoes = DadosUtil.listaAtualizacoes(folder);
 			if(atualizacoes.isEmpty()){
 				return notFound(folder);
 			}
