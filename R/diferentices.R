@@ -18,7 +18,7 @@ calcula_diferentices = function(arquivo_convenios = "dist/data/convenios-municip
   convenios.e = expande_convenios(convenios)
   
   t = convenios.e %>% 
-    group_by(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, nome, cod7) %>% 
+    group_by(MUNIC_PROPONENTE, UF_PROPONENTE, nome, cod7) %>% 
     summarise(total = sum(total))
   t$funcao.imputada = "TOTAL GERAL"
   

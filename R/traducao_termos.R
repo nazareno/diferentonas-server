@@ -29,7 +29,7 @@ status.novos <- c('Não informado',
 
 traduz_termos = function(iniciativas){
   message("Traduzindo termos, formatando strings")
-  status <- cbind(TX_SITUACAO = status.antigos, TX_STATUS = status.novos)
+  status <- cbind(SIT_CONVENIO = status.antigos, TX_STATUS = status.novos)
   novas.iniciativas <- merge(iniciativas, status)
   
   # Tornando as palavras capitalizadas
@@ -44,13 +44,8 @@ traduz_termos = function(iniciativas){
     return(paste(sapply(palavras, modificar.palavra), collapse = ' '))
   }
   
-  novas.iniciativas$TX_OBJETO_CONVENIO <- sapply(novas.iniciativas$TX_OBJETO_CONVENIO, capitalizar)
-  novas.iniciativas$NM_ORGAO_SUPERIOR <- sapply(novas.iniciativas$NM_ORGAO_SUPERIOR, capitalizar)
-  novas.iniciativas$NM_ORGAO_CONCEDENTE <- sapply(novas.iniciativas$NM_ORGAO_CONCEDENTE, capitalizar)
-  novas.iniciativas$NM_PROGRAMA <-  sapply(novas.iniciativas$NM_PROGRAMA, capitalizar)
-  
-  # Transformando in_aditivo em boolean
-  novas.iniciativas$IN_ADITIVO_SN <- with(novas.iniciativas, ifelse(IN_ADITIVO_SN == 'S', 1, 0))
+  novas.iniciativas$OBJETO_PROPOSTA <- sapply(novas.iniciativas$OBJETO_PROPOSTA, capitalizar)
+  novas.iniciativas$DESC_ORGAO_SUP <- sapply(novas.iniciativas$DESC_ORGAO_SUP, capitalizar)
   
   return(novas.iniciativas)
 }

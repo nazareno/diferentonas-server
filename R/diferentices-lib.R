@@ -1,13 +1,13 @@
 sumariza_convenios_para_diferentices = function(df){
   df %>% 
-    select(  NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, funcao.imputada, nome, cod7, VL_REPASSE) %>%
-    group_by(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, funcao.imputada, nome, cod7) %>%
-    summarise(total = sum(VL_REPASSE)) 
+    select(  MUNIC_PROPONENTE, UF_PROPONENTE, funcao.imputada, nome, cod7, VL_GLOBAL_CONV) %>%
+    group_by(MUNIC_PROPONENTE, UF_PROPONENTE, funcao.imputada, nome, cod7) %>%
+    summarise(total = sum(VL_GLOBAL_CONV)) 
 }
 
 expande_convenios = function(convenios){
   convenios %>% 
-  complete(nesting(NM_MUNICIPIO_PROPONENTE, UF_PROPONENTE, nome, cod7), funcao.imputada, 
+  complete(nesting(MUNIC_PROPONENTE, UF_PROPONENTE, nome, cod7), funcao.imputada, 
            fill = list(total = 0)) %>% unique()
 }
 
@@ -61,7 +61,7 @@ pca_comparacao <- function(convenios, vizinhos, cod) {
                formula = cod7 ~ funcao.imputada, sum)
   
   df = cs.w[, -1]
-  row.names(df) = cs$NM_MUNICIPIO_PROPONENTE
+  row.names(df) = cs$MUNIC_PROPONENTE
   pcs = prcomp(df, scale = TRUE)
   autoplot(pcs, label = TRUE, label.size = 3, shape = FALSE, 
            loadings = TRUE, loadings.colour = 'blue',
