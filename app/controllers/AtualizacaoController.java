@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.persistence.EntityManager;
 
 import models.Cidade;
@@ -16,6 +17,7 @@ import models.Score;
 
 import org.h2.tools.Csv;
 
+import play.Configuration;
 import play.Logger;
 import play.db.jpa.JPAApi;
 import play.db.jpa.Transactional;
@@ -23,12 +25,20 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import util.DadosUtil;
 
+@Singleton
 public class AtualizacaoController extends Controller {
 	
-	@Inject
+	
 	private JPAApi jpaAPI;
+	private String folder;
+	
+	
+	@Inject
+	public AtualizacaoController(JPAApi jpaAPI, Configuration configuration) {
+		this.jpaAPI = jpaAPI;
+		this.folder = configuration.getString("diferentonas.data", "dist/data");
+	}
 
-    private static final String folder = "dist/data/";
 
 	@Transactional(readOnly = true)
     public Result getAtualizacoes(){
