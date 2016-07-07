@@ -21,7 +21,7 @@ public class CidadaoDAO {
         this.jpaAPI = jpaAPI;
     }
 
-    public Cidadao create(Cidadao cidadao) {
+    public Cidadao saveAndUpdate(Cidadao cidadao) {
         EntityManager em = jpaAPI.em();
 		em.persist(cidadao);
         em.flush();
@@ -36,8 +36,6 @@ public class CidadaoDAO {
     
     public Cidadao findByLogin(String login) {
     	List<Cidadao> list = jpaAPI.em().createQuery("from Cidadao where login = :paramLogin", Cidadao.class).setParameter("paramLogin", login).getResultList();
-//    	List<Cidadao> list = jpaAPI.em().createNamedQuery("findByLogin", Cidadao.class)
-//		.setParameter("paramlogin", login).getResultList();
     	return list.isEmpty()? null: list.get(0);
     }
     

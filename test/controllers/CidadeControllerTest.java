@@ -180,4 +180,49 @@ public class CidadeControllerTest extends WithApplication {
     	});
     }
 
+    @Test
+    public void deveRetornarSomenteNovidadesDeNovoScoreParaMaiorQueDois() throws JsonParseException, JsonMappingException, IOException {
+    	
+    	Score novoScore = jpaAPI.withTransaction( (em) -> {
+    		Cidade cidade = dao.find(2513406L);
+    		Score score = new Score("teste", 2f, 0f, 0f, 0f);
+    		cidade.atualizaScore(score);
+    		em.persist(score);
+    		em.persist(cidade);
+    		em.flush();
+    		em.refresh(score);
+    		em.refresh(cidade);
+    		return score;
+    	});
+    	
+    	float novoValor = 3f;
+    	
+    	jpaAPI.withTransaction( () -> {
+    		Cidade cidade = dao.find(2513406L);
+			Score score = new Score("teste", novoValor, 0f, 0f, 0f);
+    		cidade.atualizaScore(score);
+    		EntityManager em = jpaAPI.em();
+			em .persist(cidade);
+    		em.flush();
+    		em.refresh(cidade);
+    	});
+    	
+        Result result = Helpers.route(controllers.routes.CidadeController.getNovidades(2513406L, 0, 10));
+        assertEquals(OK, result.status());
+
+        String conteudoResposta = contentAsString(result);
+        assertNotNull(conteudoResposta);
+        assertTrue(Json.parse(conteudoResposta).isArray());
+        List<Novidade> novidades = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<Novidade>>() {});
+        
+        assertFalse(novidades.isEmpty());
+        Novidade novidadeDeNovoScore = novidades.get(0);
+		assertEquals(novoScore, novidadeDeNovoScore.getScore());
+        assertEquals(TipoDaNovidade.NOVO_SCORE, novidadeDeNovoScore.getTipo());
+        
+    	jpaAPI.withTransaction( () -> {
+    		jpaAPI.em().remove(jpaAPI.em().merge(novidadeDeNovoScore));
+    		jpaAPI.em().remove(jpaAPI.em().merge(novoScore));
+    	});
+    }
 }

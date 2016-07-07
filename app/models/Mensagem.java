@@ -11,8 +11,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -26,9 +24,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  *
  */
 @Entity
-@NamedQueries({
-		@NamedQuery(name = "all", query = "SELECT m FROM Mensagem m ORDER BY criadaEm desc"),
-		@NamedQuery(name = "naolidas", query = "SELECT m FROM Mensagem m WHERE m.criadaEm > :dataDaUltimaLida ORDER BY criadaEm desc") })
 public class Mensagem implements Serializable {
 	
 	/**

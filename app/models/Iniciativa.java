@@ -118,12 +118,86 @@ public class Iniciativa implements Serializable {
             return false;
         return true;
     }
+    
+    
 
     public List<Opiniao> getOpinioes() {
         return opinioes;
     }
 
-    public void addOpiniao(Opiniao opiniao) {
+
+	public boolean fullEquals(Iniciativa other) {
+		if (ano == null) {
+			if (other.ano != null)
+				return false;
+		} else if (!ano.equals(other.ano))
+			return false;
+		if (area == null) {
+			if (other.area != null)
+				return false;
+		} else if (!area.equals(other.area))
+			return false;
+		if (concedente == null) {
+			if (other.concedente != null)
+				return false;
+		} else if (!concedente.equals(other.concedente))
+			return false;
+		if (dataConclusaoGovernoFederal == null) {
+			if (other.dataConclusaoGovernoFederal != null)
+				return false;
+		} else if (!dataConclusaoGovernoFederal
+				.equals(other.dataConclusaoGovernoFederal))
+			return false;
+		if (dataConclusaoMunicipio == null) {
+			if (other.dataConclusaoMunicipio != null)
+				return false;
+		} else if (!dataConclusaoMunicipio.equals(other.dataConclusaoMunicipio))
+			return false;
+		if (dataInicio == null) {
+			if (other.dataInicio != null)
+				return false;
+		} else if (!dataInicio.equals(other.dataInicio))
+			return false;
+		if (fonte == null) {
+			if (other.fonte != null)
+				return false;
+		} else if (!fonte.equals(other.fonte))
+			return false;
+		if (programa == null) {
+			if (other.programa != null)
+				return false;
+		} else if (!programa.equals(other.programa))
+			return false;
+		if (status == null) {
+			if (other.status != null)
+				return false;
+		} else if (!status.equals(other.status))
+			return false;
+		if (temAditivo == null) {
+			if (other.temAditivo != null)
+				return false;
+		} else if (!temAditivo.equals(other.temAditivo))
+			return false;
+		if (titulo == null) {
+			if (other.titulo != null)
+				return false;
+		} else if (!titulo.equals(other.titulo))
+			return false;
+		if (verbaGovernoFederal == null) {
+			if (other.verbaGovernoFederal != null)
+				return false;
+		} else if (!verbaGovernoFederal.equals(other.verbaGovernoFederal))
+			return false;
+		if (verbaMunicipio == null) {
+			if (other.verbaMunicipio != null)
+				return false;
+		} else if (!verbaMunicipio.equals(other.verbaMunicipio))
+			return false;
+		return true;
+	}
+
+
+	public void addOpiniao(Opiniao opiniao) {
         this.opinioes.add(opiniao);
         opiniao.setIniciativa(this);
         opiniao.getAutor().inscreverEm(this);
@@ -315,5 +389,23 @@ public class Iniciativa implements Serializable {
 		this.novidades = novidades;
 	}
     
+	public void atualiza(Iniciativa iniciativaAtualizada) {
+		if(!iniciativaAtualizada.fullEquals(this)){
+			this.ano = iniciativaAtualizada.ano;
+			this.titulo = iniciativaAtualizada.titulo;
+			this.programa = iniciativaAtualizada.programa;
+			this.area = iniciativaAtualizada.area;
+			this.fonte = iniciativaAtualizada.fonte;
+			this.concedente = iniciativaAtualizada.concedente;
+			this.status = iniciativaAtualizada.status;
+			this.temAditivo = iniciativaAtualizada.temAditivo;
+			this.verbaGovernoFederal = iniciativaAtualizada.verbaGovernoFederal;
+			this.verbaMunicipio = iniciativaAtualizada.verbaMunicipio;
+			this.dataInicio = iniciativaAtualizada.dataInicio;
+			this.dataConclusaoMunicipio = iniciativaAtualizada.dataConclusaoMunicipio;
+			this.dataConclusaoGovernoFederal = iniciativaAtualizada.dataConclusaoGovernoFederal;
+			novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, this.cidade, this));
+		}
+	}
     
 }

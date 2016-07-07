@@ -1,5 +1,6 @@
 package util;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -86,9 +87,9 @@ public class InitialData {
 		jpaAPI.withTransaction(() -> {
             Cidadao admin = dao.findByLogin("admin");
             if (admin == null) {
-                admin = dao.create(new Cidadao("admin"));
+                admin = dao.saveAndUpdate(new Cidadao("admin"));
                 for(int i = 0; i < 1000; i++ ){
-                	cidadaos.add(dao.create(new Cidadao(String.format("cidadão_%03d", i))).getId());
+                	cidadaos.add(dao.saveAndUpdate(new Cidadao(String.format("cidadão_%03d", i))).getId());
                 }
             }
         });
@@ -213,6 +214,8 @@ public class InitialData {
     			Logger.info("Inseri " + count + " scores nas cidades.");
     		}
     	}
+		new File(dataPath).delete();
+
 	}
 
 	private void populaIniciativas(JPAApi jpaAPI, CidadaoDAO daoCidadao) {
@@ -282,6 +285,8 @@ public class InitialData {
                     	em.flush();
                     }
                 }
+        		new File(dataPath).delete();
+
             } catch (SQLException  e) {
                 Logger.error("Parando prematuramente a inserção de Iniciativas!!!!!!");
                 Logger.error(e.getMessage(), e);

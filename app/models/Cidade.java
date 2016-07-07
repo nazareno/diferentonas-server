@@ -15,8 +15,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
-import play.Logger;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -247,6 +245,7 @@ public class Cidade implements Serializable {
 	public void atualizaScore(Score scoreAtualizado) {
 		for (Score score : scores) {
 			if (score.getArea().equals(scoreAtualizado.getArea())) {
+				// TODO criar coleção de novidades no score e migrar esse if pra dentro do score.atualiza
 				if(Math.abs(score.compareTo(scoreAtualizado)) >= 1){
 					novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_SCORE, this, score));
 				}
@@ -257,5 +256,11 @@ public class Cidade implements Serializable {
 		scores.add(scoreAtualizado);
 		scoreAtualizado.setCidade(this);
 		novidades.add(new Novidade(TipoDaNovidade.NOVO_SCORE, this, scoreAtualizado));
+	}
+
+	public void addIniciativa(Iniciativa iniciativa) {
+		iniciativas.add(iniciativa);
+		iniciativa.setCidade(this);
+		novidades.add(new Novidade(TipoDaNovidade.NOVA_INICIATIVA, this, iniciativa));
 	}
 }
