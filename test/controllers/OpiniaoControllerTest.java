@@ -12,15 +12,11 @@ import static play.mvc.Http.Status.OK;
 import java.io.IOException;
 import java.util.Iterator;
 
-import module.MainModule;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import play.Application;
 import play.db.jpa.JPAApi;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -38,7 +34,7 @@ public class OpiniaoControllerTest extends WithApplication {
 
     private JPAApi jpaAPI;
 
-    private Long iniciativaExemplo = 805264L;
+    private Long iniciativaExemplo = 818977L;
     private String conteudoExemplo = "Essa iniciativa é absolutamente estrogonófica para a cidade.";
 
     @Before
@@ -53,12 +49,6 @@ public class OpiniaoControllerTest extends WithApplication {
         jpaAPI.withTransaction(() -> {
             controller.removeOpinioes(iniciativaExemplo);
         });
-    }
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().bindings(new MainModule())
-                .build();
     }
 
     @Test

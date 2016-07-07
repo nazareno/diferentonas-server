@@ -18,14 +18,11 @@ import models.CidadeDAO;
 import models.Novidade;
 import models.Score;
 import models.TipoDaNovidade;
-import module.MainModule;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import play.Application;
 import play.db.jpa.JPAApi;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -45,7 +42,6 @@ public class CidadeControllerTest extends WithApplication {
     private JPAApi jpaAPI;
     private CidadeDAO dao;
 
-    private Long iniciativaExemplo = 805264L;
     private String conteudoExemplo = "Essa iniciativa é absolutamente estrogonófica para a cidade.";
 
 
@@ -53,13 +49,6 @@ public class CidadeControllerTest extends WithApplication {
     public void setUp() {
         this.dao = app.injector().instanceOf(CidadeDAO.class);
         this.jpaAPI = app.injector().instanceOf(JPAApi.class);
-    }
-
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().bindings(new MainModule())
-                .build();
     }
 
     @Test

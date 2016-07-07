@@ -12,14 +12,11 @@ import java.util.List;
 
 import models.Novidade;
 import models.TipoDaNovidade;
-import module.MainModule;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import play.Application;
 import play.db.jpa.JPAApi;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -30,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FeedControllerTest extends WithApplication {
 
-    private Long iniciativaUsada = 805264L;
+    private Long iniciativaUsada = 805265L;
     private String conteudoExemplo = "Das que conheço, essa iniciativa é uma delas!";
 
     @Before
@@ -40,12 +37,6 @@ public class FeedControllerTest extends WithApplication {
         jpaAPI.withTransaction(() -> {
             controller.removeOpinioes(iniciativaUsada);
         });
-    }
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().bindings(new MainModule())
-                .build();
     }
 
     @Test

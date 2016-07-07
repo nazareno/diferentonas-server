@@ -14,14 +14,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import models.Mensagem;
-import module.MainModule;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import play.Application;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Http.Status;
 import play.mvc.Result;
@@ -63,12 +60,6 @@ public class MensagemControllerTest extends WithApplication {
 		idsDasMensagensParaDeletar.clear();
 	}
 	
-	@Override
-	protected Application provideApplication() {
-		return new GuiceApplicationBuilder().bindings(new MainModule())
-		.build();
-	}
-
 	@Test
 	public void deveRetornarNenhumaMensagem() {
 		Result result = Helpers.route(controllers.routes.MensagemController.getMensagens(0, 10));
