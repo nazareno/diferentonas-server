@@ -202,7 +202,6 @@ public class MensagemControllerTest extends WithApplication {
 		assertEquals(OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
 		assertTrue(node.isArray());
-		System.out.println(node.toString());
 		
 		Iterator<JsonNode> elements = node.elements();
 		assertFalse(elements.hasNext());

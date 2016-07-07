@@ -31,6 +31,7 @@ public class DadosUtil {
 						name.indexOf(".csv")));
 			}
 
+			Collections.sort(paths);
 			Collections.reverse(paths);
 		}catch(IOException e){
 			Logger.error(" Listagem de Atualizações: ", e);

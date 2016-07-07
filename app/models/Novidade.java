@@ -17,11 +17,13 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * Um acontecimento (visto ou não) na linha do tempo de um cidadão.
  */
 @Entity
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Novidade implements Serializable{
 
 	private static final long serialVersionUID = -6390884039407731417L;
@@ -49,6 +51,12 @@ public class Novidade implements Serializable{
 
     @ManyToOne(fetch = FetchType.EAGER)
 	private Score score;
+    
+    private String nomeDoCampo;
+    
+    private String valorAntigo;
+
+	private String valorNovo;
 
 	public Novidade(){
 		this.criadaEm = new Date();
@@ -68,6 +76,17 @@ public class Novidade implements Serializable{
 		this.tipo = tipo;
 		this.cidade = cidade;
 		this.iniciativa = iniciativa;
+	}
+
+	public Novidade(TipoDaNovidade tipo, Cidade cidade,
+			Iniciativa iniciativa, String nomeDoCampo, String valorAntigo, String valorNovo) {
+		this();
+		this.tipo = tipo;
+		this.cidade = cidade;
+		this.iniciativa = iniciativa;
+		this.nomeDoCampo = nomeDoCampo;
+		this.valorAntigo = valorAntigo;
+		this.valorNovo = valorNovo;
 	}
 
 	public Novidade(TipoDaNovidade tipo, Cidade cidade,
@@ -132,6 +151,30 @@ public class Novidade implements Serializable{
 
 	public void setScore(Score score) {
 		this.score = score;
+	}
+	
+	public String getNomeDoCampo() {
+		return nomeDoCampo;
+	}
+
+	public void setNomeDoCampo(String nomeDoCampo) {
+		this.nomeDoCampo = nomeDoCampo;
+	}
+
+	public String getValorAntigo() {
+		return valorAntigo;
+	}
+
+	public void setValorAntigo(String valorAntigo) {
+		this.valorAntigo = valorAntigo;
+	}
+	
+	public String getValorNovo() {
+		return valorNovo;
+	}
+
+	public void setValorNovo(String valorNovo) {
+		this.valorNovo = valorNovo;
 	}
 
 	@Override

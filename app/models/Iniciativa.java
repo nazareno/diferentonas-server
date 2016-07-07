@@ -1,6 +1,8 @@
 package models;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import play.Logger;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -24,6 +28,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 public class Iniciativa implements Serializable {
+	
+	private static String[] camposAtualizaveis = { "id", "ano", "titulo",
+			"programa", "area", "fonte", "concedente", "status", "temAditivo",
+			"verbaGovernoFederal", "verbaMunicipio", "dataInicio",
+			"dataConclusaoMunicipio", "dataConclusaoGovernoFederal" };
+	
+	private static SimpleDateFormat formatoData = new SimpleDateFormat("dd/MM/yyyy");
 
     private static final long serialVersionUID = 811023123992501763L;
 
@@ -390,21 +401,29 @@ public class Iniciativa implements Serializable {
 	}
     
 	public void atualiza(Iniciativa iniciativaAtualizada) {
-		if(!iniciativaAtualizada.fullEquals(this)){
-			this.ano = iniciativaAtualizada.ano;
-			this.titulo = iniciativaAtualizada.titulo;
-			this.programa = iniciativaAtualizada.programa;
-			this.area = iniciativaAtualizada.area;
-			this.fonte = iniciativaAtualizada.fonte;
-			this.concedente = iniciativaAtualizada.concedente;
-			this.status = iniciativaAtualizada.status;
-			this.temAditivo = iniciativaAtualizada.temAditivo;
-			this.verbaGovernoFederal = iniciativaAtualizada.verbaGovernoFederal;
-			this.verbaMunicipio = iniciativaAtualizada.verbaMunicipio;
-			this.dataInicio = iniciativaAtualizada.dataInicio;
-			this.dataConclusaoMunicipio = iniciativaAtualizada.dataConclusaoMunicipio;
-			this.dataConclusaoGovernoFederal = iniciativaAtualizada.dataConclusaoGovernoFederal;
-			novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, this.cidade, this));
+		for (String campo : camposAtualizaveis) {
+			try {
+				Field field = Iniciativa.class.getDeclaredField(campo);
+				Object valorAntigo = field.get(this);
+				Object valorNovo = field.get(iniciativaAtualizada);
+
+				if(!valorAntigo.equals(valorNovo)){
+					field.setAccessible(true);
+					field.set(this, valorNovo);
+					if(Date.class.equals(field.getType())){
+						String dataAntigaFormatada = formatoData.format(valorAntigo);
+						String dataNovaFormatada = formatoData.format(valorNovo);
+						
+						novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, this.cidade, this, campo, dataAntigaFormatada, dataNovaFormatada));
+						
+					}else{
+						novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, this.cidade, this, campo, valorAntigo.toString(), valorNovo.toString()));
+					}
+				}
+			} catch (IllegalArgumentException | IllegalAccessException
+					| NoSuchFieldException | SecurityException e) {
+				Logger.error("não atualizou iniciativa: x", e);
+			}
 		}
 	}
     

@@ -53,10 +53,7 @@ public class AtualizadorActor extends UntypedActor {
 			jpaAPI.withTransaction(() -> {
 				try {
 					String proxima = daoAtualizacao.find().getProxima();
-					Logger.debug(proxima);
 
-					baixaDadosDoServidor(proxima);
-			    	
 					String scoresDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + proxima + ".csv";
 					Logger.debug(scoresDataPath);
 					atualizaScores(scoresDataPath);
@@ -64,8 +61,6 @@ public class AtualizadorActor extends UntypedActor {
 					String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + proxima + ".csv";
 					Logger.debug(iniciativasDataPath);
 			    	atualizaIniciativas(iniciativasDataPath);
-					
-					Logger.debug("OK");
 
 			    	daoAtualizacao.finaliza(false);
 					sender().tell(true, self());
@@ -78,14 +73,8 @@ public class AtualizadorActor extends UntypedActor {
 		}
 	}
 	
-    private void baixaDadosDoServidor(String proxima) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private void atualizaScores(String dataPath) throws SQLException {
     	
-
     	int count = 0;
 
     	final ResultSet scoreResultSet = new Csv().read(dataPath, null, "utf-8");
@@ -111,7 +100,7 @@ public class AtualizadorActor extends UntypedActor {
     		
     		count++;
     		if (count % 2000 == 0) {
-    			Logger.info("Inseri " + count + " scores nas cidades.");
+    			Logger.info("Atualizou " + count + " scores nas cidades.");
     		}
     	}
     	scoreResultSet.close();

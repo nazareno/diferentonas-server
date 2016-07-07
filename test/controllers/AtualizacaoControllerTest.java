@@ -1,19 +1,20 @@
 package controllers;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.contentAsString;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.GregorianCalendar;
 
 import models.Atualizacao;
-import models.Novidade;
+import models.AtualizacaoDAO;
 
-import org.junit.Ignore;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import play.libs.Json;
@@ -22,40 +23,40 @@ import play.test.Helpers;
 import play.test.WithApplication;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Testes do controller.
  */
 public class AtualizacaoControllerTest extends WithApplication {
+	
+	private AtualizacaoDAO atualizacaoDAO;
+	private File novaAtualizacao;
+	private String data;
+
+    @Before
+    public void setUp() throws IOException {
+        this.atualizacaoDAO = app.injector().instanceOf(AtualizacaoDAO.class);
+        GregorianCalendar calendar = new GregorianCalendar();
+        calendar.add(GregorianCalendar.DAY_OF_YEAR, 1);
+        data = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
+        novaAtualizacao = new File(atualizacaoDAO.getFolder() + "/iniciativas-" + data + ".csv");
+        novaAtualizacao.createNewFile();
+    }
+
+    @After
+    public void tearDown() {
+        novaAtualizacao.delete();
+    }
 
     @Test
-    public void deveListarDuasAtualizacoes() throws JsonParseException, JsonMappingException, IOException {
+    public void deveListarAtualizacaoDisponivel() throws JsonParseException, JsonMappingException, IOException {
         Result result = Helpers.route(controllers.routes.AtualizacaoController.getAtualizacoes());
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);
         Atualizacao atualizacao = Json.fromJson(Json.parse(conteudoResposta), Atualizacao.class);
+        assertEquals(data, atualizacao.getProxima());
         assertEquals(Atualizacao.Status.DESATUALIZADO, atualizacao.getStatus());
-        assertEquals("", atualizacao.getUltima());
-        assertEquals("20160706", atualizacao.getProxima());
-    }
-
-    @Test
-    @Ignore
-    public void deveAtualizarScores() throws JsonParseException, JsonMappingException, IOException {
-        Result result = Helpers.route(controllers.routes.AtualizacaoController.aplica());
-        assertEquals(OK, result.status());
-        
-        result = Helpers.route(controllers.routes.CidadeController.getNovidades(2801108L, 0, 0));
-        assertEquals(OK, result.status());
-        String conteudoResposta = contentAsString(result);
-        assertNotNull(conteudoResposta);
-        assertTrue(Json.parse(conteudoResposta).isArray());
-        List<Novidade> novidades = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<Novidade>>() {});
-        assertFalse("devia ter novidades", novidades.isEmpty());
-        
     }
 }
