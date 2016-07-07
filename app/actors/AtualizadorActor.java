@@ -1,14 +1,23 @@
 package actors;
 
-import java.io.IOException;
+import java.io.File;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 
 import models.AtualizacaoDAO;
 import models.Cidade;
+import models.CidadeDAO;
+import models.Iniciativa;
+import models.IniciativaDAO;
 import models.Score;
 
 import org.h2.tools.Csv;
@@ -27,21 +36,38 @@ public class AtualizadorActor extends UntypedActor {
 	@Inject
 	private AtualizacaoDAO daoAtualizacao;
 	
+	@Inject
+	private CidadeDAO cidadeDAO;
+	
+	@Inject
+	private IniciativaDAO iniciativaDAO;
+	
 	public void onReceive(Object msg) throws Exception {
 		Logger.debug("AtualizadorActor.onReceive()");
 		if (msg instanceof AtualizaIniciativas) {
 			// sender().tell("Hello, " + ((AtualizaIniciativas) msg).name,
 			// self());
 		} else if (msg instanceof AtualizaScores) {
-			play.Logger.debug("****************** Before");
-			
 			jpaAPI.withTransaction(() -> daoAtualizacao.inicia());
 			
 			jpaAPI.withTransaction(() -> {
 				try {
-					Thread.sleep(20000);
-//					atualizaScores();
-					daoAtualizacao.finaliza(false);
+					String proxima = daoAtualizacao.find().getProxima();
+					Logger.debug(proxima);
+
+					baixaDadosDoServidor(proxima);
+			    	
+					String scoresDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + proxima + ".csv";
+					Logger.debug(scoresDataPath);
+					atualizaScores(scoresDataPath);
+			    	
+					String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + proxima + ".csv";
+					Logger.debug(iniciativasDataPath);
+			    	atualizaIniciativas(iniciativasDataPath);
+					
+					Logger.debug("OK");
+
+			    	daoAtualizacao.finaliza(false);
 					sender().tell(true, self());
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -49,25 +75,24 @@ public class AtualizadorActor extends UntypedActor {
 					sender().tell(false, self());
 				}
 			});
-			play.Logger.debug("****************** After");
 		}
 	}
 	
-    private void atualizaScores() throws SQLException, IOException {
+    private void baixaDadosDoServidor(String proxima) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void atualizaScores(String dataPath) throws SQLException {
     	
-    	String proxima = daoAtualizacao.find().getProxima();
-    	
-    	//TODO BAIXAR DADOS E FILTRAR NO R AQUI!
-    	
-    	String dataPath = daoAtualizacao.getFolder() + "/diferentices-" + proxima + ".csv";
+
     	int count = 0;
-    	EntityManager em = jpaAPI.em();
 
     	final ResultSet scoreResultSet = new Csv().read(dataPath, null, "utf-8");
     	count = 0;
     	while (scoreResultSet.next()) {
     		long originID = scoreResultSet.getLong(1);
-    		Cidade cidade = em.find(Cidade.class, originID);
+    		Cidade cidade = cidadeDAO.find(originID);
     		if (cidade == null) {
         		Logger.error("Cidade " + originID + " não encontrada");
         		continue;
@@ -82,13 +107,93 @@ public class AtualizadorActor extends UntypedActor {
     		
     		cidade.atualizaScore(score);
     		
-    		em.persist(cidade);
+    		cidadeDAO.save(cidade);
     		
     		count++;
     		if (count % 2000 == 0) {
     			Logger.info("Inseri " + count + " scores nas cidades.");
     		}
     	}
+    	scoreResultSet.close();
+    	
+    	new File(dataPath).delete();
+	}
+	
+    	
+
+
+	
+	private void atualizaIniciativas(String dataPath) throws SQLException {
+
+		ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
+		int count = 0;
+		while (resultSet.next()) {
+
+			long idIniciativa = resultSet.getLong("NR_CONVENIO");
+
+			Cidade cidadeDaIniciativa = cidadeDAO.find(resultSet.getLong("cod7"));
+			if (cidadeDaIniciativa == null) {
+				Logger.error("Cidade " + resultSet.getLong("cod7") + " não encontrada para iniciativa " + idIniciativa);
+				continue;
+			}
+
+			Iniciativa iniciativaAtualizada = parseIniciativa(resultSet);
+			if(iniciativaAtualizada == null){
+				continue;
+			}
+			
+			Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
+			if (iniciativa == null) {
+				cidadeDaIniciativa.addIniciativa(iniciativaAtualizada);
+				cidadeDAO.save(cidadeDaIniciativa);
+			}else{
+				iniciativa.atualiza(iniciativaAtualizada);
+				iniciativaDAO.save(iniciativa);
+			}
+
+			count++;
+			if (count % 2000 == 0) {
+				Logger.info("Atualizou " + count + " iniciativas.");
+			}
+		}
+		
+		new File(dataPath).delete();
+    }
+
+	private Iniciativa parseIniciativa(ResultSet resultSet) {
+		try{
+			float verbaGovernoFederal = resultSet.getString("VL_REPASSE_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_REPASSE_CONV"); // repasse
+			float verbaMunicipio = resultSet.getString("VL_CONTRAPARTIDA_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_CONTRAPARTIDA_CONV");    // contrapartida
+
+			DateFormat formatter = new SimpleDateFormat("dd/mm/yyyy");
+			Date dataConclusao = formatter.parse(resultSet.getString("DIA_FIM_VIGENC_CONV"));
+
+			// Adicionando 2 meses para o prazo de prestação de contas
+			Calendar cal = GregorianCalendar.getInstance();
+			cal.setTime(dataConclusao);
+			cal.add(GregorianCalendar.MONTH, 2);
+			Date dataConclusaoGovernoFederal = cal.getTime();
+
+
+			return new Iniciativa(
+					resultSet.getLong("NR_CONVENIO"),        // id
+					resultSet.getInt("ANO"),        // ano
+					resultSet.getString("OBJETO_PROPOSTA"),    // titulo
+					resultSet.getString("Nome Programa"),    // programa
+					resultSet.getString("funcao.imputada"),    // area
+					resultSet.getString("DESC_ORGAO_SUP"),        // fonte
+					resultSet.getString("DESC_ORGAO"),    // concedente
+					resultSet.getString("TX_STATUS"),    // status
+					false,//resultSet.getBoolean(50),    // temAditivo
+					verbaGovernoFederal,        // verba do governo federal
+					verbaMunicipio,                // verba do municipio
+					formatter.parse(resultSet.getString("DIA_INIC_VIGENC_CONV")),        // data de inicio
+					dataConclusao,    // data de conclusao municipio
+					dataConclusaoGovernoFederal);	
+		}catch(SQLException | ParseException e){
+			Logger.error("Erro no parsing da iniciativa em: " + resultSet.toString());
+		}
+		return null;
 	}
 
 }

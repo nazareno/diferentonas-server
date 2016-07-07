@@ -17,8 +17,6 @@ import models.Mensagem;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import play.Application;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.libs.ws.WS;
 import play.libs.ws.WSClient;
@@ -30,12 +28,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class HTTPStackTest extends WithServer {
 
     private int timeout = 5000;
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder()
-                .build();
-    }
 
     /**
      * Test method for {@link controllers.CidadeController#index()}.

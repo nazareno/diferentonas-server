@@ -10,14 +10,12 @@ import static play.test.Helpers.contentAsString;
 import java.io.IOException;
 import java.util.List;
 
+import models.Atualizacao;
 import models.Novidade;
-import module.MainModule;
 
 import org.junit.Ignore;
 import org.junit.Test;
 
-import play.Application;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -33,23 +31,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class AtualizacaoControllerTest extends WithApplication {
 
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().bindings(new MainModule())
-                .build();
-    }
-
     @Test
     public void deveListarDuasAtualizacoes() throws JsonParseException, JsonMappingException, IOException {
         Result result = Helpers.route(controllers.routes.AtualizacaoController.getAtualizacoes());
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);
-        assertTrue(Json.parse(conteudoResposta).isArray());
-        List<String> atualizacoes = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<String>>() {});
-        assertFalse("devia ter duas atualizações", atualizacoes.isEmpty());
-        assertEquals("20160705", atualizacoes.get(0));
-        assertEquals("20160627", atualizacoes.get(1));
+        Atualizacao atualizacao = Json.fromJson(Json.parse(conteudoResposta), Atualizacao.class);
+        assertEquals(Atualizacao.Status.DESATUALIZADO, atualizacao.getStatus());
+        assertEquals("", atualizacao.getUltima());
+        assertEquals("20160706", atualizacao.getProxima());
     }
 
     @Test

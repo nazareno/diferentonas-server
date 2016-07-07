@@ -1,11 +1,8 @@
 package models;
 
-import java.io.IOException;
-
 import javax.persistence.EntityManager;
 
 import play.Configuration;
-import play.Logger;
 import play.db.jpa.JPAApi;
 import util.DadosUtil;
 
@@ -62,16 +59,10 @@ public class AtualizacaoDAO {
 	
 	public void finaliza(boolean comErro){
 		Atualizacao status = find();
-		Logger.debug(status.toString());
 		status.finaliza(comErro);
-		Logger.debug(status.toString());
 		EntityManager em = jpaAPI.em();
-		Logger.debug(status.toString());
 		em.persist(status);
-		Logger.debug(status.toString());
 		em.flush();
-		Logger.debug(status.toString());
 		em.refresh(status);
-		Logger.debug(status.toString());
 	}
 }

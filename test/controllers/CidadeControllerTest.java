@@ -18,14 +18,11 @@ import models.CidadeDAO;
 import models.Novidade;
 import models.Score;
 import models.TipoDaNovidade;
-import module.MainModule;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import play.Application;
 import play.db.jpa.JPAApi;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
@@ -45,7 +42,6 @@ public class CidadeControllerTest extends WithApplication {
     private JPAApi jpaAPI;
     private CidadeDAO dao;
 
-    private Long iniciativaExemplo = 805264L;
     private String conteudoExemplo = "Essa iniciativa é absolutamente estrogonófica para a cidade.";
 
 
@@ -53,13 +49,6 @@ public class CidadeControllerTest extends WithApplication {
     public void setUp() {
         this.dao = app.injector().instanceOf(CidadeDAO.class);
         this.jpaAPI = app.injector().instanceOf(JPAApi.class);
-    }
-
-
-    @Override
-    protected Application provideApplication() {
-        return new GuiceApplicationBuilder().bindings(new MainModule())
-                .build();
     }
 
     @Test
@@ -191,4 +180,49 @@ public class CidadeControllerTest extends WithApplication {
     	});
     }
 
+    @Test
+    public void deveRetornarSomenteNovidadesDeNovoScoreParaMaiorQueDois() throws JsonParseException, JsonMappingException, IOException {
+    	
+    	Score novoScore = jpaAPI.withTransaction( (em) -> {
+    		Cidade cidade = dao.find(2513406L);
+    		Score score = new Score("teste", 2f, 0f, 0f, 0f);
+    		cidade.atualizaScore(score);
+    		em.persist(score);
+    		em.persist(cidade);
+    		em.flush();
+    		em.refresh(score);
+    		em.refresh(cidade);
+    		return score;
+    	});
+    	
+    	float novoValor = 3f;
+    	
+    	jpaAPI.withTransaction( () -> {
+    		Cidade cidade = dao.find(2513406L);
+			Score score = new Score("teste", novoValor, 0f, 0f, 0f);
+    		cidade.atualizaScore(score);
+    		EntityManager em = jpaAPI.em();
+			em .persist(cidade);
+    		em.flush();
+    		em.refresh(cidade);
+    	});
+    	
+        Result result = Helpers.route(controllers.routes.CidadeController.getNovidades(2513406L, 0, 10));
+        assertEquals(OK, result.status());
+
+        String conteudoResposta = contentAsString(result);
+        assertNotNull(conteudoResposta);
+        assertTrue(Json.parse(conteudoResposta).isArray());
+        List<Novidade> novidades = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<Novidade>>() {});
+        
+        assertFalse(novidades.isEmpty());
+        Novidade novidadeDeNovoScore = novidades.get(0);
+		assertEquals(novoScore, novidadeDeNovoScore.getScore());
+        assertEquals(TipoDaNovidade.NOVO_SCORE, novidadeDeNovoScore.getTipo());
+        
+    	jpaAPI.withTransaction( () -> {
+    		jpaAPI.em().remove(jpaAPI.em().merge(novidadeDeNovoScore));
+    		jpaAPI.em().remove(jpaAPI.em().merge(novoScore));
+    	});
+    }
 }

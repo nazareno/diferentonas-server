@@ -26,6 +26,10 @@ public class IniciativaDAO {
 		return jpaAPI.em().find(Iniciativa.class, id);
 	}
 
+	public void save(Iniciativa iniciativa) {
+		jpaAPI.em().persist(iniciativa);
+	}
+
 	public void flush() {
 		jpaAPI.em().flush();
 	}
@@ -109,5 +113,4 @@ public class IniciativaDAO {
 		}
 		return hashMap;
 	}
-
 }

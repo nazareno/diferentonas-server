@@ -13,8 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class Atualizacao implements Serializable {
 
-	private enum Status {
-		ATUALIZADO, ATUALIZANDO, DESATUALIZADO, INDEFINIDO;
+	public enum Status {
+		ATUALIZADO, ATUALIZANDO, DESATUALIZADO, SERVIDOR_FORA_DO_AR;
 	}
 
 	/**
@@ -36,12 +36,12 @@ public class Atualizacao implements Serializable {
 		this.id = 0L;
 		this.ultima = "";
 		this.proxima = "";
-		this.status = Status.INDEFINIDO;
+		this.status = Status.SERVIDOR_FORA_DO_AR;
 	}
 
 	public void atualiza(List<String> atualizacoesDisponiveis) {
 		if (atualizacoesDisponiveis.isEmpty()) {
-			this.status = Status.INDEFINIDO;
+			this.status = Status.SERVIDOR_FORA_DO_AR;
 		} else if (atualizacoesDisponiveis.get(0).equals(this.ultima)) {
 			this.status = Status.ATUALIZADO;
 		} else {
@@ -127,7 +127,7 @@ public class Atualizacao implements Serializable {
 
 	public void finaliza(boolean comErro) {
 		if(comErro){
-			this.status = Status.INDEFINIDO;
+			this.status = Status.SERVIDOR_FORA_DO_AR;
 		}else{
 			this.ultima = this.proxima;
 			this.status = Status.ATUALIZADO;

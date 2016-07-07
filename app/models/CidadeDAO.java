@@ -2,10 +2,8 @@ package models;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
-import play.db.jpa.JPA;
 import play.db.jpa.JPAApi;
 
 import com.google.inject.Inject;
@@ -19,20 +17,6 @@ public class CidadeDAO {
     @Inject
     public CidadeDAO(JPAApi jpaAPI) {
         this.jpaAPI = jpaAPI;
-    }
-
-    /**
-     * Create an Cidade
-     *
-     * @param Cidade model
-     * @return Cidade
-     */
-    public Cidade create(Cidade model) {
-        EntityManager em = jpaAPI.em();
-		em.persist(model);
-        em.flush();
-        em.refresh(model);
-        return model;
     }
 
     /**
@@ -62,18 +46,8 @@ public class CidadeDAO {
      * @param Cidade model
      * @return Cidade
      */
-    public Cidade update(Cidade model) {
-        return JPA.em().merge(model);
-    }
-
-    /**
-     * Delete an Cidade by id
-     *
-     * @param Integer id
-     */
-    public void delete(Long id) {
-        Cidade model = JPA.em().getReference(Cidade.class, id);
-        JPA.em().remove(model);
+    public void save(Cidade model) {
+        jpaAPI.em().persist(model);
     }
 
     /**
@@ -82,29 +56,17 @@ public class CidadeDAO {
      * @return List<Cidade>
      */
     public List<Cidade> all() {
-        return JPA.em().createQuery("SELECT m FROM " + Cidade.TABLE + " m ORDER BY id", Cidade.class).getResultList();
+        return jpaAPI.em().createQuery("SELECT m FROM " + Cidade.TABLE + " m ORDER BY id", Cidade.class).getResultList();
     }
 
     /**
-     * Get the page of Cidades
-     *
-     * @param Integer page
-     * @param Integer size
-     * @return List<Cidade>
+     * Retorna uma página de novidades ordenada da mais recente pra mais antiga.
+     * 
+     * @param id ID da {@link Cidade}
+     * @param pagina
+     * @param tamanhoDaPagina
+     * @return Uma lista de {@link Novidade}s.
      */
-    public List<Cidade> paginate(Integer page, Integer size) {
-        return JPA.em().createQuery("SELECT m FROM " + Cidade.TABLE + " m ORDER BY id", Cidade.class).setFirstResult(page * size).setMaxResults(size).getResultList();
-    }
-
-    /**
-     * Get the number of total row
-     *
-     * @return Long
-     */
-    public Long count() {
-        return JPA.em().createQuery("SELECT count(m) FROM " + Cidade.TABLE + " m", Long.class).getSingleResult();
-    }
-    
     public List<Novidade> getNovidades(Long id, int pagina, int tamanhoDaPagina) {
         TypedQuery<Novidade> query = jpaAPI.em()
                 .createQuery("SELECT n "

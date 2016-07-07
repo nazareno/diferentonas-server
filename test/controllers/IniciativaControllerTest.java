@@ -39,12 +39,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class IniciativaControllerTest extends WithApplication {
 
-	@Override
-	protected Application provideApplication() {
-		return new GuiceApplicationBuilder().bindings(new MainModule())
-		.build();
-	}
-
 	@Before
 	public void limpaBancoParaTestes() {
 		CidadaoDAO cidadaoDAO= app.injector().instanceOf(CidadaoDAO.class);

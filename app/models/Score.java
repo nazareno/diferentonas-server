@@ -134,6 +134,9 @@ public class Score implements Serializable, Comparable<Score>{
 
 	@Override
 	public int compareTo(Score o) {
+		if (this.valorScore >= 2 && o.getValorScore() >= 2){
+			return 0;
+		}
 		return Double.compare(Math.floor(this.valorScore), Math.floor(o.valorScore));
 	}
 
