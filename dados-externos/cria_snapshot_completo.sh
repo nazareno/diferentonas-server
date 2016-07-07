@@ -4,7 +4,7 @@
 # hoje nas fontes que utilizamos.
 #
 # --datasiconv=<data> faz com que o script use os dados em siconv-<data> em
-# lugar de baixar novos dados do siconv. Útil para reprocessar dados. 
+# lugar de baixar novos dados do siconv. Útil para reprocessar dados.
 
 # arquivo com cidades semelhantes, por enquanto estático:
 ARQUIVO_VIZINHOS=dist/data/vizinhos.euclidiano.csv
@@ -20,6 +20,7 @@ esac
 done
 
 if [ -z "$data_dados_siconv" ]; then
+  reusando_dados_locais=false
   echo "[`date`] Checando data da atualização mais recente no siconv"
   # Data dos dados do SICONV
   data_dados_siconv=`curl -sI 'http://portal.convenios.gov.br/images/docs/CGSIS/csv/siconv_convenio.csv.zip' | grep 'Last-Modified' | cut -d' ' -f 2- | awk 'BEGIN{
