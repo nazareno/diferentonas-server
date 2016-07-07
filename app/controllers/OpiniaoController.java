@@ -118,7 +118,10 @@ public class OpiniaoController {
     @Transactional
     public Result removeOpinioes(Long idIniciativa) {
         Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
-        Iterator<Opiniao> it = iniciativa.getOpinioes().iterator();
+        Logger.debug(""+iniciativa);
+        List<Opiniao> opinioes = iniciativa.getOpinioes();
+        Logger.debug(""+opinioes);
+		Iterator<Opiniao> it = opinioes.iterator();
         while (it.hasNext()){
             Opiniao o = it.next();
             removeOpiniaoDoBD(o);

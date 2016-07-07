@@ -10,11 +10,9 @@ import javax.inject.Singleton;
 
 import models.Atualizacao;
 import models.AtualizacaoDAO;
-import play.Logger;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
-import scala.compat.java8.FutureConverters;
 import actors.AtualizadorActorProtocol;
 import akka.actor.ActorRef;
 
@@ -46,14 +44,11 @@ public class AtualizacaoController extends Controller {
 			return ok(toJson(statusDaAtualizacao));
 		}
 
-		Logger.debug(" ask ");
-		FutureConverters.toJava(
-				ask(atualizador, new AtualizadorActorProtocol.AtualizaScores(),
-						1000L)).thenApply(response -> {
-			Logger.debug(" * * * * * terminou");
-			return true;
-		});
+		ask(atualizador, new AtualizadorActorProtocol.AtualizaScores(), 1000L);
 		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {}
 		return getAtualizacoes();
 	}
 }

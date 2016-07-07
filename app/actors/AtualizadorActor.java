@@ -1,6 +1,6 @@
 package actors;
 
-import java.io.IOException;
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -40,7 +40,7 @@ public class AtualizadorActor extends UntypedActor {
 			jpaAPI.withTransaction(() -> {
 				try {
 					Thread.sleep(20000);
-//					atualizaScores();
+					atualizaScores();
 					daoAtualizacao.finaliza(false);
 					sender().tell(true, self());
 				} catch (Exception e) {
@@ -53,15 +53,20 @@ public class AtualizadorActor extends UntypedActor {
 		}
 	}
 	
-    private void atualizaScores() throws SQLException, IOException {
+    private void atualizaScores() throws SQLException {
     	
     	String proxima = daoAtualizacao.find().getProxima();
     	
     	//TODO BAIXAR DADOS E FILTRAR NO R AQUI!
     	
     	String dataPath = daoAtualizacao.getFolder() + "/diferentices-" + proxima + ".csv";
-    	int count = 0;
     	EntityManager em = jpaAPI.em();
+
+    	atualizaScores(dataPath, em);
+	}
+
+	private void atualizaScores(String dataPath, EntityManager em) throws SQLException{
+		int count = 0;
 
     	final ResultSet scoreResultSet = new Csv().read(dataPath, null, "utf-8");
     	count = 0;
@@ -89,6 +94,9 @@ public class AtualizadorActor extends UntypedActor {
     			Logger.info("Inseri " + count + " scores nas cidades.");
     		}
     	}
+    	scoreResultSet.close();
+    	
+    	new File(dataPath).delete();
 	}
 
 }

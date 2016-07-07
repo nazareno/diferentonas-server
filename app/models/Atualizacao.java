@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 public class Atualizacao implements Serializable {
 
-	private enum Status {
+	public enum Status {
 		ATUALIZADO, ATUALIZANDO, DESATUALIZADO, INDEFINIDO;
 	}
 

@@ -241,15 +241,15 @@ public class InitialData {
                 int count = 0;
                 while (resultSet.next()) {
 
-                	long idIniciativa = resultSet.getLong(3);
+                	long idIniciativa = resultSet.getLong("NR_CONVENIO");
                 	if (em.find(Iniciativa.class, idIniciativa) != null) {
                     	Logger.warn("Convênio duplicado: " + idIniciativa);
                 		continue;
                 	}
                 	
-                	Cidade cidadeDaIniciativa = em.find(Cidade.class, resultSet.getLong(63));
+                	Cidade cidadeDaIniciativa = em.find(Cidade.class, resultSet.getLong("cod7"));
                 	if (cidadeDaIniciativa == null) {
-                		Logger.error("Cidade " + resultSet.getLong(63) + " não encontrada para iniciativa " + idIniciativa);
+                		Logger.error("Cidade " + resultSet.getLong("cod7") + " não encontrada para iniciativa " + idIniciativa);
                 		continue;
                 	}
                 	
@@ -291,11 +291,11 @@ public class InitialData {
 
 	private Iniciativa parseIniciativa(ResultSet resultSet) {
 		try{
-			float verbaGovernoFederal = resultSet.getString(29).contains("NA") ? 0f : resultSet.getFloat(29); // repasse
-			float verbaMunicipio = resultSet.getString(30).contains("NA") ? 0f : resultSet.getFloat(30);    // contrapartida
+			float verbaGovernoFederal = resultSet.getString("VL_REPASSE_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_REPASSE_CONV"); // repasse
+			float verbaMunicipio = resultSet.getString("VL_CONTRAPARTIDA_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_CONTRAPARTIDA_CONV");    // contrapartida
 
 			DateFormat formatter = new SimpleDateFormat("dd/mm/yyyy");
-			Date dataConclusao = formatter.parse(resultSet.getString(19));
+			Date dataConclusao = formatter.parse(resultSet.getString("DIA_FIM_VIGENC_CONV"));
 
 			// Adicionando 2 meses para o prazo de prestação de contas
 			Calendar cal = GregorianCalendar.getInstance();
@@ -305,18 +305,18 @@ public class InitialData {
 
 
 			return new Iniciativa(
-					resultSet.getLong(3),        // id
-					resultSet.getInt(2),        // ano
-					resultSet.getString(35),    // titulo
-					resultSet.getString(16),    // programa
-					resultSet.getString(69),    // area
-					resultSet.getString(7),        // fonte
-					resultSet.getString(13),    // concedente
-					resultSet.getString(70),    // status
-					resultSet.getBoolean(50),    // temAditivo
+					resultSet.getLong("NR_CONVENIO"),        // id
+					resultSet.getInt("ANO"),        // ano
+					resultSet.getString("OBJETO_PROPOSTA"),    // titulo
+					resultSet.getString("Nome Programa"),    // programa
+					resultSet.getString("Nome Sub Funcao"),    // area
+					resultSet.getString("DESC_ORGAO_SUP"),        // fonte
+					resultSet.getString("DESC_ORGAO"),    // concedente
+					resultSet.getString("TX_STATUS"),    // status
+					false,//resultSet.getBoolean(50),    // temAditivo
 					verbaGovernoFederal,        // verba do governo federal
 					verbaMunicipio,                // verba do municipio
-					formatter.parse(resultSet.getString(18)),        // data de inicio
+					formatter.parse(resultSet.getString("DIA_INIC_VIGENC_CONV")),        // data de inicio
 					dataConclusao,    // data de conclusao municipio
 					dataConclusaoGovernoFederal);	
 		}catch(SQLException | ParseException e){

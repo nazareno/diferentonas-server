@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -29,6 +30,8 @@ public class Iniciativa implements Serializable {
     @Id
     private Long id;
     private Integer ano;
+    
+    @Column(columnDefinition = "TEXT")
     private String titulo;                // objeto
     private String programa;
     private String area;                // funcao
