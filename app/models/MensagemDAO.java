@@ -85,7 +85,7 @@ public class MensagemDAO {
      */
     public List<Mensagem> paginate(Integer pagina, Integer quantidade) {
     	
-		return jpaAPI.em().createQuery("SELECT m FROM " + Mensagem.TABLE + " m ORDER BY id DESC", Mensagem.class)
+		return jpaAPI.em().createQuery("SELECT m FROM " + Mensagem.TABLE + " m ORDER BY m.criadaEm DESC", Mensagem.class)
 				.setFirstResult(pagina * quantidade).setMaxResults(quantidade)
 				.getResultList();
     }

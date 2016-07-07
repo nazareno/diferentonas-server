@@ -28,6 +28,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class FeedControllerTest extends WithApplication {
 
     private Long iniciativaUsada = 805265L;
+    private Long cidadeDaIniciativaUsada = 2922706L;
     private String conteudoExemplo = "Das que conheço, essa iniciativa é uma delas!";
 
     @Before
@@ -71,7 +72,7 @@ public class FeedControllerTest extends WithApplication {
         Novidade aNovidade = novidades.get(0);
         assertEquals(TipoDaNovidade.NOVA_OPINIAO, aNovidade.getTipo());
         assertEquals(iniciativaUsada, aNovidade.getIniciativa().getId());
-        // assertEquals(iniciativaUsada, aNovidade.getIniciativa());
+        assertEquals(cidadeDaIniciativaUsada, aNovidade.getCidade().getId());
     }
 
 }

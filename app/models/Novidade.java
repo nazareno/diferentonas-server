@@ -54,11 +54,12 @@ public class Novidade implements Serializable{
 		this.criadaEm = new Date();
 	}
 
-    public Novidade(TipoDaNovidade tipo, Opiniao opiniao, Iniciativa iniciativa) {
+    public Novidade(TipoDaNovidade tipo, Opiniao opiniao, Iniciativa iniciativa, Cidade cidade) {
 		this();
 		this.tipo = tipo;
         this.opiniao = opiniao;
 		this.iniciativa = iniciativa;
+		this.cidade = cidade;
     }
 
 	public Novidade(TipoDaNovidade tipo, Cidade cidade,

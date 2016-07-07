@@ -201,7 +201,7 @@ public class Iniciativa implements Serializable {
         this.opinioes.add(opiniao);
         opiniao.setIniciativa(this);
         opiniao.getAutor().inscreverEm(this);
-        opiniao.setNovidade(new Novidade(TipoDaNovidade.NOVA_OPINIAO, opiniao, this));
+        opiniao.setNovidade(new Novidade(TipoDaNovidade.NOVA_OPINIAO, opiniao, this, this.cidade));
     }
 
     public boolean removeOpiniao(Opiniao paraRemover) {
