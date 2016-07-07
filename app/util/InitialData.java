@@ -309,7 +309,7 @@ public class InitialData {
 					resultSet.getInt("ANO"),        // ano
 					resultSet.getString("OBJETO_PROPOSTA"),    // titulo
 					resultSet.getString("Nome Programa"),    // programa
-					resultSet.getString("Nome Sub Funcao"),    // area
+					resultSet.getString("funcao.imputada"),    // area
 					resultSet.getString("DESC_ORGAO_SUP"),        // fonte
 					resultSet.getString("DESC_ORGAO"),    // concedente
 					resultSet.getString("TX_STATUS"),    // status
