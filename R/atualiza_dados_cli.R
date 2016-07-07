@@ -16,7 +16,7 @@ arquivo_historicos = args[6]
 # arquivo_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160627.csv"
 # arquivo_siafi = "dados-externos/convenios-siafi-20160627.csv"
 # arquivo_vizinhos = "dist/data/vizinhos.euclidiano.csv"
-# arquivo_saida = "dist/data/iniciativas-20160705.csv"
+# arquivo_iniciativas_saida = "dist/data/iniciativas-20160705.csv"
 # arquivo_diferentices = "dist/data/diferentices-20160705.csv"
 # arquivo_historicos = "dist/data/historico-20160705.csv"
 
@@ -37,7 +37,7 @@ source("R/traducao_termos.R")
 iniciativas = cruza_dados(convenios, arquivo_siafi)
 iniciativas = traduz_termos(iniciativas)
 write.csv(iniciativas, arquivo_iniciativas_saida, row.names = FALSE)
-message("Dados de iniciativa salvos em ", arquivo_saida)
+message("Dados de iniciativa salvos em ", arquivo_iniciativas_saida)
 
 # -----------------------------------------------------------
 # Calcula scores de diferentices das cidades
@@ -50,6 +50,3 @@ write.csv(diferentices,
           row.names = FALSE)
 message("Diferentices salvas em ", arquivo_diferentices)
 
-# arquivo_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160513.csv"
-# arquivo_siafi = "dados-externos/convenios-siafi-em-201605.csv"
-# arquivo_saida = "x"

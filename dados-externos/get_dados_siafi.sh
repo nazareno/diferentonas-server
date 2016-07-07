@@ -54,10 +54,9 @@ for f in 20*.csv; do
     fi
 done
 
-echo "Os .zip e .csv que não iniciam com 'utf8-' podem ser descartados"
- # para apagar:
- # rm transparenciabrasil/*zip
- # rm transparenciabrasil/201*
+# Os .zip e .csv que não iniciam com 'utf8-' podem ser descartados
+rm transferencias-*zip
+rm 201*csv
 
 echo "Consollidando em um só arquivo"
 
