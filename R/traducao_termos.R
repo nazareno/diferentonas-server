@@ -4,11 +4,13 @@ status.antigos <- c('',
                     'Proposta Aprovada e Plano de Trabalho em Análise',
                     'Proposta Aprovada e Plano de Trabalho em Complementação',
                     'Proposta/Plano de Trabalho Aprovados',
+                    'Proposta/Plano de Trabalho Aprovado',
                     'Proposta/Plano de Trabalho complementado em Análise',
                     'Proposta/Plano de Trabalho complementado envida para Análise',
                     'Proposta/Plano de Trabalho em Análise',
                     'Proposta/Plano de Trabalho em Complementação',
                     'Proposta/Plano de Trabalho enviado para Análise',
+                    'Assinatura Pendente Registro TV Siafi',
                     'Assinado',
                     'Em execução',
                     'Aguardando Prestação de Contas',
@@ -17,20 +19,24 @@ status.antigos <- c('',
                     'Prestação de Contas em Complementação',
                     'Prestação de Contas Aprovada',
                     'Prestação de Contas Aprovada com Ressalvas',
-                    'Prestação de Contas Rejeitada')
+                    'Prestação de Contas Rejeitada', 
+                    'Convênio Anulado', 
+                    "Inadimplente")
 
 status.novos <- c('Não informado',
-                  rep('Não iniciada', 11),
+                  rep('Não iniciada', 13),
                   'Em andamento',
                   rep('Concluída, segundo a prefeitura', 4),
                   'Aprovada pelo Governo Federal',
                   'Aprovada pelo Governo Federal com ressalvas',
-                  'Rejeitada pelo Governo Federal')
+                  'Rejeitada pelo Governo Federal', 
+                  'Anulado',
+                  'Inadimplente')
 
 traduz_termos = function(iniciativas){
   message("Traduzindo termos, formatando strings")
-  status <- cbind(SIT_CONVENIO = status.antigos, TX_STATUS = status.novos)
-  novas.iniciativas <- merge(iniciativas, status)
+  status <- data.frame(SIT_CONVENIO = status.antigos, TX_STATUS = status.novos)
+  novas.iniciativas <- dplyr::left_join(iniciativas, status)
   
   # Tornando as palavras capitalizadas
   modificar.palavra <- function(palavra) {

@@ -13,8 +13,8 @@ arquivo_diferentices = args[5]
 arquivo_historicos = args[6]
 
 # Debug / uso interativo: 
-# arquivo_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160627.csv"
-# arquivo_siafi = "dados-externos/convenios-siafi-20160627.csv"
+# dados_siconv = "dados-externos/siconv/01_ConveniosProgramas-20160627.csv"
+# arquivo_siafi = "dados-externos/convenios-siafi-201607.csv"
 # arquivo_vizinhos = "dist/data/vizinhos.euclidiano.csv"
 # arquivo_iniciativas_saida = "dist/data/iniciativas-20160705.csv"
 # arquivo_diferentices = "dist/data/diferentices-20160705.csv"
