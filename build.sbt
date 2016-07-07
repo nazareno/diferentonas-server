@@ -18,7 +18,8 @@ libraryDependencies ++= Seq(
   "org.hibernate" % "hibernate-entitymanager" % "5.1.0.Final",
   "org.postgresql" % "postgresql" % "9.4.1207.jre7",
   "org.mockito" % "mockito-core" % "1.10.19" % "test",
-  "com.eaio.uuid" % "uuid" % "3.4"
+  "com.eaio.uuid" % "uuid" % "3.4",
+  "com.typesafe.akka" %% "akka-actor" % "2.4.7"
 )
 
 herokuAppName in Compile := "diferentonas"

@@ -18,6 +18,7 @@ import java.util.stream.LongStream;
 
 import javax.persistence.EntityManager;
 
+import models.AtualizacaoDAO;
 import models.Cidadao;
 import models.CidadaoDAO;
 import models.Cidade;
@@ -67,8 +68,12 @@ public class InitialData {
      * @param jpaAPI
      */
     @Inject
-    public InitialData(JPAApi jpaAPI, CidadaoDAO daoCidadao) throws SQLException {
+    public InitialData(JPAApi jpaAPI, CidadaoDAO daoCidadao, AtualizacaoDAO daoAtualizacao) throws SQLException {
         Logger.info("Na inicialização da aplicação.");
+        
+        jpaAPI.withTransaction(()->{
+        	daoAtualizacao.create();
+        });
         
         populaCidadaos(jpaAPI, daoCidadao);
 
@@ -258,8 +263,8 @@ public class InitialData {
                     
                     em.persist(iniciativa);
                     
-//                    int numeroDeOpinioes = 2; // LOCAL ONLY
-                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
+                    int numeroDeOpinioes = 2; // LOCAL ONLY
+//                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
 					for (int i = 0; i < numeroDeOpinioes; i++) {
                     	Cidadao cidadao = daoCidadao.find(cidadaos.get(r.nextInt(1000)));
                     	Opiniao opiniao = new Opiniao();
@@ -277,7 +282,7 @@ public class InitialData {
                     	em.flush();
                     }
                 }
-            } catch (SQLException | IOException e) {
+            } catch (SQLException  e) {
                 Logger.error("Parando prematuramente a inserção de Iniciativas!!!!!!");
                 Logger.error(e.getMessage(), e);
             }

@@ -13,7 +13,7 @@ import play.Logger;
 
 public class DadosUtil {
 
-	public static List<String> listaAtualizacoes(String folder) throws IOException {
+	public static List<String> listaAtualizacoes(String folder){
 
 		List<String> paths = new ArrayList<>();
 
@@ -32,8 +32,10 @@ public class DadosUtil {
 			}
 
 			Collections.reverse(paths);
-			return paths;
+		}catch(IOException e){
+			Logger.error(" Listagem de Atualizações: ", e);
 		}
+		return paths;
 	}
 
 }
