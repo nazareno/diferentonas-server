@@ -1,6 +1,7 @@
 package actors;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -33,13 +34,10 @@ public class AtualizadorActor extends UntypedActor {
 			// sender().tell("Hello, " + ((AtualizaIniciativas) msg).name,
 			// self());
 		} else if (msg instanceof AtualizaScores) {
-			play.Logger.debug("****************** Before");
-			
 			jpaAPI.withTransaction(() -> daoAtualizacao.inicia());
 			
 			jpaAPI.withTransaction(() -> {
 				try {
-					Thread.sleep(20000);
 					atualizaScores();
 					daoAtualizacao.finaliza(false);
 					sender().tell(true, self());
@@ -49,7 +47,6 @@ public class AtualizadorActor extends UntypedActor {
 					sender().tell(false, self());
 				}
 			});
-			play.Logger.debug("****************** After");
 		}
 	}
 	
@@ -59,7 +56,7 @@ public class AtualizadorActor extends UntypedActor {
     	
     	//TODO BAIXAR DADOS E FILTRAR NO R AQUI!
     	
-    	String dataPath = daoAtualizacao.getFolder() + "/diferentices-" + proxima + ".csv";
+    	String dataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + proxima + ".csv";
     	EntityManager em = jpaAPI.em();
 
     	atualizaScores(dataPath, em);
