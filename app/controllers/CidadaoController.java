@@ -23,18 +23,39 @@ public class CidadaoController extends Controller {
     private CidadaoDAO daoCidadao;
 
     @Transactional(readOnly = true)
-    public Result getCidadaos(String query, int pagina, int tamanhoPagina) {
-        if (pagina < 0 || tamanhoPagina <= 0 || tamanhoPagina > 500) {
-            return badRequest("Página, Tamanho de página e Máximo de resultados devem ser maiores que zero. " +
-                    "Tamannho de página deve ser menor ou igual a 500.");
+    public Result getFuncionarios(String query, int pagina, int tamanhoPagina) {
+        try {
+            validaParametros("não importa", pagina, tamanhoPagina);
+        } catch (IllegalArgumentException e){
+            return badRequest(e.getMessage());
         }
 
-        if(query.isEmpty() || query.length() > 50){
-            return badRequest("Argumento da busca não pode ser vazio ou superior a 50 caracteres.");
+        List<Cidadao> funcionarios = daoCidadao.getFuncionarios(query, pagina, tamanhoPagina);
+
+        return ok(toJson(funcionarios));
+    }
+
+    @Transactional(readOnly = true)
+    public Result getCidadaos(String query, int pagina, int tamanhoPagina) {
+        try {
+            validaParametros(query, pagina, tamanhoPagina);
+        } catch (IllegalArgumentException e){
+            return badRequest(e.getMessage());
         }
 
         List<Cidadao> cidadaos = daoCidadao.getCidadaos(query, pagina, tamanhoPagina);
         return ok(toJson(cidadaos));
+    }
+
+    private void validaParametros(String query, int pagina, int tamanhoPagina) throws IllegalArgumentException {
+        if (pagina < 0 || tamanhoPagina <= 0 || tamanhoPagina > 500) {
+            throw new IllegalArgumentException("Página, Tamanho de página e Máximo de resultados devem ser maiores que zero. " +
+                    "Tamannho de página deve ser menor ou igual a 500.");
+        }
+
+        if(query.isEmpty() || query.length() > 50){
+            throw new IllegalArgumentException("Argumento da busca não pode ser vazio ou superior a 50 caracteres.");
+        }
     }
 
     @Transactional

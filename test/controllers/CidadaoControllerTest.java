@@ -162,4 +162,20 @@ public class CidadaoControllerTest extends WithApplication {
         assertFalse(cidadao3.isFuncionario());
         assertNull(cidadao3.getMinisterioDeAfiliacao());
     }
+
+    @Test
+    public void deveRetornarApenasFuncionarios() throws IOException {
+        Result result = Helpers.route(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10));
+        List<Cidadao> cidadaos = jsonToList(contentAsString(result));
+        Cidadao cidadao = cidadaos.get(0);
+
+        String umMinisterio = "Ministério que ainda vão inventar";
+        Helpers.route(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), umMinisterio));
+
+        result = Helpers.route(controllers.routes.CidadaoController.getFuncionarios("", 0, 10));
+        cidadaos = jsonToList(contentAsString(result));
+        Cidadao cidadao2 = cidadaos.get(0);
+        assertEquals(1, cidadaos.size());
+        assertEquals("raquel", cidadao2.getLogin());
+    }
 }

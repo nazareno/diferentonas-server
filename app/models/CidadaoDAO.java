@@ -73,4 +73,17 @@ public class CidadaoDAO {
     	List<Cidadao> list = jpaAPI.em().createQuery("from Cidadao where token = :paramToken", Cidadao.class).setParameter("paramLogin", token).getResultList();
     	return list.isEmpty()? null: list.get(0);
 	}
+
+    public List<Cidadao> getFuncionarios(String queryString, int pagina, int tamanhoDaPagina) {
+        TypedQuery<Cidadao> query = jpaAPI.em()
+                .createQuery("SELECT c "
+                        + "FROM Cidadao c "
+                        + "WHERE c.login LIKE :query_string "
+                        + "AND c.funcionario = true "
+                        + "ORDER BY c.login", Cidadao.class)
+                .setParameter("query_string", "%" + queryString + "%")
+                .setFirstResult(pagina * tamanhoDaPagina)
+                .setMaxResults(tamanhoDaPagina);
+        return query.getResultList();
+    }
 }
