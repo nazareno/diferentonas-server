@@ -266,8 +266,8 @@ public class InitialData {
                     
                     em.persist(iniciativa);
                     
-//                    int numeroDeOpinioes = 2; // LOCAL ONLY
-                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
+                    int numeroDeOpinioes = 2; // LOCAL ONLY
+//                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
 					for (int i = 0; i < numeroDeOpinioes; i++) {
                     	Cidadao cidadao = daoCidadao.find(cidadaos.get(r.nextInt(1000)));
                     	Opiniao opiniao = new Opiniao();

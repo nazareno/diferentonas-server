@@ -41,4 +41,4 @@ GET      /atualizacoes/aplica                controllers.AtualizacaoController.a
 
 
 # Login de Cidadão com Facebook
-GET      /cidadao/facebook/ok                controllers.FacebookLoginController.estaLogado() 
+#GET      /cidadao/facebook/ok                controllers.LoginController.estaLogado() 
