@@ -5,9 +5,11 @@ import models.CidadaoDAO;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -17,6 +19,7 @@ import static play.libs.Json.toJson;
  * Encapsula operações relacionadas com usuários do sistema.
  */
 @Singleton
+@Security.Authenticated(Secured.class)
 public class CidadaoController extends Controller {
 
     @Inject

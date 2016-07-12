@@ -8,10 +8,12 @@ import play.db.jpa.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
+@Security.Authenticated(Secured.class)
 public class CidadeController extends Controller {
 
     private CidadeDAO dao;

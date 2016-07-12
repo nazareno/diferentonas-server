@@ -20,6 +20,7 @@ import play.data.Form;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.inject.Inject;
@@ -27,6 +28,7 @@ import com.google.inject.Inject;
 /**
  * Controller para ações relacionadas às opiniões dos usuários em iniciativas.
  */
+@Security.Authenticated(Secured.class)
 public class OpiniaoController {
 
     @Inject
