@@ -68,4 +68,9 @@ public class CidadaoDAO {
     public void remove(Cidadao cidadao) {
         jpaAPI.em().remove(cidadao);
     }
+
+    public Cidadao findByToken(String token) {
+    	List<Cidadao> list = jpaAPI.em().createQuery("from Cidadao where token = :paramToken", Cidadao.class).setParameter("paramLogin", token).getResultList();
+    	return list.isEmpty()? null: list.get(0);
+	}
 }

@@ -38,3 +38,7 @@ GET      /assets/*file                       controllers.Assets.at(path="/public
 
 GET      /atualizacoes                       controllers.AtualizacaoController.getAtualizacoes()
 GET      /atualizacoes/aplica                controllers.AtualizacaoController.aplica()
+
+
+# Login de Cidadão com Facebook
+GET      /cidadao/facebook/ok                controllers.FacebookLoginController.estaLogado() 

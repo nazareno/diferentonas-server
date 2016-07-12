@@ -26,6 +26,7 @@ public class Cidadao implements Serializable {
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	private UUID id;
 	private String login;
+	private String token;
 
 
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -66,6 +67,14 @@ public class Cidadao implements Serializable {
 
 	public void setIniciativasAcompanhadas(Set<Iniciativa> iniciativasAcompanhadas) {
 		this.iniciativasAcompanhadas = iniciativasAcompanhadas;
+	}
+	
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 	@Override
