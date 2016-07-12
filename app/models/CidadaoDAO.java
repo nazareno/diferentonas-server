@@ -53,4 +53,19 @@ public class CidadaoDAO {
         return query.getResultList();
     }
 
+    public List<Cidadao> getCidadaos(String queryString, int pagina, int tamanhoDaPagina) {
+        TypedQuery<Cidadao> query = jpaAPI.em()
+                .createQuery("SELECT c "
+                        + "FROM Cidadao c "
+                        + "WHERE c.login LIKE :query_string "
+                        + "ORDER BY c.login", Cidadao.class)
+                .setParameter("query_string", "%" + queryString + "%")
+                .setFirstResult(pagina * tamanhoDaPagina)
+                .setMaxResults(tamanhoDaPagina);
+        return query.getResultList();
+    }
+
+    public void remove(Cidadao cidadao) {
+        jpaAPI.em().remove(cidadao);
+    }
 }

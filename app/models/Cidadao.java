@@ -32,6 +32,11 @@ public class Cidadao implements Serializable {
 	@JsonIgnore
 	private Set<Iniciativa> iniciativasAcompanhadas;
 
+	// se o cidadao é funcionário de um ministério
+	private boolean funcionario;
+	// o ministério, caso seja funcionaário
+	private String ministerioDeAfiliacao;
+
 
 	public Cidadao() {
 		this.iniciativasAcompanhadas = new HashSet<>();
@@ -103,5 +108,21 @@ public class Cidadao implements Serializable {
 
 	public boolean isInscritoEm(Iniciativa iniciativa) {
 		return this.iniciativasAcompanhadas.contains(iniciativa);
+	}
+
+	public boolean isFuncionario() {
+		return funcionario;
+	}
+
+	public String getMinisterioDeAfiliacao() {
+		return ministerioDeAfiliacao;
+	}
+
+	public void setMinisterioDeAfiliacao(String ministerioDeAfiliacao) {
+		this.ministerioDeAfiliacao = ministerioDeAfiliacao;
+	}
+
+	public void setFuncionario(boolean funcionario) {
+		this.funcionario = funcionario;
 	}
 }
