@@ -87,7 +87,9 @@ public class InitialData {
 		jpaAPI.withTransaction(() -> {
             Cidadao admin = dao.findByLogin("admin");
             if (admin == null) {
-                admin = dao.saveAndUpdate(new Cidadao("admin"));
+                Cidadao cidadao = new Cidadao("admin");
+                cidadao.setToken("TOKEN");
+				admin = dao.saveAndUpdate(cidadao);
                 for(int i = 0; i < 1000; i++ ){
                 	cidadaos.add(dao.saveAndUpdate(new Cidadao(String.format("cidadão_%03d", i))).getId());
                 }

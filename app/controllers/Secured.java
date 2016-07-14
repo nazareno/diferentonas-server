@@ -18,7 +18,8 @@ public class Secured extends Security.Authenticator {
         	return authTokenHeaderValues[0];
         }
 
-        return null;
+        return "TOKEN";// FIXME delete me to enable access control
+//        return null;
     }
 
     @Override
