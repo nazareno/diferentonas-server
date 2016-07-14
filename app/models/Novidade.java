@@ -59,29 +59,29 @@ public class Novidade implements Serializable{
 	private String valorNovo;
 
 	public Novidade(){
-		this.criadaEm = new Date();
+		
 	}
 
     public Novidade(TipoDaNovidade tipo, Opiniao opiniao, Iniciativa iniciativa, Cidade cidade) {
-		this();
 		this.tipo = tipo;
+		this.criadaEm = opiniao.getCriadaEm();
         this.opiniao = opiniao;
 		this.iniciativa = iniciativa;
 		this.cidade = cidade;
     }
 
-	public Novidade(TipoDaNovidade tipo, Cidade cidade,
+	public Novidade(TipoDaNovidade tipo, Date data, Cidade cidade,
 			Iniciativa iniciativa) {
-		this();
 		this.tipo = tipo;
+		this.criadaEm = data;
 		this.cidade = cidade;
 		this.iniciativa = iniciativa;
 	}
 
-	public Novidade(TipoDaNovidade tipo, Cidade cidade,
+	public Novidade(TipoDaNovidade tipo, Date data, Cidade cidade,
 			Iniciativa iniciativa, String nomeDoCampo, String valorAntigo, String valorNovo) {
-		this();
 		this.tipo = tipo;
+		this.criadaEm = data;
 		this.cidade = cidade;
 		this.iniciativa = iniciativa;
 		this.nomeDoCampo = nomeDoCampo;
@@ -89,10 +89,10 @@ public class Novidade implements Serializable{
 		this.valorNovo = valorNovo;
 	}
 
-	public Novidade(TipoDaNovidade tipo, Cidade cidade,
+	public Novidade(TipoDaNovidade tipo, Date data, Cidade cidade,
 			Score score) {
-		this();
 		this.tipo = tipo;
+		this.criadaEm = data;
 		this.cidade = cidade;
 		this.score = score;
 	}

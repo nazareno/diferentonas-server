@@ -70,7 +70,7 @@ public class CidadaoDAO {
     }
 
     public Cidadao findByToken(String token) {
-    	List<Cidadao> list = jpaAPI.em().createQuery("from Cidadao where token = :paramToken", Cidadao.class).setParameter("paramLogin", token).getResultList();
+    	List<Cidadao> list = jpaAPI.em().createQuery("from Cidadao where token = :paramToken", Cidadao.class).setParameter("paramToken", token).getResultList();
     	return list.isEmpty()? null: list.get(0);
 	}
 

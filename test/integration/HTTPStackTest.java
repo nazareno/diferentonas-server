@@ -25,6 +25,7 @@ import play.test.WithServer;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+@Ignore
 public class HTTPStackTest extends WithServer {
 
     private int timeout = 5000;

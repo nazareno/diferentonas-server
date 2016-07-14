@@ -12,10 +12,12 @@ import models.Novidade;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
 /**
  * Controller da linha do tempo dos cidadãos.
  */
+@Security.Authenticated(Secured.class)
 public class FeedController extends Controller {
 
     @Inject

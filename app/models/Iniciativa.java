@@ -400,7 +400,7 @@ public class Iniciativa implements Serializable {
 		this.novidades = novidades;
 	}
     
-	public void atualiza(Iniciativa iniciativaAtualizada) {
+	public void atualiza(Iniciativa iniciativaAtualizada, Date dataDaAtualizacao) {
 		for (String campo : camposAtualizaveis) {
 			try {
 				Field field = Iniciativa.class.getDeclaredField(campo);
@@ -414,10 +414,10 @@ public class Iniciativa implements Serializable {
 						String dataAntigaFormatada = formatoData.format(valorAntigo);
 						String dataNovaFormatada = formatoData.format(valorNovo);
 						
-						novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, this.cidade, this, campo, dataAntigaFormatada, dataNovaFormatada));
+						novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, dataDaAtualizacao, this.cidade, this, campo, dataAntigaFormatada, dataNovaFormatada));
 						
 					}else{
-						novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, this.cidade, this, campo, valorAntigo.toString(), valorNovo.toString()));
+						novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, dataDaAtualizacao, this.cidade, this, campo, valorAntigo.toString(), valorNovo.toString()));
 					}
 				}
 			} catch (IllegalArgumentException | IllegalAccessException

@@ -18,15 +18,16 @@ public class ControllersTestUtils {
                 "\"tipo\": \"coracao\"}");
     }
 
-    public static Result enviaPOSTAddOpiniao(String conteudo, long iniciativa) throws IOException {
+    public static Result enviaPOSTAddOpiniao(String conteudo, long iniciativa, String token) throws IOException {
         JsonNode json = criaJsonParaPostOpiniao(conteudo);
-        return enviaPOSTAddOpiniao(json, iniciativa);
+        return enviaPOSTAddOpiniao(json, iniciativa, token);
     }
 
-    public static Result enviaPOSTAddOpiniao(JsonNode json, long iniciativaExemplo) {
+    public static Result enviaPOSTAddOpiniao(JsonNode json, long iniciativaExemplo, String token) {
         Logger.debug("Requisição para add opinião: " + json.toString());
         Http.RequestBuilder request = new Http.RequestBuilder().method("POST")
                 .bodyJson(json)
+                .header("X-Auth-Token", token)
                 .uri(controllers.routes.OpiniaoController.addOpiniao(iniciativaExemplo).url());
         return route(request);
     }

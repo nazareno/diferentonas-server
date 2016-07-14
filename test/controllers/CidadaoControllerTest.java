@@ -1,28 +1,34 @@
 package controllers;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import controllers.*;
-import models.Cidadao;
-import models.Novidade;
-import org.junit.Before;
-import org.junit.Test;
-import play.db.jpa.JPAApi;
-import play.libs.Json;
-import play.mvc.Result;
-import play.test.Helpers;
-import play.test.WithApplication;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static play.mvc.Http.Status.OK;
+import static play.test.Helpers.contentAsString;
 
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
-import static play.mvc.Http.Status.OK;
-import static play.test.Helpers.contentAsString;
+import models.Cidadao;
 
-public class CidadaoControllerTest extends WithApplication {
+import org.junit.Before;
+import org.junit.Test;
+
+import play.db.jpa.JPAApi;
+import play.libs.Json;
+import play.mvc.Result;
+import play.test.Helpers;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import controllers.util.WithAuthentication;
+
+public class CidadaoControllerTest extends WithAuthentication {
 
     private List<Cidadao> cidadaosCobaia;
 
@@ -56,7 +62,8 @@ public class CidadaoControllerTest extends WithApplication {
 
     @Test
     public void deveBuscarPorLogin() throws IOException {
-        Result result = Helpers.route(controllers.routes.CidadaoController.getCidadaos("r", 0, 10));
+    	
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("r", 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);
@@ -67,7 +74,8 @@ public class CidadaoControllerTest extends WithApplication {
 
     @Test
     public void deveRetornarListaVaziaAoNaoEncontrar() throws IOException {
-        Result result = Helpers.route(controllers.routes.CidadaoController.getCidadaos("ieyqwfasdkljhfrsd", 0, 10));
+    	
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("ieyqwfasdkljhfrsd", 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);
@@ -79,7 +87,8 @@ public class CidadaoControllerTest extends WithApplication {
     @Test
     public void devePromoverAFuncionario() throws IOException {
         // pegar um usuario conhecido no BD.
-        Result result = Helpers.route(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10));
+    	
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         List<Cidadao> cidadaos = jsonToList(contentAsString(result));
         assertEquals(1, cidadaos.size()); // para evitar surpresas
@@ -90,7 +99,7 @@ public class CidadaoControllerTest extends WithApplication {
         assertNull(cidadao.getMinisterioDeAfiliacao());
 
         String umMinisterio = "Ministério que ainda vão inventar";
-        Result result2 = Helpers.route(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), umMinisterio));
+        Result result2 = Helpers.route(builder.uri(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), umMinisterio).url()).method("POST"));
         assertEquals(OK, result2.status());
         Cidadao cidadao2 = Json.fromJson(Json.parse(contentAsString(result2)), Cidadao.class);
         assertTrue(cidadao2.isFuncionario());
@@ -98,7 +107,7 @@ public class CidadaoControllerTest extends WithApplication {
 
         // e via GET
         // pegar um usuario conhecido no BD.
-        Result result3 = Helpers.route(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10));
+        Result result3 = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10).url()).method("GET"));
         List<Cidadao> cidadaos3 = jsonToList(contentAsString(result3));
 
         // agora o teste
@@ -111,7 +120,8 @@ public class CidadaoControllerTest extends WithApplication {
     @Test
     public void devePermitirMudancaDeMinisterio() throws IOException {
         // pegar um usuario conhecido no BD.
-        Result result = Helpers.route(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10));
+    	
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         List<Cidadao> cidadaos = jsonToList(contentAsString(result));
         assertEquals(1, cidadaos.size()); // para evitar surpresas
@@ -123,11 +133,13 @@ public class CidadaoControllerTest extends WithApplication {
 
         String umMinisterio = "Ministério que ainda vão inventar";
         String outroMinisterio = "Novo nome do Ministério que ainda vão inventar";
-        Helpers.route(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), umMinisterio));
-        Helpers.route(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), outroMinisterio));
+        
+        Helpers.route(builder.uri(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), umMinisterio).url()).method("POST"));
+        
+        Helpers.route(builder.uri(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), outroMinisterio).url()).method("POST"));
 
         // e via GET
-        Result result2 = Helpers.route(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10));
+        Result result2 = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10).url()).method("GET"));
         List<Cidadao> cidadaos2 = jsonToList(contentAsString(result2));
 
         // agora o teste
@@ -139,7 +151,8 @@ public class CidadaoControllerTest extends WithApplication {
     @Test
     public void deveDespromoverFuncionario() throws IOException {
         // pegar um usuario conhecido no BD.
-        Result result = Helpers.route(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10));
+    	
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         List<Cidadao> cidadaos = jsonToList(contentAsString(result));
 
@@ -147,13 +160,13 @@ public class CidadaoControllerTest extends WithApplication {
         Cidadao cidadao = cidadaos.get(0);
 
         String umMinisterio = "Ministério que ainda vão inventar";
-        Helpers.route(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), umMinisterio));
-        Result result2 = Helpers.route(controllers.routes.CidadaoController.removePapelDeFuncionario(cidadao.getId().toString()));
+        Helpers.route(builder.uri(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), umMinisterio).url()).method("POST"));
+        Result result2 = Helpers.route(builder.uri(controllers.routes.CidadaoController.removePapelDeFuncionario(cidadao.getId().toString()).url()).method("DELETE"));
         assertEquals(OK, result2.status());
 
         // e via GET
         // pegar um usuario conhecido no BD.
-        Result result3 = Helpers.route(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10));
+        Result result3 = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("raquel", 0, 10).url()).method("GET"));
         List<Cidadao> cidadaos3 = jsonToList(contentAsString(result3));
         assertEquals(1, cidadaos3.size());
 

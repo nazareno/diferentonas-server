@@ -20,15 +20,16 @@ import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
-import play.test.WithApplication;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import controllers.util.WithAuthentication;
+
 /**
  * Testa inserção e recuperação de opiniões de usuários nas iniciativas.
  */
-public class OpiniaoControllerTest extends WithApplication {
+public class OpiniaoControllerTest extends WithAuthentication {
 
     private OpiniaoController controller;
 
@@ -72,11 +73,11 @@ public class OpiniaoControllerTest extends WithApplication {
         failSeHaOpinioes(iniciativaExemplo);
 
         // criar opinião
-        Result result2 = enviaPOSTAddOpiniao(conteudoExemplo, iniciativaExemplo);
+        Result result2 = enviaPOSTAddOpiniao(conteudoExemplo, iniciativaExemplo, token);
         assertEquals(OK, result2.status());
 
         // agora deve haver uma
-        Result result = Helpers.route(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 100));
+        Result result = Helpers.route(builder.uri(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 100).url()).method("GET"));
         JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
         Iterator<JsonNode> elementosIt = respostaJson.elements();
         assertTrue(elementosIt.hasNext()); // há elemento
@@ -89,7 +90,7 @@ public class OpiniaoControllerTest extends WithApplication {
 
     @Test
     public void devePostarConteudoDaOpiniao() throws IOException {
-        Result result = enviaPOSTAddOpiniao(conteudoExemplo, iniciativaExemplo);
+        Result result = enviaPOSTAddOpiniao(conteudoExemplo, iniciativaExemplo, token);
 
         assertEquals(OK, result.status());
         JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
@@ -107,11 +108,11 @@ public class OpiniaoControllerTest extends WithApplication {
         String opiniao1 = "Excelente!",
                 opiniao2 = "Top!!!",
                 opiniao3 = "Não concordo com tudo";
-        enviaPOSTAddOpiniao(opiniao1, iniciativaExemplo);
-        enviaPOSTAddOpiniao(opiniao2, iniciativaExemplo);
-        enviaPOSTAddOpiniao(opiniao3, iniciativaExemplo);
+        enviaPOSTAddOpiniao(opiniao1, iniciativaExemplo, token);
+        enviaPOSTAddOpiniao(opiniao2, iniciativaExemplo, token);
+        enviaPOSTAddOpiniao(opiniao3, iniciativaExemplo, token);
 
-        Result result = Helpers.route(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 2));
+        Result result = Helpers.route(builder.uri(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 2).url()).method("GET"));
         // Deve haver 2 opiniões
         JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
         Iterator<JsonNode> elementosIt = respostaJson.elements();
@@ -122,7 +123,7 @@ public class OpiniaoControllerTest extends WithApplication {
         assertFalse(elementosIt.hasNext()); // só há 2 elementos
 
         // pag 2
-        result = Helpers.route(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 1, 2));
+        result = Helpers.route(builder.uri(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 1, 2).url()).method("GET"));
         // Deve haver 1 opiniões
         respostaJson = Json.parse(Helpers.contentAsString(result));
         elementosIt = respostaJson.elements();
@@ -132,7 +133,7 @@ public class OpiniaoControllerTest extends WithApplication {
 
 
         // pag 3
-        result = Helpers.route(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 3, 2));
+        result = Helpers.route(builder.uri(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 3, 2).url()).method("GET"));
         // Deve haver 0 opiniões
         respostaJson = Json.parse(Helpers.contentAsString(result));
         elementosIt = respostaJson.elements();
@@ -153,7 +154,7 @@ public class OpiniaoControllerTest extends WithApplication {
         // 1001 caracteres.
         conteudo += "x";
 
-        Result result = enviaPOSTAddOpiniao(conteudo, iniciativaExemplo);
+        Result result = enviaPOSTAddOpiniao(conteudo, iniciativaExemplo, token);
         assertEquals(BAD_REQUEST, result.status());
         // é preciso ter limites
         assertEquals("{\"conteudo\":[\"Opiniões devem ter 1000 caracteres ou menos\"]}", Helpers.contentAsString(result));
@@ -163,7 +164,7 @@ public class OpiniaoControllerTest extends WithApplication {
     public void deveImpedirPostsVazios() throws IOException {
         String conteudo = "";
 
-        Result result = enviaPOSTAddOpiniao(conteudo, iniciativaExemplo);
+        Result result = enviaPOSTAddOpiniao(conteudo, iniciativaExemplo, token);
         assertEquals(BAD_REQUEST, result.status());
         // é preciso ter limites
         assertEquals("{\"conteudo\":[\"Campo necessário\"]}", Helpers.contentAsString(result));
@@ -172,12 +173,12 @@ public class OpiniaoControllerTest extends WithApplication {
     @Test
     public void deveExigirCampos() throws IOException {
         JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\"}");
-        Result result = enviaPOSTAddOpiniao(json, iniciativaExemplo);
+        Result result = enviaPOSTAddOpiniao(json, iniciativaExemplo, token);
         assertEquals(BAD_REQUEST, result.status());
         assertEquals("{\"conteudo\":[\"Campo necessário\"]}", Helpers.contentAsString(result));
 
         JsonNode json2 = new ObjectMapper().readTree("{\"conteudo\": \"Topíssimo\"}");
-        Result result2 = enviaPOSTAddOpiniao(json2, iniciativaExemplo);
+        Result result2 = enviaPOSTAddOpiniao(json2, iniciativaExemplo, token);
         assertEquals(BAD_REQUEST, result2.status());
         assertEquals("{\"tipo\":[\"Campo necessário\"]}", Helpers.contentAsString(result2));
     }
@@ -186,10 +187,10 @@ public class OpiniaoControllerTest extends WithApplication {
     public void deveRetornarPrimeiroMaisRecentes() throws IOException {
         JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\", \"conteudo\": \"Topíssimo\"}");
         JsonNode json2 = new ObjectMapper().readTree("{\"tipo\": \"coracao\", \"conteudo\": \"Eu quero que você se top top top\"}");
-        enviaPOSTAddOpiniao(json, iniciativaExemplo);
-        enviaPOSTAddOpiniao(json2, iniciativaExemplo);
+        enviaPOSTAddOpiniao(json, iniciativaExemplo, token);
+        enviaPOSTAddOpiniao(json2, iniciativaExemplo, token);
 
-        Result result = Helpers.route(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 2));
+        Result result = Helpers.route(builder.uri(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 2).url()).method("GET"));
         JsonNode respostaJson = Json.parse(Helpers.contentAsString(result));
         Iterator<JsonNode> elementosIt = respostaJson.elements();
         assertTrue(elementosIt.hasNext()); // há elemento

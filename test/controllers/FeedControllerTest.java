@@ -20,12 +20,13 @@ import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
-import play.test.WithApplication;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class FeedControllerTest extends WithApplication {
+import controllers.util.WithAuthentication;
+
+public class FeedControllerTest extends WithAuthentication {
 
     private Long iniciativaUsada = 805265L;
     private Long cidadeDaIniciativaUsada = 2922706L;
@@ -42,7 +43,7 @@ public class FeedControllerTest extends WithApplication {
 
     @Test
     public void deveIniciarComFeedVazio() throws IOException {
-        Result result = Helpers.route(controllers.routes.FeedController.getNovidades(0, 10));
+        Result result = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);
@@ -58,11 +59,11 @@ public class FeedControllerTest extends WithApplication {
     @Test
     public void deveNotificarOpinioesEmIniciativaOndeComentei() throws IOException {
         // vira interessado
-        enviaPOSTAddOpiniao(conteudoExemplo, iniciativaUsada);
+        enviaPOSTAddOpiniao(conteudoExemplo, iniciativaUsada, token);
         // a segunda opinião cria uma notificação
-        enviaPOSTAddOpiniao("A novidade veio dar na praia. Na qualidade rara de sereia", iniciativaUsada);
+        enviaPOSTAddOpiniao("A novidade veio dar na praia. Na qualidade rara de sereia", iniciativaUsada, token);
 
-        Result result = Helpers.route(controllers.routes.FeedController.getNovidades(0, 10));
+        Result result = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 10).url()).method("GET"));
         List<Novidade> novidades = jsonToList(contentAsString(result));
 
         // TODO Esse teste só é possível quando tivermos diferentes usuários:

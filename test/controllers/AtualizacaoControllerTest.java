@@ -18,17 +18,19 @@ import org.junit.Before;
 import org.junit.Test;
 
 import play.libs.Json;
+import play.mvc.Http.RequestBuilder;
 import play.mvc.Result;
 import play.test.Helpers;
-import play.test.WithApplication;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import controllers.util.WithAuthentication;
+
 /**
  * Testes do controller.
  */
-public class AtualizacaoControllerTest extends WithApplication {
+public class AtualizacaoControllerTest extends WithAuthentication {
 	
 	private AtualizacaoDAO atualizacaoDAO;
 	private File novaAtualizacao;
@@ -45,13 +47,19 @@ public class AtualizacaoControllerTest extends WithApplication {
     }
 
     @After
-    public void tearDown() {
+    public void desautenticaAdmin() {
         novaAtualizacao.delete();
     }
 
     @Test
     public void deveListarAtualizacaoDisponivel() throws JsonParseException, JsonMappingException, IOException {
-        Result result = Helpers.route(controllers.routes.AtualizacaoController.getAtualizacoes());
+    	
+    	RequestBuilder request = new RequestBuilder()
+        .method("GET")
+        .uri(controllers.routes.AtualizacaoController.getAtualizacoes().url())
+        .header("X-Auth-Token", token);
+    	
+        Result result = Helpers.route(request);
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);

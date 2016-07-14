@@ -13,10 +13,12 @@ import models.AtualizacaoDAO;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 import actors.AtualizadorActorProtocol;
 import akka.actor.ActorRef;
 
 @Singleton
+@Security.Authenticated(Secured.class)
 public class AtualizacaoController extends Controller {
 
 	private ActorRef atualizador;

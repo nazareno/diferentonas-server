@@ -27,8 +27,7 @@ public class Cidadao implements Serializable {
 	private UUID id;
 	private String login;
 	private String token;
-
-
+	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonIgnore
 	private Set<Iniciativa> iniciativasAcompanhadas;
