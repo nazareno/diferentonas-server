@@ -11,7 +11,6 @@ import static play.test.Helpers.contentAsString;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -26,7 +25,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import play.Logger;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.Result;
@@ -49,9 +47,6 @@ public class CidadeControllerTest extends WithAuthentication {
     private CidadeDAO dao;
     private List<Novidade> novidadesParaDeletar = new ArrayList<>();
     private List<Score> scoresParaDeletar = new ArrayList<>();
-
-    private String conteudoExemplo = "Essa iniciativa é absolutamente estrogonófica para a cidade.";
-
 
     @Before
     public void setUp() {

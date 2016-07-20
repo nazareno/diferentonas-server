@@ -28,8 +28,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 @Ignore
 public class HTTPStackTest extends WithServer {
 
-    private int timeout = 5000;
-
     /**
      * Test method for {@link controllers.CidadeController#index()}.
      */

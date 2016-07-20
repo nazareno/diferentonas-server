@@ -21,7 +21,6 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import play.Logger;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.Http;
