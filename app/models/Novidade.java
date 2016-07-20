@@ -205,7 +205,8 @@ public class Novidade implements Serializable{
 	@Override
 	public String toString() {
 		return "Novidade [id=" + id + ", tipo=" + tipo + ", criadaEm="
-				+ criadaEm + ", opiniao=" + opiniao.getId() + "]";
+				+ criadaEm + "]";
 	}
+	
     
 }

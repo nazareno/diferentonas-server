@@ -8,15 +8,13 @@ import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.contentAsString;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
-
 import javax.persistence.EntityManager;
-
 
 import models.Cidade;
 import models.CidadeDAO;
@@ -24,24 +22,21 @@ import models.Novidade;
 import models.Score;
 import models.TipoDaNovidade;
 
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
+import play.Logger;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.Result;
 import play.test.Helpers;
-
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 import controllers.util.WithAuthentication;
 
@@ -56,7 +51,6 @@ public class CidadeControllerTest extends WithAuthentication {
     private List<Score> scoresParaDeletar = new ArrayList<>();
 
     private String conteudoExemplo = "Essa iniciativa é absolutamente estrogonófica para a cidade.";
-    private Date dataDaNovidade = new Date();
 
 
     @Before
@@ -128,7 +122,7 @@ public class CidadeControllerTest extends WithAuthentication {
     	Score novoScore = jpaAPI.withTransaction( (em) -> {
     		Cidade cidade = dao.find(2513406L);
     		Score score = new Score("teste", 0f, 0f, 0f, 0f);
-    		cidade.atualizaScore(score, dataDaNovidade);
+    		cidade.atualizaScore(score, new Date());
     		em.persist(score);
     		em.persist(cidade);
     		em.flush();
@@ -155,32 +149,35 @@ public class CidadeControllerTest extends WithAuthentication {
     }
 
     @Test
-    public void deveRetornarNovidadesDeNovoScoreEScoreAtualizado() throws JsonParseException, JsonMappingException, IOException {
+    public void deveRetornarNovidadesDeNovoScoreEScoreAtualizado() throws JsonParseException, JsonMappingException, IOException, InterruptedException {
     	
     	Score novoScore = jpaAPI.withTransaction( (em) -> {
     		Cidade cidade = dao.find(2513406L);
     		Score score = new Score("teste", 0f, 0f, 0f, 0f);
-    		cidade.atualizaScore(score, dataDaNovidade);
+    		cidade.atualizaScore(score, new Date());
     		em.persist(score);
     		em.persist(cidade);
-    		em.flush();
+    		em.flush(); 
     		em.refresh(score);
     		em.refresh(cidade);
     		return score;
     	});
     	scoresParaDeletar.add(novoScore);
     	
+    	Thread.sleep(1000);
+    	
     	float novoValor = 1f;
     	
     	jpaAPI.withTransaction( () -> {
     		Cidade cidade = dao.find(2513406L);
 			Score score = new Score("teste", novoValor, 0f, 0f, 0f);
-    		cidade.atualizaScore(score, dataDaNovidade);
+    		cidade.atualizaScore(score, new Date());
     		EntityManager em = jpaAPI.em();
-			em .persist(cidade);
+			em.persist(cidade);
     		em.flush();
     		em.refresh(cidade);
     	});
+    	
     	
         Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(2513406L, 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
@@ -189,7 +186,7 @@ public class CidadeControllerTest extends WithAuthentication {
         assertNotNull(conteudoResposta);
         assertTrue(Json.parse(conteudoResposta).isArray());
         List<Novidade> novidades = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<Novidade>>() {});
-        
+
         assertFalse(novidades.isEmpty());
         Novidade novidadeDeNovoScore = novidades.get(1);
         novidadesParaDeletar.add(novidadeDeNovoScore);
@@ -209,7 +206,7 @@ public class CidadeControllerTest extends WithAuthentication {
     	Score novoScore = jpaAPI.withTransaction( (em) -> {
     		Cidade cidade = dao.find(2513406L);
     		Score score = new Score("teste", 2f, 0f, 0f, 0f);
-    		cidade.atualizaScore(score, dataDaNovidade);
+    		cidade.atualizaScore(score, new Date());
     		em.persist(score);
     		em.persist(cidade);
     		em.flush();
@@ -224,7 +221,7 @@ public class CidadeControllerTest extends WithAuthentication {
     	jpaAPI.withTransaction( () -> {
     		Cidade cidade = dao.find(2513406L);
 			Score score = new Score("teste", novoValor, 0f, 0f, 0f);
-    		cidade.atualizaScore(score, dataDaNovidade);
+    		cidade.atualizaScore(score, new Date());
     		EntityManager em = jpaAPI.em();
 			em .persist(cidade);
     		em.flush();
