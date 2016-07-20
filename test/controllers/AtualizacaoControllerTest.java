@@ -39,8 +39,7 @@ public class AtualizacaoControllerTest extends WithAuthentication {
     @Before
     public void setUp() throws IOException {
         this.atualizacaoDAO = app.injector().instanceOf(AtualizacaoDAO.class);
-        GregorianCalendar calendar = new GregorianCalendar();
-        calendar.add(GregorianCalendar.DAY_OF_YEAR, 1);
+        GregorianCalendar calendar = new GregorianCalendar(2016, 5, 28);
         data = new SimpleDateFormat("yyyyMMdd").format(calendar.getTime());
         novaAtualizacao = new File(atualizacaoDAO.getFolder() + "/iniciativas-" + data + ".csv");
         novaAtualizacao.createNewFile();
