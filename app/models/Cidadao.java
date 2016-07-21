@@ -26,6 +26,7 @@ public class Cidadao implements Serializable {
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	private UUID id;
 	private String login;
+	private String nome;
 	private String token;
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
@@ -37,12 +38,16 @@ public class Cidadao implements Serializable {
 	// o ministério, caso seja funcionaário
 	private String ministerioDeAfiliacao;
 
+	private String facebook;
+
+	private String google;
+
 
 	public Cidadao() {
 		this.iniciativasAcompanhadas = new HashSet<>();
 	}
 	
-	public Cidadao(String login) {
+	public Cidadao(String nome, String login) {
 		this();
 		this.login = login;
 	}
@@ -132,5 +137,22 @@ public class Cidadao implements Serializable {
 
 	public void setFuncionario(boolean funcionario) {
 		this.funcionario = funcionario;
+	}
+
+	public void setProviderId(ProvedorDeLogin provider, String id) {
+		switch (provider) {
+	      case FACEBOOK:
+	        this.facebook = id;
+	        break;
+	      case GOOGLE:
+	        this.google = id;
+	        break;
+	      default:
+	        throw new IllegalArgumentException();
+	    }
+	}
+
+	public void setNome(String nome) {
+		this.nome = nome;
 	}
 }

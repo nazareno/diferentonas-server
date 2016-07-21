@@ -86,4 +86,12 @@ public class CidadaoDAO {
                 .setMaxResults(tamanhoDaPagina);
         return query.getResultList();
     }
+
+	public Cidadao findByProvider(ProvedorDeLogin provider, String id) {
+    	List<Cidadao> list = jpaAPI.em()
+    			.createQuery("from Cidadao where " + provider.name().toLowerCase() + " = :paramProvider", Cidadao.class)
+    			.setParameter("paramProvider", id).getResultList();
+    	
+    	return list.isEmpty()? null: list.get(0);
+	}
 }

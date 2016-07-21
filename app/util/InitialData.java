@@ -87,11 +87,11 @@ public class InitialData {
 		jpaAPI.withTransaction(() -> {
             Cidadao admin = dao.findByLogin("admin");
             if (admin == null) {
-                Cidadao cidadao = new Cidadao("admin");
+                Cidadao cidadao = new Cidadao("admin", "admin@mail.com");
                 cidadao.setToken("TOKEN");
 				admin = dao.saveAndUpdate(cidadao);
                 for(int i = 0; i < 1000; i++ ){
-                	cidadaos.add(dao.saveAndUpdate(new Cidadao(String.format("cidadão_%03d", i))).getId());
+                	cidadaos.add(dao.saveAndUpdate(new Cidadao(String.format("cidadão_%03d", i), String.format("cidadao_%03d@mail.com", i))).getId());
                 }
             }
         });
@@ -268,8 +268,8 @@ public class InitialData {
                     
                     em.persist(iniciativa);
                     
-                    int numeroDeOpinioes = 2; // LOCAL ONLY
-//                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
+//                    int numeroDeOpinioes = 2; // LOCAL ONLY
+                    int numeroDeOpinioes = 5 + r.nextInt(8); // POPULATE HEROKU DB
 					for (int i = 0; i < numeroDeOpinioes; i++) {
                     	Cidadao cidadao = daoCidadao.find(cidadaos.get(r.nextInt(1000)));
                     	Opiniao opiniao = new Opiniao();

@@ -35,9 +35,9 @@ public class CidadaoControllerTest extends WithAuthentication {
     @Before
     public void limpaBancoParaTeste() {
         cidadaosCobaia = new LinkedList<>();
-        cidadaosCobaia.add(new Cidadao("root"));
-        cidadaosCobaia.add(new Cidadao("raquel"));
-        cidadaosCobaia.add(new Cidadao("toinho"));
+        cidadaosCobaia.add(new Cidadao("root", "root"));
+        cidadaosCobaia.add(new Cidadao("raquel", "raquel"));
+        cidadaosCobaia.add(new Cidadao("toinho", "toinho"));
 
         CidadaoController controller = app.injector().instanceOf(CidadaoController.class);
         JPAApi jpaAPI = app.injector().instanceOf(JPAApi.class);

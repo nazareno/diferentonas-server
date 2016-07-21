@@ -23,7 +23,7 @@ public class WithAuthentication extends WithApplication {
     	
     	app.injector().instanceOf(JPAApi.class).withTransaction(()->{
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
-    		Cidadao admin = cidadaoDAO.findByLogin("admin");
+    		Cidadao admin = cidadaoDAO.findByLogin("admin@mail.com");
     		token = UUID.randomUUID().toString();
 			admin.setToken(token);
     		cidadaoDAO.saveAndUpdate(admin);
@@ -35,7 +35,7 @@ public class WithAuthentication extends WithApplication {
     public void desautenticaAdmin() {
     	app.injector().instanceOf(JPAApi.class).withTransaction(()->{
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
-    		Cidadao admin = cidadaoDAO.findByLogin("admin");
+    		Cidadao admin = cidadaoDAO.findByLogin("admin@mail.com");
     		admin.setToken("");
     		cidadaoDAO.saveAndUpdate(admin);
     	});
