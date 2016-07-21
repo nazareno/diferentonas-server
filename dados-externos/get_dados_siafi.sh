@@ -44,27 +44,29 @@ done
 echo "pronto. dados do siafi baixados em " transparenciabrasil
 
 for f in *.zip; do
+    [ -f "$f" ] || break
     unzip -n $f
 done
 
 echo "Convertendo todo mundo para UTF-8"
 for f in 20*.csv; do
+    [ -f "$f" ] || break
     if [[ ! -e utf8-$f ]]; then
-         iconv -t UTF-8 -f ISO-8859-15 $f > utf8-$f
+         #iconv -t UTF-8 -f ISO-8859-15 $f > utf8-$f
+         iconv -t UTF-8 $f > utf8-$f
     fi
 done
 
 # Os .zip e .csv que não iniciam com 'utf8-' podem ser descartados
-rm transferencias-*zip
-rm 201*csv
+rm -f transferencias-*zip
+rm -f 201*csv
 
 echo "Consollidando em um só arquivo"
 
 of='../'$ofn
 echo "Número Convênio;Modalidade Aplicação;Fonte-Finalidade;Nome Favorecido;Codigo Acao;Nome Programa;Codigo Programa;Nome Sub Funcao;Codigo Sub Funcao ;Nome Funcao;Codigo Funcao;Nome Municipio;Codigo SIAFI Municipio;Sigla Unidade Federação;Repasse" > $of
 # Seleciona colunas e remove duplicatas
-awk -F'\t' 'BEGIN{OFS = ";"};
-            NR > 1 && $(17) != "" && $(17) != " " && !($0 in a) {a[$0]; print $(17), $(16), $(15), $(14), $(10), $9, $8, $7, $6, $5, $4, $3, $2, $1, $(18)}' utf8-*_Transferencias.csv >> $of
+awk -F'\t' 'BEGIN{OFS = ";"}; NR > 1 && $(17) ~ /[0-9]/ && !(a[$(17)]) {a[$(17)] += 1; print $(17), $(16), $(15), $(14), $(10), $9, $8, $7, $6, $5, $4, $3, $2, $1, $(18)}' utf8-*_Transferencias.csv >> $of
 cd -
 
 echo "Resultado em " $ofn
