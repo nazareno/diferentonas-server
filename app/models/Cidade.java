@@ -1,6 +1,7 @@
 package models;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -195,11 +196,6 @@ public class Cidade implements Serializable {
         this.iniciativas = iniciativas;
     }
 
-    public void addIniciativas(Iniciativa iniciativa) {
-        this.iniciativas.add(iniciativa);
-        this.novidades.add(new Novidade(TipoDaNovidade.NOVA_INICIATIVA, this, iniciativa));
-    }
-    
     public List<Novidade> getNovidades() {
 		return novidades;
 	}
@@ -242,12 +238,12 @@ public class Cidade implements Serializable {
         return true;
     }
 
-	public void atualizaScore(Score scoreAtualizado) {
+	public void atualizaScore(Score scoreAtualizado, Date dataDaAtualizacao) {
 		for (Score score : scores) {
 			if (score.getArea().equals(scoreAtualizado.getArea())) {
 				// TODO criar coleção de novidades no score e migrar esse if pra dentro do score.atualiza
 				if(Math.abs(score.compareTo(scoreAtualizado)) >= 1){
-					novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_SCORE, this, score));
+					novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_SCORE, dataDaAtualizacao, this, score));
 				}
 				score.atualiza(scoreAtualizado);
 				return;
@@ -255,12 +251,12 @@ public class Cidade implements Serializable {
 		}
 		scores.add(scoreAtualizado);
 		scoreAtualizado.setCidade(this);
-		novidades.add(new Novidade(TipoDaNovidade.NOVO_SCORE, this, scoreAtualizado));
+		novidades.add(new Novidade(TipoDaNovidade.NOVO_SCORE, dataDaAtualizacao, this, scoreAtualizado));
 	}
 
-	public void addIniciativa(Iniciativa iniciativa) {
+	public void addIniciativa(Iniciativa iniciativa, Date dataDaAtualizacao) {
 		iniciativas.add(iniciativa);
 		iniciativa.setCidade(this);
-		novidades.add(new Novidade(TipoDaNovidade.NOVA_INICIATIVA, this, iniciativa));
+		novidades.add(new Novidade(TipoDaNovidade.NOVA_INICIATIVA, dataDaAtualizacao, this, iniciativa));
 	}
 }

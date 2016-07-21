@@ -23,16 +23,17 @@ import play.libs.Json;
 import play.mvc.Http.Status;
 import play.mvc.Result;
 import play.test.Helpers;
-import play.test.WithApplication;
 
 import com.fasterxml.jackson.databind.JsonNode;
+
+import controllers.util.WithAuthentication;
 
 /**
  * Testes para {@link MensagemController}.
  * 
  * @author ricardo
  */
-public class MensagemControllerTest extends WithApplication {
+public class MensagemControllerTest extends WithAuthentication {
 	
 	private Mensagem templateMensagem;
 	
@@ -55,14 +56,14 @@ public class MensagemControllerTest extends WithApplication {
 	public void limpaBancoAposTeste(){
 		
 		for (String id : idsDasMensagensParaDeletar) {
-			Helpers.route(controllers.routes.MensagemController.delete(id));
+			Helpers.route(builder.uri(controllers.routes.MensagemController.delete(id).url()).method("DELETE"));
 		}
 		idsDasMensagensParaDeletar.clear();
 	}
 	
 	@Test
 	public void deveRetornarNenhumaMensagem() {
-		Result result = Helpers.route(controllers.routes.MensagemController.getMensagens(0, 10));
+		Result result = Helpers.route(builder.uri(controllers.routes.MensagemController.getMensagens(0, 10).url()).method("GET"));
 		assertEquals(OK, result.status());
 		assertNotNull(Helpers.contentAsString(result));
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
@@ -72,7 +73,7 @@ public class MensagemControllerTest extends WithApplication {
 	@Test
 	public void deveAdicionarUmaMensagem() {
 		templateMensagem.setTitulo("Titulo OK");
-		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
 		
 		// insere
 		assertEquals(CREATED, result.status());
@@ -97,7 +98,7 @@ public class MensagemControllerTest extends WithApplication {
 		
 		templateMensagem.setTitulo(conteudoInvalido.toString());
 
-		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
 		assertEquals(Status.BAD_REQUEST, result.status());
 	}
 
@@ -106,7 +107,7 @@ public class MensagemControllerTest extends WithApplication {
 		
 		templateMensagem.setTitulo("");
 
-		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
 		assertEquals(Status.BAD_REQUEST, result.status());
 	}
 
@@ -115,7 +116,7 @@ public class MensagemControllerTest extends WithApplication {
 		
 		templateMensagem.setTitulo(null);
 
-		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
 		assertEquals(Status.BAD_REQUEST, result.status());
 	}
 
@@ -127,7 +128,7 @@ public class MensagemControllerTest extends WithApplication {
 		for (int i = 1; i < 21; i++) {
 			templateMensagem.setTitulo("" + i);
 
-			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
 			assertEquals(CREATED, result.status());
 			Mensagem mensagemCriada = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 			assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
@@ -135,7 +136,7 @@ public class MensagemControllerTest extends WithApplication {
 			
 		}
 		
-		Result result = Helpers.route(controllers.routes.MensagemController.getMensagens(0, 3));
+		Result result = Helpers.route(builder.uri(controllers.routes.MensagemController.getMensagens(0, 3).url()).method("GET"));
 		
 		assertEquals(OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
@@ -158,7 +159,7 @@ public class MensagemControllerTest extends WithApplication {
 		for (int i = 1; i < 21; i++) {
 			templateMensagem.setTitulo("" + i);
 
-			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
 			assertEquals(CREATED, result.status());
 			Mensagem mensagemCriada = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 			assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
@@ -166,7 +167,7 @@ public class MensagemControllerTest extends WithApplication {
 			
 		}
 		
-		Result result = Helpers.route(controllers.routes.MensagemController.getMensagens(1, 3));
+		Result result = Helpers.route(builder.uri(controllers.routes.MensagemController.getMensagens(1, 3).url()).method("GET"));
 		
 		assertEquals(OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
@@ -189,7 +190,7 @@ public class MensagemControllerTest extends WithApplication {
 		for (int i = 1; i < 21; i++) {
 			templateMensagem.setTitulo("" + i);
 
-			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
 			assertEquals(CREATED, result.status());
 			Mensagem mensagemCriada = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 			assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
@@ -197,7 +198,7 @@ public class MensagemControllerTest extends WithApplication {
 			
 		}
 		
-		Result result = Helpers.route(controllers.routes.MensagemController.getMensagens(10, 3));
+		Result result = Helpers.route(builder.uri(controllers.routes.MensagemController.getMensagens(10, 3).url()).method("GET"));
 		
 		assertEquals(OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
@@ -215,7 +216,7 @@ public class MensagemControllerTest extends WithApplication {
 		for (int i = 1; i < 21; i++) {
 			templateMensagem.setTitulo("" + i);
 
-			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)));
+			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
 			assertEquals(CREATED, result.status());
 			Mensagem mensagemCriada = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 			assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
@@ -223,7 +224,7 @@ public class MensagemControllerTest extends WithApplication {
 			
 		}
 		
-		Result result = Helpers.route(controllers.routes.MensagemController.getMensagens(6, 3));
+		Result result = Helpers.route(builder.uri(controllers.routes.MensagemController.getMensagens(6, 3).url()).method("GET"));
 		
 		assertEquals(OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));

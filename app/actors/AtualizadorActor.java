@@ -41,8 +41,11 @@ public class AtualizadorActor extends UntypedActor {
 	
 	@Inject
 	private IniciativaDAO iniciativaDAO;
+
+	private SimpleDateFormat formatoDataAtualizacao = new SimpleDateFormat("yyyyMMdd");
 	
 	public void onReceive(Object msg) throws Exception {
+
 		Logger.debug("AtualizadorActor.onReceive()");
 		if (msg instanceof AtualizaIniciativas) {
 			// sender().tell("Hello, " + ((AtualizaIniciativas) msg).name,
@@ -53,14 +56,15 @@ public class AtualizadorActor extends UntypedActor {
 			jpaAPI.withTransaction(() -> {
 				try {
 					String proxima = daoAtualizacao.find().getProxima();
+					Date proximaData = formatoDataAtualizacao.parse(proxima);
 
 					String scoresDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + proxima + ".csv";
 					Logger.debug(scoresDataPath);
-					atualizaScores(scoresDataPath);
+					atualizaScores(scoresDataPath, proximaData);
 			    	
 					String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + proxima + ".csv";
 					Logger.debug(iniciativasDataPath);
-			    	atualizaIniciativas(iniciativasDataPath);
+			    	atualizaIniciativas(iniciativasDataPath, proximaData);
 
 			    	daoAtualizacao.finaliza(false);
 					sender().tell(true, self());
@@ -73,7 +77,7 @@ public class AtualizadorActor extends UntypedActor {
 		}
 	}
 	
-	private void atualizaScores(String dataPath) throws SQLException {
+	private void atualizaScores(String dataPath, Date dataDaAtualizacao) throws SQLException {
     	
     	int count = 0;
 
@@ -94,7 +98,7 @@ public class AtualizadorActor extends UntypedActor {
     				scoreResultSet.getFloat(5),
     				scoreResultSet.getFloat(6));
     		
-    		cidade.atualizaScore(score);
+    		cidade.atualizaScore(score, dataDaAtualizacao);
     		
     		cidadeDAO.save(cidade);
     		
@@ -112,7 +116,7 @@ public class AtualizadorActor extends UntypedActor {
 
 
 	
-	private void atualizaIniciativas(String dataPath) throws SQLException {
+	private void atualizaIniciativas(String dataPath, Date dataDaAtualizacao) throws SQLException {
 
 		ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
 		int count = 0;
@@ -133,10 +137,10 @@ public class AtualizadorActor extends UntypedActor {
 			
 			Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
 			if (iniciativa == null) {
-				cidadeDaIniciativa.addIniciativa(iniciativaAtualizada);
+				cidadeDaIniciativa.addIniciativa(iniciativaAtualizada, dataDaAtualizacao);
 				cidadeDAO.save(cidadeDaIniciativa);
 			}else{
-				iniciativa.atualiza(iniciativaAtualizada);
+				iniciativa.atualiza(iniciativaAtualizada, dataDaAtualizacao);
 				iniciativaDAO.save(iniciativa);
 			}
 

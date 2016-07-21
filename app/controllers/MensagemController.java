@@ -13,9 +13,11 @@ import play.db.jpa.Transactional;
 import play.mvc.BodyParser;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
 
 import com.google.inject.Inject;
 
+@Security.Authenticated(Secured.class)
 public class MensagemController extends Controller {
 
     private MensagemDAO dao;

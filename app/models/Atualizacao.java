@@ -2,6 +2,8 @@ package models;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -41,12 +43,15 @@ public class Atualizacao implements Serializable {
 
 	public void atualiza(List<String> atualizacoesDisponiveis) {
 		if (atualizacoesDisponiveis.isEmpty()) {
-			this.status = Status.SERVIDOR_FORA_DO_AR;
-		} else if (atualizacoesDisponiveis.get(0).equals(this.ultima)) {
 			this.status = Status.ATUALIZADO;
-		} else {
-			this.status = Status.DESATUALIZADO;
-			this.proxima = atualizacoesDisponiveis.get(0);
+		} else{
+			atualizacoesDisponiveis = atualizacoesDisponiveis.stream().filter(atualizacao -> atualizacao.compareTo(ultima) > 0).collect(Collectors.toList());
+			if(atualizacoesDisponiveis.isEmpty()){
+				this.status = Status.ATUALIZADO;
+			}else{
+				this.status = Status.DESATUALIZADO;
+				this.proxima = atualizacoesDisponiveis.get(0);
+			}
 		}
 	}
 

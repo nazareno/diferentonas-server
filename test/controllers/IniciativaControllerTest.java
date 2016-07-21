@@ -16,28 +16,25 @@ import java.util.List;
 import models.Cidadao;
 import models.CidadaoDAO;
 import models.Iniciativa;
-import module.MainModule;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import play.Application;
-import play.Logger;
 import play.db.jpa.JPAApi;
-import play.inject.guice.GuiceApplicationBuilder;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Http.Status;
 import play.mvc.Result;
 import play.test.Helpers;
-import play.test.WithApplication;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class IniciativaControllerTest extends WithApplication {
+import controllers.util.WithAuthentication;
+
+public class IniciativaControllerTest extends WithAuthentication {
 
 	@Before
 	public void limpaBancoParaTestes() {
@@ -52,7 +49,7 @@ public class IniciativaControllerTest extends WithApplication {
 	@Test
 	public void deveriaRetornarIniciativasSimilares() {
 		long id = 797935L;
-		Result result = Helpers.route(controllers.routes.IniciativaController.similares(id, 5L));
+		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.similares(id, 5L).url()).method("GET"));
 		assertEquals(Status.OK, result.status());
 		JsonNode node = Json.parse(Helpers.contentAsString(result));
 		assertTrue(node.isArray());
@@ -72,14 +69,14 @@ public class IniciativaControllerTest extends WithApplication {
 
 	@Test
 	public void deveriaFalharNaInscricaoNumaIniciativaInexistente() {
-		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(0L));
+		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(0L).url()).method("POST"));
 		assertEquals(Status.NOT_FOUND, result.status());
 	}
 
 	@Test
 	public void deveriaInscreverCidadaoNaIniciativa() {
 		long id = 797935L;
-		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
 		assertEquals(Status.OK, result.status());
 	}
 
@@ -87,49 +84,49 @@ public class IniciativaControllerTest extends WithApplication {
 	@Ignore
 	public void deveriaInscreverDoisCidadaosNaMesmaIniciativa() {
 		long id = 797935L;
-		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
 		assertEquals(Status.OK, result.status());
 		
 		//FIXME troca usuário e resubmete
-		result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
 		assertEquals(Status.OK, result.status());
 }
 
 	@Test
 	public void deveriaReportarCidadaoJaInscritoNumaIniciativa() {
 		long id = 797935L;
-		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
 		assertEquals(Status.OK, result.status());
 
-		result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
 		assertEquals(Status.CONFLICT, result.status());
 	}
 
 	@Test
 	public void deveriaFalharNaRemocaoDaInscricaoNumaIniciativaInexistente() {
-		Result result = Helpers.route(controllers.routes.IniciativaController.removeInscrito(0L));
+		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.removeInscrito(0L).url()).method("DELETE"));
 		assertEquals(Status.NOT_FOUND, result.status());
 	}
 
 	@Test
 	public void deveriaFalharAoRemoverCidadaoNaoInscritoNaIniciativa() {
 		long id = 797935L;
-		Result result = Helpers.route(controllers.routes.IniciativaController.removeInscrito(id));
+		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.removeInscrito(id).url()).method("DELETE"));
 		assertEquals(Status.NOT_FOUND, result.status());
 	}
 
 	@Test
 	public void deveriaRemoverCidadaoJaInscritoNumaIniciativa() {
 		long id = 797935L;
-		Result result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
 		assertEquals(Status.OK, result.status());
 		
 		// não deveria estar aqui, mas não há como limpar banco de dados após todos os testes ainda.
-		result = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(id));
+		result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
 		assertEquals(Status.CONFLICT, result.status());
 
 
-		result = Helpers.route(controllers.routes.IniciativaController.removeInscrito(id));
+		result = Helpers.route(builder.uri(controllers.routes.IniciativaController.removeInscrito(id).url()).method("DELETE"));
 		assertEquals(Status.OK, result.status());
 	}
 
@@ -138,12 +135,12 @@ public class IniciativaControllerTest extends WithApplication {
 		long idCidade = 2807402L;
 		long idIniciativa = 797935L;
 		// caso hajs efeitos colaterais
-		Helpers.route(controllers.routes.IniciativaController.removeInscrito(idIniciativa));
+		Helpers.route(builder.uri(controllers.routes.IniciativaController.removeInscrito(idIniciativa).url()).method("DELETE"));
 
-		Result result1 = Helpers.route(controllers.routes.IniciativaController.adicionaInscrito(idIniciativa));
+		Result result1 = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(idIniciativa).url()).method("POST"));
 		assertEquals(contentAsString(result1), Http.Status.OK, result1.status());
 
-		Result result2 = Helpers.route(controllers.routes.IniciativaController.getIniciativas(idCidade));
+		Result result2 = Helpers.route(builder.uri(controllers.routes.IniciativaController.getIniciativas(idCidade).url()).method("GET"));
 		assertEquals(OK, result2.status());
 
 		List<Iniciativa> iniciativas = new ObjectMapper()
