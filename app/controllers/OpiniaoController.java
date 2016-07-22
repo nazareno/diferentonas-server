@@ -88,7 +88,7 @@ public class OpiniaoController {
     }
 
     private Cidadao getUsuarioLogado() {
-        return cidadaoDAO.findByLogin("admin");
+        return cidadaoDAO.findByLogin("admin@mail.com");
     }
 
     /**

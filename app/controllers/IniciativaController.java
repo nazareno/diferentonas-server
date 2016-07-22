@@ -43,7 +43,7 @@ public class IniciativaController extends Controller {
     @Transactional(readOnly = true)
     public Result get(Long id) {
     	
-        Cidadao cidadao = cidadaoDAO.findByLogin("admin");
+        Cidadao cidadao = cidadaoDAO.findByLogin("admin@mail.com");
 
     	iniciativaDAO.adicionaSumarios(iniciativaDAO.find(id), cidadao);
         return ok(toJson(iniciativaDAO.find(id)));
@@ -57,14 +57,14 @@ public class IniciativaController extends Controller {
         }
 
         Logger.debug("Iniciativas para " + cidade.getNome() + ": " + cidade.getIniciativas().size());
-        Cidadao cidadao = cidadaoDAO.findByLogin("admin");
+        Cidadao cidadao = cidadaoDAO.findByLogin("admin@mail.com");
 
         return ok(toJson(iniciativaDAO.adicionaSumarios(cidade.getIniciativas(), cidadao)));
     }
 
     @Transactional(readOnly = true)
     public CompletionStage<Result> similares(Long id, Long quantidade) {
-        Cidadao cidadao = cidadaoDAO.findByLogin("admin");
+        Cidadao cidadao = cidadaoDAO.findByLogin("admin@mail.com");
         Hibernate.initialize(cidadao.getIniciativasAcompanhadas());// TODO isso não devia estar aqui na fachada...
 		return CompletableFuture.supplyAsync(
 				() -> (iniciativaDAO.findSimilares(id, quantidade, cidadao)))
@@ -112,7 +112,7 @@ public class IniciativaController extends Controller {
         // não faz nada com o access-token
         // String loginDoCidadao = session("cidadao");
         //TODO podemos precisar disso depois do login...
-        return cidadaoDAO.findByLogin("admin");
+        return cidadaoDAO.findByLogin("admin@mail.com");
     }
 
 }

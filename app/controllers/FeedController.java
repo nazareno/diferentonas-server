@@ -31,7 +31,7 @@ public class FeedController extends Controller {
                     "Tamannho de página deve ser menor ou igual a 500.");
         }
 
-        Cidadao cidadao = daoCidadao.findByLogin("admin");
+        Cidadao cidadao = daoCidadao.findByLogin("admin@mail.com");
 //        List<Novidade> novidades = daoCidadao.getNovidadesRecentes(UUID.fromString("65fe8be9-81ea-4f2c-b30c-8c3336107793"), pagina, tamanhoPagina);
         List<Novidade> novidades = daoCidadao.getNovidadesRecentes(cidadao.getId(), pagina, tamanhoPagina);
 		return ok(toJson(novidades));

@@ -41,7 +41,7 @@ public class IniciativaControllerTest extends WithAuthentication {
 		CidadaoDAO cidadaoDAO= app.injector().instanceOf(CidadaoDAO.class);
 		JPAApi jpaAPI = app.injector().instanceOf(JPAApi.class);
 		jpaAPI.withTransaction(() -> {
-			Cidadao cidadao = cidadaoDAO.findByLogin("admin");
+			Cidadao cidadao = cidadaoDAO.findByLogin("admin@mail.com");
 			cidadao.setIniciativasAcompanhadas(new HashSet<>());
 		});
 	}
