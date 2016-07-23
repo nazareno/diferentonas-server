@@ -15,8 +15,8 @@ set -e
 
 ofn=$1
 
-mkdir -p transparenciabrasil
-cd transparenciabrasil
+mkdir -p siafi
+cd siafi
 
 ano_atual=`date +'%Y'`
 mes_atual=`date +'%m'`
@@ -41,7 +41,7 @@ for ano in `seq 2011 $ano_atual`; do
     done
 done
 
-echo "pronto. dados do siafi baixados em " transparenciabrasil
+echo "pronto. dados do siafi baixados em " siafi
 
 for f in *.zip; do
     [ -f "$f" ] || break
@@ -61,12 +61,11 @@ done
 rm -f transferencias-*zip
 rm -f 201*csv
 
-echo "Consollidando em um só arquivo"
+echo "Consolidando em um só arquivo"
 
 of='../'$ofn
-echo "Número Convênio;Modalidade Aplicação;Fonte-Finalidade;Nome Favorecido;Codigo Acao;Nome Programa;Codigo Programa;Nome Sub Funcao;Codigo Sub Funcao ;Nome Funcao;Codigo Funcao;Nome Municipio;Codigo SIAFI Municipio;Sigla Unidade Federação;Repasse" > $of
-# Seleciona colunas e remove duplicatas
-awk -F'\t' 'BEGIN{OFS = ";"}; NR > 1 && $(17) ~ /[0-9]/ && !(a[$(17)]) {a[$(17)] += 1; print $(17), $(16), $(15), $(14), $(10), $9, $8, $7, $6, $5, $4, $3, $2, $1, $(18)}' utf8-*_Transferencias.csv >> $of
+#../consolida_arquivos_siafi.sh utf8-*_Transferencias.csv > $of
+../consolida_siafi.R utf8-*_Transferencias.csv > $of
 cd -
 
 echo "Resultado em " $ofn
