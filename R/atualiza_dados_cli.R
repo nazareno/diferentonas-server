@@ -13,12 +13,12 @@ arquivo_diferentices = args[5]
 arquivo_historicos = args[6]
 
 # Debug / uso interativo: 
-# dados_siconv = "dados-externos/siconv-Xxxxx"
+# dados_siconv = "dados-externos/siconv-20160628"
 # arquivo_siafi = "dados-externos/convenios-siafi-201607.csv"
 # arquivo_vizinhos = "dist/data/vizinhos.euclidiano.csv"
-# arquivo_iniciativas_saida = "dist/data/iniciativas-20160722.csv"
-# arquivo_diferentices = "dist/data/diferentices-20160722.csv"
-# arquivo_historicos = "dist/data/historico-20160722.csv"
+# arquivo_iniciativas_saida = "dist/data/iniciativas-20160728.csv"
+# arquivo_diferentices = "dist/data/diferentices-20160728.csv"
+# arquivo_historicos = "dist/data/historico-20160728.csv"
 
 library(futile.logger)
 
@@ -27,9 +27,10 @@ library(futile.logger)
 # -----------------------------------------------------------
 source("R/consolida_siconv.R")
 convenios = consolida_convenios(dados_siconv)
-historico = carrega_e_limpa_historicos(dados_siconv, convenios$NR_CONVENIO)
-write.csv(historico, arquivo_historicos, row.names = FALSE)
-flog.info("Históricos dos convênios salvo em %s", arquivo_historicos)
+# TODO Por agora não estamos usando arquivos de histórico (criar issue)
+# historico = carrega_e_limpa_historicos(dados_siconv, convenios$NR_CONVENIO)
+# write.csv(historico, arquivo_historicos, row.names = FALSE)
+# flog.info("Históricos dos convênios salvo em %s", arquivo_historicos)
 
 # -----------------------------------------------------------
 # Cruza dados do SICONF + SIAFI com dados sobre os municípios:

@@ -8,7 +8,7 @@ if (length(args) < 1) {
 }
 
 le_um = function(arquivo_siafi, df_ja_lido = NULL){
-  #write(arquivo_siafi, stderr())
+  write(arquivo_siafi, stderr())
   library(readr)
   library(dplyr, warn.conflicts = F)
   bruto = suppressWarnings(read_tsv(arquivo_siafi, 
@@ -16,6 +16,18 @@ le_um = function(arquivo_siafi, df_ja_lido = NULL){
                                                      `Número Convênio` = "i")))
   filtrado = bruto %>%
     select(1:10, 14:17)
+  
+  if (!is.null(df_ja_lido) &
+      !("Número Convênio" %in% names(df_ja_lido))) {
+    warning("Dados lidos em algum ponto não tinham nome de convênio: ",
+            paste(names(df_ja_lido)))
+  }
+  if (!("Número Convênio" %in% names(filtrado))) {
+    warning("Dados do arquivo não tem nome de convênio: ",
+            arquivo_siafi,
+            " - ",
+            paste(names(filtrado)))
+  }
   
   deve_incluir = function(numero, ja_lido){
     if(is.null(ja_lido)){
@@ -38,6 +50,4 @@ for (arquivo in args[-1]) {
   resultado = rbind(resultado, le_um(arquivo, resultado))
 }
 
-write.csv2(resultado, "")
-
-warnings()
+write.csv2(resultado, "", row.names = F)

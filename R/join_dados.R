@@ -1,20 +1,21 @@
-library(dplyr, warn.conflicts = FALSE)
-library(readr)
 source("R/diferentonas-utils.R")
 
 #' 
 #' Recebe as iniciativas de um arquivo baixado do siconv e 
 #' descarta as partes que não utilizamos no Diferentonas. 
 #' 
-filtra_convenios = function(convenios){
-  message(paste("Antes de filtrar: ", NROW(convenios), "convênios"))
+filtra_convenios = function(convenios) {
+  require(dplyr, warn.conflicts = FALSE)
+  futile.logger::flog.info("Antes de filtrar: %d convênios", NROW(convenios))
   
   ## seleciona e salva apenas os convênios propostos no âmbito municipal
-  message("Filtrando")
+  futile.logger::flog.info("Filtrando aqueles depois de 2013 e celebrados por municípios")
   t = convenios %>%
     filter(ANO_PROP >= 2013,
            NATUREZA_JURIDICA == "Administração Pública Municipal") %>%
-    select(-NATUREZA_JURIDICA) 
+    select(-NATUREZA_JURIDICA)
+  
+  futile.logger::flog.info(paste("Filtrados são ", NROW(convenios), "convênios"))
   return(t)
 }
 
@@ -27,28 +28,28 @@ cruza_dados = function(convenios_siconv,
                        arquivo_siafi,
                        arquivo_idh = "dist/data/dados2010.csv", 
                        arquivo_populacao = "dist/data/populacao.csv"){
+  require(dplyr, warn.conflicts = FALSE)
+  require(futile.logger)
   # --------------------------------------
   # Primeiro carregar todo mundo
   # --------------------------------------
   
   # 1. Dados dos convênios no SICONV 
   convenios.d = filtra_convenios(convenios_siconv)
-  message(paste("Filtrados são ", NROW(convenios.d), "convênios"))
   
   # 2. Dados do IBGE e IDH
-  municipios = read_csv(arquivo_idh)
-  message("Carreguei dados do de código e IDH")
+  municipios = readr::read_csv(arquivo_idh)
+  flog.info("Carreguei dados do de código e IDH")
   # para pegar as UFs: 
-  populacao = read_csv2(arquivo_populacao)
+  populacao = readr::read_csv2(arquivo_populacao)
   names(populacao)[1:3] = c("Sigla", "Codigo", "Municipio") # lidar com https://github.com/hadley/dplyr/issues/848
-  message("Carreguei dados de UF")
+  flog.info("Carreguei dados de UF")
   
   # 3. Dados do SIAFI
-  message(paste("Carregando dados do SIAFI de", arquivo_siafi))
-  siafi <- read_csv2(arquivo_siafi)
-  names(siafi)[1] = "numero.convenio"
+  flog.info(paste("Carregando dados do SIAFI de", arquivo_siafi))
+  siafi <- readr::read_csv2(arquivo_siafi)
+  names(siafi)[14] = "numero.convenio"
   siafi$numero.convenio = as.integer(siafi$numero.convenio)
-  siafi = siafi[!duplicated(select(siafi, 1, 13), fromLast = TRUE),]
 
   # -------------------
   # Cruzar dados
@@ -57,41 +58,58 @@ cruza_dados = function(convenios_siconv,
   # Primeiro SICONV x IDH e população
   joined.du = cruza_siconv_idh_populacao(convenios.d, municipios, populacao)
   
-  message(paste(NROW(joined.du), " convênios nos dados SICONV x IBGE"))
+  flog.info("%d convênios nos dados cruzados SICONV x IBGE", NROW(joined.du))
   
   # -------------------
   # SICONV x SIAFI
   # -------------------
-  joined.du.siafi = joined.du %>% left_join(select(siafi, numero.convenio, 6:10), 
+  joined.du.siafi = joined.du %>% left_join(siafi %>% select(numero.convenio, 
+                                                             `Nome Programa`,     
+                                                             `Codigo Programa`,
+                                                             `Nome Funcao`,
+                                                             `Codigo Funcao`), 
                                             by = c("NR_CONVENIO" = "numero.convenio"))
   
-  message(paste(NROW(joined.du.siafi), " convênios após cruzar com SIAFI"))
-  message(paste(sum(is.na(joined.du.siafi$`Nome Funcao`)), " convênios do SICONV sem função orçamentária especificada no SIAFI"))
+  flog.info(paste(NROW(joined.du.siafi), " convênios após cruzar com SIAFI"))
+  flog.info(paste(sum(is.na(joined.du.siafi$`Nome Funcao`)), " convênios do SICONV sem função orçamentária especificada no SIAFI"))
   
   # PREENCHER FUNÇÃO PARA CONVÊNIOS AUSENTES DO SIAFI
-  todos_os_convenios = convenios_siconv %>% left_join(select(siafi, numero.convenio, 6:10), 
+  todos_os_convenios = convenios_siconv %>% left_join(siafi %>% select(numero.convenio, 
+                                                                       `Nome Programa`,     
+                                                                       `Codigo Programa`,
+                                                                       `Nome Funcao`,
+                                                                       `Codigo Funcao`), 
                                                       by = c("NR_CONVENIO" = "numero.convenio"))
   joined.siafi.imputado = imputa_funcoes_orcamentarias(joined.du.siafi, todos_os_convenios)
   
   return(joined.siafi.imputado)
 }
 
-cruza_siconv_idh_populacao = function(convenios.d, municipios, populacao){
-  convenios.d = convenios.d %>% 
+cruza_siconv_idh_populacao = function(convenios.d, municipios, populacao) {
+  require(dplyr, warn.conflicts = FALSE)
+  convenios.d = convenios.d %>%
     mutate(nome = rm_accent(tolower(as.character(MUNIC_PROPONENTE))))
-  municipios = municipios %>% 
+  municipios = municipios %>%
     mutate(nome = rm_accent(tolower(as.character(municipio))))
   
-  municipios = inner_join(municipios, 
-                          select(populacao, Codigo, Municipio), 
+  municipios = inner_join(municipios,
+                          select(populacao, Codigo, Municipio),
                           by = c("cod7" = "Codigo"))
   
   m.ids = municipios %>% select(nome, cod7, UF)
   
-  joined.d = inner_join(convenios.d, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = "UF"))
-  faltou = anti_join(convenios.d, m.ids, by = c("nome" = "nome", "UF_PROPONENTE" = "UF")) %>% select(nome, UF_PROPONENTE) %>% unique()
-  if(NROW(faltou) > 0){
-    warning(NROW(faltou), " municípios não encontrados nos dados do IBGE: ", paste(paste(faltou$nome, "-", faltou$UF_PROPONENTE, " ")))
+  joined.d = inner_join(convenios.d,
+                        m.ids,
+                        by = c("nome" = "nome", "UF_PROPONENTE" = "UF"))
+  faltou = anti_join(convenios.d,
+                     m.ids,
+                     by = c("nome" = "nome", "UF_PROPONENTE" = "UF")) %>% select(nome, UF_PROPONENTE) %>% unique()
+  if (NROW(faltou) > 0) {
+    warning(NROW(faltou),
+            " municípios não encontrados nos dados do IBGE: ",
+            paste(paste(
+              faltou$nome, "-", faltou$UF_PROPONENTE, " "
+            )))
   }
   return(joined.d)
 }
@@ -105,6 +123,7 @@ cruza_siconv_idh_populacao = function(convenios.d, municipios, populacao){
 #' inferência, escolhemos funções junto aos técnicos do MPOG e MJ.
 #' 
 imputa_funcoes_orcamentarias <- function(joined.du.siafi, todos_os_convenios){
+  require(dplyr, warn.conflicts = FALSE)
   mapa.funcoes = criar_mapa(todos_os_convenios)
   joined.siafi.imputado = left_join(joined.du.siafi, mapa.funcoes, by = "DESC_ORGAO_SUP")
   
@@ -134,6 +153,8 @@ imputa_funcoes_orcamentarias <- function(joined.du.siafi, todos_os_convenios){
 #' e uma chamada "NM_ORGAO_SUPERIOR". A primeira do SIAFI e a segunda
 #' do SICONV.
 criar_mapa = function(df){
+  require(dplyr, warn.conflicts = FALSE)
+  
   resposta = df %>% 
     filter(!is.na(`Nome Funcao`)) %>%
     group_by(DESC_ORGAO_SUP, `Nome Funcao`) %>% 

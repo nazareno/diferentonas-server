@@ -34,9 +34,10 @@ status.novos <- c('Não informado',
                   'Inadimplente')
 
 traduz_termos = function(iniciativas){
-  message("Traduzindo termos, formatando strings")
-  status <- data.frame(SIT_CONVENIO = status.antigos, TX_STATUS = status.novos)
-  novas.iniciativas <- dplyr::left_join(iniciativas, status)
+  library(futile.logger)
+  flog.info("Traduzindo termos, formatando strings")
+  status <- dplyr::tibble(SIT_CONVENIO = status.antigos, TX_STATUS = status.novos)
+  novas.iniciativas <- dplyr::left_join(iniciativas, status, by = "SIT_CONVENIO")
   
   # Tornando as palavras capitalizadas
   modificar.palavra <- function(palavra) {
