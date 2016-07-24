@@ -77,7 +77,9 @@ f3=/tmp/historico-${data_dados_siconv}.csv
 
 ./R/atualiza_dados_cli.R dados-externos/$output_siconv dados-externos/$output_siafi $ARQUIVO_VIZINHOS $f1 $f2 $f3
 # Deu tudo certo, copia para dist/data
-mv $f1 $f2 $f3 ${diretorio_saida}
+# mv $f1 $f2 $f3 ${diretorio_saida}
+# Temporariamente decidimos não usar o arquivo de histórico (fica tudo mais rápido assim)
+mv $f1 $f2 ${diretorio_saida}
 echo "[`date`] Dados movidos para ${diretorio_saida} : " $f1 " " $f2 " " $f3
 cd -
 

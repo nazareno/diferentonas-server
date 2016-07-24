@@ -8,7 +8,7 @@ if (length(args) < 1) {
 }
 
 le_um = function(arquivo_siafi, df_ja_lido = NULL){
-  write(arquivo_siafi, stderr())
+  #write(arquivo_siafi, stderr())
   library(readr)
   library(dplyr, warn.conflicts = F)
   bruto = suppressWarnings(read_tsv(arquivo_siafi, 

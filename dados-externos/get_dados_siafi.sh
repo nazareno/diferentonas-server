@@ -52,8 +52,7 @@ echo "Convertendo todo mundo para UTF-8"
 for f in 20*.csv; do
     [ -f "$f" ] || break
     if [[ ! -e utf8-$f ]]; then
-         #iconv -t UTF-8 -f ISO-8859-15 $f > utf8-$f
-         iconv -t UTF-8 $f > utf8-$f
+         iconv -t UTF-8 -f ISO-8859-15 $f > utf8-$f
     fi
 done
 
@@ -64,7 +63,6 @@ rm -f 201*csv
 echo "Consolidando em um só arquivo"
 
 of='../'$ofn
-#../consolida_arquivos_siafi.sh utf8-*_Transferencias.csv > $of
 ../consolida_siafi.R utf8-*_Transferencias.csv > $of
 cd -
 
