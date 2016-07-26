@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/diferentonas-server -Dhttp.port=${PORT} -Dplay.evolutions.db.default.autoApply=true -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=${DATABASE_URL} -Ddiferentonas.data=data
+web: target/universal/stage/bin/diferentonas-server -Dhttp.port=${PORT} -Dplay.evolutions.db.default.autoApply=true -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=${DATABASE_URL} -Ddiferentonas.data=data -DDIFERENTONAS_ADMIN_EMAIL=${DIFERENTONAS_ADMIN_EMAIL}

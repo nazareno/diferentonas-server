@@ -72,7 +72,6 @@ public class LoginController extends Controller {
 		return requisicaoDeToken.get().thenComposeAsync(respostaComToken -> {
 
 			JsonNode jsonComToken = respostaComToken.asJson();
-			Logger.debug(jsonComToken.toString());
 			if(!jsonComToken.has("access_token")){
 				return CompletableFuture.supplyAsync(() -> {
 					return ok(toJson(""));
@@ -87,7 +86,6 @@ public class LoginController extends Controller {
 			return requisicaoDePerfil.get().thenApply( respostaComEmail -> {
 
 				JsonNode jsonComEmail = respostaComEmail.asJson();
-Logger.debug(jsonComEmail.toString());
 				try {
 					
 					return processUser(request, ProvedorDeLogin.FACEBOOK, jsonComEmail.get("id").asText(), 
@@ -122,7 +120,6 @@ Logger.debug(jsonComEmail.toString());
 		return requisicaoDeToken.post(builder.toString()).thenComposeAsync(respostaComToken -> {
 
 			JsonNode jsonComToken = respostaComToken.asJson();
-			Logger.debug(jsonComToken.toString());
 			if(!jsonComToken.has("access_token")){
 				return CompletableFuture.supplyAsync(() -> {
 					return ok(toJson(""));
@@ -137,7 +134,6 @@ Logger.debug(jsonComEmail.toString());
 			return requisicaoDePerfil.get().thenApply( respostaComEmail -> {
 
 				JsonNode jsonComEmail = respostaComEmail.asJson();
-				Logger.debug(jsonComEmail.toString());
 				try {
 					String urlDaFoto = jsonComEmail.get("picture").asText();
 					return processUser(request, ProvedorDeLogin.GOOGLE, jsonComEmail.get("sub").asText(), 
@@ -168,7 +164,7 @@ Logger.debug(jsonComEmail.toString());
 					Cidadao cidadaoDoHeader = dao.find(UUID.fromString(uuid));
 					if (cidadaoDoHeader == null) { // fez login antes mas deletou usuário e tá tentando usar header
 						return notFound("Cidadão não encontrado no banco de dados. Limpe seu cache e tente novamente.");
-					} else if(!cidadao.equals(cidadaoDoHeader)){
+					} else if(!cidadaoDoHeader.equals(cidadao)){
 						return status(CONFLICT, "Login inválido. Limpe seu cache e tente novamente.");
 					}
 					

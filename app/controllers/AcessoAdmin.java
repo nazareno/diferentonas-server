@@ -22,6 +22,7 @@ public class AcessoAdmin extends Security.Authenticator {
 
 			try {
 				JWTClaimsSet claimSet = (JWTClaimsSet) AuthUtils.decodeToken(authHeader);
+				
 				Boolean admin = (Boolean)claimSet.getClaim("admin");
 				if (new DateTime(claimSet.getExpirationTime()).isAfter(DateTime.now()) && admin) {
 					return claimSet.getSubject();
