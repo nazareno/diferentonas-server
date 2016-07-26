@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Cidadao implements Serializable {
 
 	private static final long serialVersionUID = -8912114826094647736L;
+	
+	public static final String ADMIN_EMAIL = "diferentonas.admin.email";
 
 	@Id
 	@GeneratedValue(generator = "uuid2")
@@ -27,7 +29,6 @@ public class Cidadao implements Serializable {
 	private UUID id;
 	private String login;
 	private String nome;
-	private String token;
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonIgnore
@@ -73,14 +74,6 @@ public class Cidadao implements Serializable {
 		this.iniciativasAcompanhadas = iniciativasAcompanhadas;
 	}
 	
-	public String getToken() {
-		return token;
-	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -154,5 +147,25 @@ public class Cidadao implements Serializable {
 
 	public void setNome(String nome) {
 		this.nome = nome;
+	}
+
+	public String getFacebook() {
+		return facebook;
+	}
+
+	public void setFacebook(String facebook) {
+		this.facebook = facebook;
+	}
+
+	public String getGoogle() {
+		return google;
+	}
+
+	public void setGoogle(String google) {
+		this.google = google;
+	}
+
+	public String getNome() {
+		return nome;
 	}
 }

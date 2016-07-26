@@ -73,7 +73,7 @@ public class MensagemControllerTest extends WithAuthentication {
 	@Test
 	public void deveAdicionarUmaMensagem() {
 		templateMensagem.setTitulo("Titulo OK");
-		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("authorization", "token " + token));
 		
 		// insere
 		assertEquals(CREATED, result.status());
@@ -98,7 +98,7 @@ public class MensagemControllerTest extends WithAuthentication {
 		
 		templateMensagem.setTitulo(conteudoInvalido.toString());
 
-		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("authorization", "token " + token));
 		assertEquals(Status.BAD_REQUEST, result.status());
 	}
 
@@ -107,7 +107,7 @@ public class MensagemControllerTest extends WithAuthentication {
 		
 		templateMensagem.setTitulo("");
 
-		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("authorization", "token " + token));
 		assertEquals(Status.BAD_REQUEST, result.status());
 	}
 
@@ -116,7 +116,7 @@ public class MensagemControllerTest extends WithAuthentication {
 		
 		templateMensagem.setTitulo(null);
 
-		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
+		Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("authorization", "token " + token));
 		assertEquals(Status.BAD_REQUEST, result.status());
 	}
 
@@ -128,7 +128,7 @@ public class MensagemControllerTest extends WithAuthentication {
 		for (int i = 1; i < 21; i++) {
 			templateMensagem.setTitulo("" + i);
 
-			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
+			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("authorization", "token " + token));
 			assertEquals(CREATED, result.status());
 			Mensagem mensagemCriada = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 			assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
@@ -159,7 +159,7 @@ public class MensagemControllerTest extends WithAuthentication {
 		for (int i = 1; i < 21; i++) {
 			templateMensagem.setTitulo("" + i);
 
-			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
+			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("authorization", "token " + token));
 			assertEquals(CREATED, result.status());
 			Mensagem mensagemCriada = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 			assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
@@ -190,7 +190,7 @@ public class MensagemControllerTest extends WithAuthentication {
 		for (int i = 1; i < 21; i++) {
 			templateMensagem.setTitulo("" + i);
 
-			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
+			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("authorization", "token " + token));
 			assertEquals(CREATED, result.status());
 			Mensagem mensagemCriada = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 			assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());
@@ -216,7 +216,7 @@ public class MensagemControllerTest extends WithAuthentication {
 		for (int i = 1; i < 21; i++) {
 			templateMensagem.setTitulo("" + i);
 
-			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("X-Auth-Token", token));
+			Result result = route(fakeRequest(controllers.routes.MensagemController.save()).bodyJson(Json.toJson(templateMensagem)).header("authorization", "token " + token));
 			assertEquals(CREATED, result.status());
 			Mensagem mensagemCriada = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Mensagem.class);
 			assertNotNull("mensagem deveria conter um UUID gerado pelo BD", mensagemCriada.getId());

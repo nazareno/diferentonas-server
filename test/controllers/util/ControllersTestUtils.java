@@ -27,7 +27,7 @@ public class ControllersTestUtils {
         Logger.debug("Requisição para add opinião: " + json.toString());
         Http.RequestBuilder request = new Http.RequestBuilder().method("POST")
                 .bodyJson(json)
-                .header("X-Auth-Token", token)
+                .header("authorization", "token " + token)
                 .uri(controllers.routes.OpiniaoController.addOpiniao(iniciativaExemplo).url());
         return route(request);
     }

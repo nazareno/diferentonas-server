@@ -15,3 +15,4 @@ dist/data/historico*.csv
 /bin/
 /R/.Rhistory
 .DS_Store
+conf/production.conf

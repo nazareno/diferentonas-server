@@ -5,9 +5,11 @@ import static play.mvc.Controller.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.notFound;
 import static play.mvc.Results.ok;
+import static play.mvc.Results.unauthorized;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import models.Cidadao;
 import models.CidadaoDAO;
@@ -28,7 +30,7 @@ import com.google.inject.Inject;
 /**
  * Controller para ações relacionadas às opiniões dos usuários em iniciativas.
  */
-@Security.Authenticated(Secured.class)
+@Security.Authenticated(AcessoCidadao.class)
 public class OpiniaoController {
 
     @Inject
@@ -88,7 +90,8 @@ public class OpiniaoController {
     }
 
     private Cidadao getUsuarioLogado() {
-        return cidadaoDAO.findByLogin("admin@mail.com");
+    	
+    	return cidadaoDAO.find(UUID.fromString(request().username()));
     }
 
     /**
@@ -101,6 +104,12 @@ public class OpiniaoController {
         Opiniao paraRemover = opiniaoDAO.find(idOpiniao);
         if (paraRemover == null) {
             return notFound("Opinião não encontrada");
+        }
+        
+        Cidadao usuarioLogado = getUsuarioLogado();
+        
+        if(!paraRemover.getAutor().equals(usuarioLogado)){
+        	return unauthorized("Acesso negado a essa opinião");
         }
 
         Iniciativa iniciativa = paraRemover.getIniciativa();
@@ -118,6 +127,7 @@ public class OpiniaoController {
      * Usado para testes. Hoje não precisa e não tem rota.
      */
     @Transactional
+    @Deprecated
     public Result removeOpinioes(Long idIniciativa) {
         Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
         Logger.debug(""+iniciativa);

@@ -1,16 +1,20 @@
 package controllers.util;
 
-import java.util.UUID;
-
 import models.Cidadao;
 import models.CidadaoDAO;
 
 import org.junit.After;
 import org.junit.Before;
 
+import play.Configuration;
+import play.Logger;
 import play.db.jpa.JPAApi;
 import play.mvc.Http.RequestBuilder;
 import play.test.WithApplication;
+
+import com.nimbusds.jose.JOSEException;
+
+import controllers.AuthUtils;
 
 public class WithAuthentication extends WithApplication {
 	
@@ -19,24 +23,26 @@ public class WithAuthentication extends WithApplication {
 
 
     @Before
-    public void autenticaAdmin() {
+    public void autenticaAdmin() throws JOSEException{
     	
-    	app.injector().instanceOf(JPAApi.class).withTransaction(()->{
+    	Cidadao admin = app.injector().instanceOf(JPAApi.class).withTransaction(()->{
+    		Configuration configuration = app.injector().instanceOf(Configuration.class);
+    		String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
-    		Cidadao admin = cidadaoDAO.findByLogin("admin@mail.com");
-    		token = UUID.randomUUID().toString();
-			admin.setToken(token);
-    		cidadaoDAO.saveAndUpdate(admin);
+    		return cidadaoDAO.findByLogin(adminEmail);
     	});
-    	builder = new RequestBuilder().header("X-Auth-Token", token);
+    	
+		token = AuthUtils.createToken("localhost", admin).getToken();
+    	builder = new RequestBuilder().header("authorization", "token " + token);
     }
 
     @After
     public void desautenticaAdmin() {
     	app.injector().instanceOf(JPAApi.class).withTransaction(()->{
+    		Configuration configuration = app.injector().instanceOf(Configuration.class);
+    		String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
-    		Cidadao admin = cidadaoDAO.findByLogin("admin@mail.com");
-    		admin.setToken("");
+    		Cidadao admin = cidadaoDAO.findByLogin(adminEmail);
     		cidadaoDAO.saveAndUpdate(admin);
     	});
     }

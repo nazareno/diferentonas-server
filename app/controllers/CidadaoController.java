@@ -19,7 +19,7 @@ import static play.libs.Json.toJson;
  * Encapsula operações relacionadas com usuários do sistema.
  */
 @Singleton
-@Security.Authenticated(Secured.class)
+@Security.Authenticated(AcessoCidadao.class)
 public class CidadaoController extends Controller {
 
     @Inject
@@ -48,6 +48,11 @@ public class CidadaoController extends Controller {
 
         List<Cidadao> cidadaos = daoCidadao.getCidadaos(query, pagina, tamanhoPagina);
         return ok(toJson(cidadaos));
+    }
+
+    @Transactional(readOnly = true)
+    public Result getInfoCidadaoLogado() {
+    	return ok(toJson(daoCidadao.find(UUID.fromString(request().username()))));
     }
 
     private void validaParametros(String query, int pagina, int tamanhoPagina) throws IllegalArgumentException {

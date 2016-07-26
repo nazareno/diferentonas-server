@@ -29,6 +29,7 @@ import models.Score;
 
 import org.h2.tools.Csv;
 
+import play.Configuration;
 import play.Logger;
 import play.db.jpa.JPAApi;
 
@@ -69,27 +70,30 @@ public class InitialData {
      * @param jpaAPI
      */
     @Inject
-    public InitialData(JPAApi jpaAPI, CidadaoDAO daoCidadao, AtualizacaoDAO daoAtualizacao) throws SQLException {
+    public InitialData(JPAApi jpaAPI, CidadaoDAO daoCidadao, AtualizacaoDAO daoAtualizacao, Configuration configuration) throws SQLException {
         Logger.info("Na inicialização da aplicação.");
         
         jpaAPI.withTransaction(()->{
         	daoAtualizacao.create();
         });
         
-        populaCidadaos(jpaAPI, daoCidadao);
+        populaCidadaos(jpaAPI, daoCidadao, configuration.getString(Cidadao.ADMIN_EMAIL));
 
         populaCidades(jpaAPI);
 
         populaIniciativas(jpaAPI, daoCidadao);
     }
 
-	private void populaCidadaos(JPAApi jpaAPI, CidadaoDAO dao) {
+	private void populaCidadaos(JPAApi jpaAPI, CidadaoDAO dao, String adminEmail) {
 		jpaAPI.withTransaction(() -> {
-            Cidadao admin = dao.findByLogin("admin");
+            Cidadao admin = dao.findByLogin(adminEmail);
             if (admin == null) {
-                Cidadao cidadao = new Cidadao("admin", "admin@mail.com");
-                cidadao.setToken("TOKEN");
+                Cidadao cidadao = new Cidadao("Governo Federal", adminEmail);
+                cidadao.setFuncionario(true);
+                cidadao.setMinisterioDeAfiliacao("Governo Federal");
 				admin = dao.saveAndUpdate(cidadao);
+				
+				// Usuários para demonstração
                 for(int i = 0; i < 1000; i++ ){
                 	cidadaos.add(dao.saveAndUpdate(new Cidadao(String.format("cidadão_%03d", i), String.format("cidadao_%03d@mail.com", i))).getId());
                 }

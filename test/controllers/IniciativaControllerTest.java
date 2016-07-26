@@ -21,6 +21,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import play.Configuration;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.Http;
@@ -38,10 +39,12 @@ public class IniciativaControllerTest extends WithAuthentication {
 
 	@Before
 	public void limpaBancoParaTestes() {
-		CidadaoDAO cidadaoDAO= app.injector().instanceOf(CidadaoDAO.class);
+		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
+		Configuration configuration = app.injector().instanceOf(Configuration.class);
 		JPAApi jpaAPI = app.injector().instanceOf(JPAApi.class);
 		jpaAPI.withTransaction(() -> {
-			Cidadao cidadao = cidadaoDAO.findByLogin("admin@mail.com");
+			String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
+			Cidadao cidadao = cidadaoDAO.findByLogin(adminEmail);
 			cidadao.setIniciativasAcompanhadas(new HashSet<>());
 		});
 	}

@@ -2,6 +2,7 @@ package controllers;
 
 import static play.libs.Json.toJson;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
-@Security.Authenticated(Secured.class)
+@Security.Authenticated(AcessoCidadao.class)
 public class IniciativaController extends Controller {
 
     private IniciativaDAO iniciativaDAO;
@@ -43,9 +44,7 @@ public class IniciativaController extends Controller {
     @Transactional(readOnly = true)
     public Result get(Long id) {
     	
-        Cidadao cidadao = cidadaoDAO.findByLogin("admin@mail.com");
-
-    	iniciativaDAO.adicionaSumarios(iniciativaDAO.find(id), cidadao);
+        iniciativaDAO.adicionaSumarios(iniciativaDAO.find(id), getCidadaoLogado());
         return ok(toJson(iniciativaDAO.find(id)));
     }
 
@@ -57,14 +56,12 @@ public class IniciativaController extends Controller {
         }
 
         Logger.debug("Iniciativas para " + cidade.getNome() + ": " + cidade.getIniciativas().size());
-        Cidadao cidadao = cidadaoDAO.findByLogin("admin@mail.com");
-
-        return ok(toJson(iniciativaDAO.adicionaSumarios(cidade.getIniciativas(), cidadao)));
+        return ok(toJson(iniciativaDAO.adicionaSumarios(cidade.getIniciativas(), getCidadaoLogado())));
     }
 
     @Transactional(readOnly = true)
     public CompletionStage<Result> similares(Long id, Long quantidade) {
-        Cidadao cidadao = cidadaoDAO.findByLogin("admin@mail.com");
+        Cidadao cidadao = getCidadaoLogado();
         Hibernate.initialize(cidadao.getIniciativasAcompanhadas());// TODO isso não devia estar aqui na fachada...
 		return CompletableFuture.supplyAsync(
 				() -> (iniciativaDAO.findSimilares(id, quantidade, cidadao)))
@@ -85,7 +82,7 @@ public class IniciativaController extends Controller {
         if (iniciativa == null) {
             return notFound();
         }
-        Cidadao cidadao = getCidadaoAtual();
+        Cidadao cidadao = getCidadaoLogado();
         boolean inscreveu = cidadao.inscreverEm(iniciativa);
         return inscreveu ? ok() : status(CONFLICT,
                 "Cidadão " + cidadao.getId() + " já inscrito em " + iniciativa.getId());
@@ -97,22 +94,13 @@ public class IniciativaController extends Controller {
         if (iniciativa == null) {
             return notFound();
         }
-        Cidadao cidadao = getCidadaoAtual();
+        Cidadao cidadao = getCidadaoLogado();
         boolean desinscreveu = cidadao.desinscreverDe(iniciativa);
         return desinscreveu ? ok() : notFound("Cidadão " + cidadao.getId() + " não está inscrito em " + iniciativa.getId());
     }
 
-    /**
-     * Só funciona dentro de uma transação. Use enquanto não houver lógica de login.
-     *
-     * @return o Cidadao da sessão
-     */
-    protected Cidadao getCidadaoAtual() {
-
-        // não faz nada com o access-token
-        // String loginDoCidadao = session("cidadao");
-        //TODO podemos precisar disso depois do login...
-        return cidadaoDAO.findByLogin("admin@mail.com");
-    }
+	private Cidadao getCidadaoLogado() {
+		return cidadaoDAO.find(UUID.fromString(request().username()));
+	}
 
 }

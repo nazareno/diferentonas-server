@@ -13,7 +13,7 @@ import play.mvc.Security;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
-@Security.Authenticated(Secured.class)
+@Security.Authenticated(AcessoCidadao.class)
 public class CidadeController extends Controller {
 
     private CidadeDAO dao;

@@ -42,6 +42,6 @@ GET      /atualizacoes/aplica                controllers.AtualizacaoController.a
 
 
 # Login de Cidadão com Facebook
-POST /cidadao/auth/facebook controllers.LoginController.loginFacebook()
-GET /cidadao/private controllers.LoginController.getPrivate()
-#GET      /cidadao/facebook/ok                controllers.LoginController.estaLogado() 
+POST     /cidadao/auth/facebook              controllers.LoginController.loginFacebook()
+GET      /cidadao                            controllers.CidadaoController.getInfoCidadaoLogado()
+GET      /cidadao/linhadotempo               controllers.FeedController.getNovidades(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)

@@ -53,10 +53,9 @@ public class AtualizacaoControllerTest extends WithAuthentication {
     @Test
     public void deveListarAtualizacaoDisponivel() throws JsonParseException, JsonMappingException, IOException {
     	
-    	RequestBuilder request = new RequestBuilder()
+    	RequestBuilder request = builder
         .method("GET")
-        .uri(controllers.routes.AtualizacaoController.getAtualizacoes().url())
-        .header("X-Auth-Token", token);
+        .uri(controllers.routes.AtualizacaoController.getAtualizacoes().url());
     	
         Result result = Helpers.route(request);
         assertEquals(OK, result.status());
