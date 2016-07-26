@@ -14,7 +14,7 @@ calcula_diferentices = function(arquivo_convenios = "dist/data/convenios-municip
   #   ggplot(aes(x = funcao.imputada, fill = funcao.imputada, weight = total)) + 
   #   geom_bar() + 
   #   facet_grid(NM_MUNICIPIO_PROPONENTE ~ .) + coord_flip()
-  message("Adicionando zeros nas áreas não mencionadas")
+  futile.logger::flog.info("Adicionando zeros nas áreas não mencionadas")
   convenios.e = expande_convenios(convenios)
   
   t = convenios.e %>% 
@@ -25,9 +25,9 @@ calcula_diferentices = function(arquivo_convenios = "dist/data/convenios-municip
   convenios.e = rbind(convenios.e, t)
   
   # essa chamada demora!
-  message("Computando scores de diferentices")
+  futile.logger::flog.info("Computando scores de diferentices")
   resultado = computa_scores_para_todos(convenios.e, vizinhos)
-  message("Pronto")
+  futile.logger::flog.info("Diferentices calculadas")
   return(resultado)
 }
 
