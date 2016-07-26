@@ -189,6 +189,6 @@ public class CidadaoControllerTest extends WithAuthentication {
         cidadaos = jsonToList(contentAsString(result));
         Cidadao cidadao2 = cidadaos.get(0);
         assertEquals(1, cidadaos.size());
-        assertEquals("raquel", cidadao2.getLogin());
+        assertEquals("raquel", cidadao2.getNome());
     }
 }

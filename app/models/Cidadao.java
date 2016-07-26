@@ -26,7 +26,6 @@ public class Cidadao implements Serializable {
 	@Id
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@JsonIgnore
 	private UUID id;
 	@JsonIgnore
 	private String login;
@@ -55,6 +54,7 @@ public class Cidadao implements Serializable {
 	
 	public Cidadao(String nome, String login) {
 		this();
+		this.nome = nome;
 		this.login = login;
 	}
 
