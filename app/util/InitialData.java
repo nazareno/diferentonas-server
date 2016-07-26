@@ -95,7 +95,10 @@ public class InitialData {
 				
 				// Usuários para demonstração
                 for(int i = 0; i < 1000; i++ ){
-                	cidadaos.add(dao.saveAndUpdate(new Cidadao(String.format("cidadão_%03d", i), String.format("cidadao_%03d@mail.com", i))).getId());
+                	Cidadao cidadaoParaDemonstracao = new Cidadao("Anônimo", String.format("cidadao_%03d@mail.com", i));
+                	cidadaoParaDemonstracao.setUrlDaFoto("http://www.gravatar.com/avatar/" + cidadaoParaDemonstracao.getLogin().hashCode()
+							+ "?f=y&d=retro");
+					cidadaos.add(dao.saveAndUpdate(cidadaoParaDemonstracao).getId());
                 }
             }
         });

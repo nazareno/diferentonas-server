@@ -2,12 +2,14 @@ package models;
 
 public enum ProvedorDeLogin {
 	
-	FACEBOOK("facebook"), GOOGLE("google");
+	FACEBOOK("facebook", "diferentonas.secret.facebook"), GOOGLE("google", "diferentonas.secret.google");
 
 	private String name;
+	private String secretProp;
 
-	private ProvedorDeLogin(final String name) {
+	private ProvedorDeLogin(final String name, final String secretProp) {
 		this.name = name;
+		this.secretProp = secretProp;
 	}
 
 	public String getName() {
@@ -16,5 +18,9 @@ public enum ProvedorDeLogin {
 
 	public String capitalize() {
 		return this.name.toUpperCase();
+	}
+	
+	public String getSecretProp(){
+		return this.secretProp;
 	}
 }

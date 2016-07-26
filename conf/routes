@@ -41,7 +41,8 @@ GET      /atualizacoes                       controllers.AtualizacaoController.g
 GET      /atualizacoes/aplica                controllers.AtualizacaoController.aplica()
 
 
-# Login de Cidadão com Facebook
+# Login de Cidadão
 POST     /cidadao/auth/facebook              controllers.LoginController.loginFacebook()
+POST     /cidadao/auth/google                controllers.LoginController.loginGoogle()
 GET      /cidadao                            controllers.CidadaoController.getInfoCidadaoLogado()
 GET      /cidadao/linhadotempo               controllers.FeedController.getNovidades(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)

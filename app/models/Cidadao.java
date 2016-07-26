@@ -26,9 +26,12 @@ public class Cidadao implements Serializable {
 	@Id
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
+	@JsonIgnore
 	private UUID id;
+	@JsonIgnore
 	private String login;
 	private String nome;
+	private String urlDaFoto;
 	
 	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonIgnore
@@ -39,8 +42,10 @@ public class Cidadao implements Serializable {
 	// o ministério, caso seja funcionaário
 	private String ministerioDeAfiliacao;
 
+	@JsonIgnore
 	private String facebook;
 
+	@JsonIgnore
 	private String google;
 
 
@@ -168,4 +173,14 @@ public class Cidadao implements Serializable {
 	public String getNome() {
 		return nome;
 	}
+
+	public String getUrlDaFoto() {
+		return urlDaFoto;
+	}
+
+	public void setUrlDaFoto(String urlDaFoto) {
+		this.urlDaFoto = urlDaFoto;
+	}
+	
+	
 }

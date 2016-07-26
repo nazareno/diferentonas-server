@@ -27,7 +27,7 @@ public class AcessoAdmin extends Security.Authenticator {
 					return claimSet.getSubject();
 				} 
 			} catch (ParseException | JOSEException e) {
-				Logger.error("Erro na validação do token", e);
+				Logger.error("Erro na validação do token: " + e.getMessage());
 			}
     	}
 

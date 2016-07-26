@@ -23,13 +23,12 @@ public class AcessoCidadao extends Security.Authenticator {
     		String authHeader = authTokenHeaderValues[0];
 
 			try {
-				Logger.debug("DECODIFICANDO: " + authHeader);
 				JWTClaimsSet claimSet = (JWTClaimsSet) AuthUtils.decodeToken(authHeader);
 				if (new DateTime(claimSet.getExpirationTime()).isAfter(DateTime.now())) {
 					return claimSet.getSubject();
 				} 
 			} catch (ParseException | JOSEException e) {
-				Logger.error("Erro na validação do token", e);
+				Logger.error("Erro na validação do token: " + e.getMessage());
 			}
     	}
 
