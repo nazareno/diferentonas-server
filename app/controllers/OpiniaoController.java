@@ -5,6 +5,7 @@ import static play.mvc.Controller.request;
 import static play.mvc.Results.badRequest;
 import static play.mvc.Results.notFound;
 import static play.mvc.Results.ok;
+import static play.mvc.Results.status;
 import static play.mvc.Results.unauthorized;
 
 import java.util.Iterator;
@@ -21,6 +22,7 @@ import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
+import play.mvc.BodyParser;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -88,6 +90,44 @@ public class OpiniaoController {
         
         return ok(toJson(opiniao));
     }
+    
+    @Transactional
+    public Result addJoinha(Long idIniciativa, String idOpiniao){
+    	
+    	Cidadao apoiador = getUsuarioLogado();
+    	
+    	try{
+    		UUID id = UUID.fromString(idOpiniao);
+    		Opiniao opiniao = opiniaoDAO.find(id);
+    		if(opiniao.addApoiador(apoiador)){
+    			return ok();
+    		}else{
+    			return status(play.mvc.Http.Status.CONFLICT); 
+    		}
+    	}catch(IllegalArgumentException e){
+    		return notFound(idOpiniao);
+    	}
+    }
+
+    @Transactional
+    public Result removeJoinha(Long idIniciativa, String idOpiniao){
+    	
+    	Cidadao apoiador = getUsuarioLogado();
+    	
+    	try{
+    		UUID id = UUID.fromString(idOpiniao);
+    		Opiniao opiniao = opiniaoDAO.find(id);
+    		if(opiniao.removeApoiador(apoiador)){
+    			return ok();
+    		}else{
+    			return badRequest("O cidadão já não apoia essa opinião"); 
+    		}
+    	}catch(IllegalArgumentException e){
+    		return notFound(idOpiniao);
+    	}
+    }
+
+
 
     private Cidadao getUsuarioLogado() {
     	
@@ -98,10 +138,11 @@ public class OpiniaoController {
      * Usado para testes. Hoje não precisa de rota.
      */
     @Transactional
+    @Deprecated
     public Result removeOpiniao(String idOpiniao) {
         Logger.debug("Removendo opinião " + idOpiniao);
 
-        Opiniao paraRemover = opiniaoDAO.find(idOpiniao);
+        Opiniao paraRemover = opiniaoDAO.find(UUID.fromString(idOpiniao));
         if (paraRemover == null) {
             return notFound("Opinião não encontrada");
         }
@@ -118,7 +159,7 @@ public class OpiniaoController {
 
         return ok(toJson(paraRemover));
     }
-
+    
     private void removeOpiniaoDoBD(Opiniao paraRemover) {
         opiniaoDAO.delete(paraRemover);
     }

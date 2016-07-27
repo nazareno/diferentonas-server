@@ -20,12 +20,13 @@ public class WithAuthentication extends WithApplication {
 	
 	protected String token;
 	protected RequestBuilder builder;
+	protected Cidadao admin;
 
 
     @Before
     public void autenticaAdmin() throws JOSEException{
     	
-    	Cidadao admin = app.injector().instanceOf(JPAApi.class).withTransaction(()->{
+    	admin = app.injector().instanceOf(JPAApi.class).withTransaction(()->{
     		Configuration configuration = app.injector().instanceOf(Configuration.class);
     		String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);

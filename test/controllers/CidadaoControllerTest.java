@@ -15,6 +15,7 @@ import java.util.List;
 
 import models.Cidadao;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -31,23 +32,19 @@ import controllers.util.WithAuthentication;
 public class CidadaoControllerTest extends WithAuthentication {
 
     private List<Cidadao> cidadaosCobaia;
+	private CidadaoController controller;
+	private JPAApi jpaAPI;
 
     @Before
-    public void limpaBancoParaTeste() {
-        cidadaosCobaia = new LinkedList<>();
+    public void preparaBancoParaTeste() {
+		cidadaosCobaia = new LinkedList<>();
         cidadaosCobaia.add(new Cidadao("root", "root"));
         cidadaosCobaia.add(new Cidadao("raquel", "raquel"));
         cidadaosCobaia.add(new Cidadao("toinho", "toinho"));
 
-        CidadaoController controller = app.injector().instanceOf(CidadaoController.class);
-        JPAApi jpaAPI = app.injector().instanceOf(JPAApi.class);
-        jpaAPI.withTransaction(() -> {
-            for (Cidadao c:
-                 cidadaosCobaia) {
-                controller.removeCidadaoPorLogin(c.getLogin());
-            }
-        });
-
+        controller = app.injector().instanceOf(CidadaoController.class);
+        jpaAPI = app.injector().instanceOf(JPAApi.class);
+        limpaBanco();
         jpaAPI.withTransaction(() -> {
             for (Cidadao c:
                     cidadaosCobaia) {
@@ -55,6 +52,22 @@ public class CidadaoControllerTest extends WithAuthentication {
             }
         });
     }
+
+    @After	
+    public void limpaBancoPosTeste() {
+        limpaBanco();
+    }
+
+	private void limpaBanco() {
+
+        jpaAPI.withTransaction(() -> {
+            for (Cidadao c:
+                 cidadaosCobaia) {
+                controller.removeCidadaoPorLogin(c.getLogin());
+            }
+        });
+
+	}
 
     private static List<Cidadao> jsonToList(String jsonResposta) throws IOException {
         return new ObjectMapper().readValue(jsonResposta, new TypeReference<List<Cidadao>>() {});

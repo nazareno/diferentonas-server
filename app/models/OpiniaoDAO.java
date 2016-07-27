@@ -22,9 +22,8 @@ public class OpiniaoDAO {
         this.jpaAPI = jpaAPI;
     }
 
-    public Opiniao find(String idOpiniao) {
-        UUID idOpiniaoUUID = UUID.fromString(idOpiniao);
-        return jpaAPI.em().find(Opiniao.class, idOpiniaoUUID);
+    public Opiniao find(UUID id) {
+        return jpaAPI.em().find(Opiniao.class, id);
     }
 
     public void delete(Opiniao paraRemover) {
