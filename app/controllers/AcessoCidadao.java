@@ -1,7 +1,6 @@
 package controllers;
 
 import java.text.ParseException;
-import java.util.Arrays;
 
 import org.joda.time.DateTime;
 
@@ -18,7 +17,6 @@ public class AcessoCidadao extends Security.Authenticator {
     @Override
     public String getUsername(Context ctx) {
     	String[] authTokenHeaderValues = ctx.request().headers().get(AuthUtils.AUTH_HEADER_KEY);
-    	Logger.debug(Arrays.toString(authTokenHeaderValues));
     	if ((authTokenHeaderValues != null) && (authTokenHeaderValues.length == 1) && (authTokenHeaderValues[0] != null)) {
     		String authHeader = authTokenHeaderValues[0];
 

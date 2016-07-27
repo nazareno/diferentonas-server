@@ -57,6 +57,8 @@ public class FeedControllerTest extends WithAuthentication {
 
     @Test
     public void deveIniciarComFeedVazio() throws IOException {
+        Helpers.route(builder.uri(controllers.routes.IniciativaController.removeInscrito(iniciativaUsada).url()).method("DELETE"));
+
         Result result = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
