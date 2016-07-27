@@ -409,14 +409,16 @@ public class Iniciativa implements Serializable {
 
 				if(!valorAntigo.equals(valorNovo)){
 					field.setAccessible(true);
-					field.set(this, valorNovo);
 					if(Date.class.equals(field.getType())){
 						String dataAntigaFormatada = formatoData.format(valorAntigo);
 						String dataNovaFormatada = formatoData.format(valorNovo);
 						
-						novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, dataDaAtualizacao, this.cidade, this, campo, dataAntigaFormatada, dataNovaFormatada));
-						
+						if(!dataAntigaFormatada.equals(dataNovaFormatada)){
+							field.set(this, valorNovo);
+							novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, dataDaAtualizacao, this.cidade, this, campo, dataAntigaFormatada, dataNovaFormatada));
+						}
 					}else{
+						field.set(this, valorNovo);
 						novidades.add(new Novidade(TipoDaNovidade.ATUALIZACAO_DE_INICIATIVA, dataDaAtualizacao, this.cidade, this, campo, valorAntigo.toString(), valorNovo.toString()));
 					}
 				}
