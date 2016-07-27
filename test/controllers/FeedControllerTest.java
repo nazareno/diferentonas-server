@@ -60,12 +60,12 @@ public class FeedControllerTest extends WithAuthentication {
         Helpers.route(builder.uri(controllers.routes.IniciativaController.removeInscrito(iniciativaUsada).url()).method("DELETE"));
 
         Result result = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 10).url()).method("GET"));
-        assertEquals(OK, result.status());
+        assertEquals("getNovidades não completou com sucesso", OK, result.status());
         String conteudoResposta = contentAsString(result);
-        assertNotNull(conteudoResposta);
-        assertTrue(Json.parse(conteudoResposta).isArray());
+        assertNotNull("conteúdo da resposta não deveria ser null", conteudoResposta);
+        assertTrue("resposta não é um array de novidades", Json.parse(conteudoResposta).isArray());
         List<Novidade> novidades = jsonToList(conteudoResposta);
-        assertTrue(novidades.isEmpty());
+        assertTrue("array de novidades não está vazio", novidades.isEmpty());
     }
 
     private static List<Novidade> jsonToList(String jsonResposta) throws IOException {
