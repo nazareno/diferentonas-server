@@ -19,6 +19,7 @@ import java.util.UUID;
 
 import models.Iniciativa;
 import models.IniciativaDAO;
+import models.Novidade;
 import models.Opiniao;
 import models.OpiniaoDAO;
 
@@ -254,11 +255,11 @@ public class OpiniaoControllerTest extends WithAuthentication {
         UUID opiniaoUUID = Json.fromJson(Json.parse(Helpers.contentAsString(resultado)), Opiniao.class).getId();
 		uuidDeOpinioesPraRemover.add(opiniaoUUID);
         
-		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
 		
         resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.addJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("POST"));
         
-		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
 
     }
 
@@ -269,17 +270,17 @@ public class OpiniaoControllerTest extends WithAuthentication {
         UUID opiniaoUUID = Json.fromJson(Json.parse(Helpers.contentAsString(resultado)), Opiniao.class).getId();
 		uuidDeOpinioesPraRemover.add(opiniaoUUID);
         
-		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
 		
         resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.addJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("POST"));
         assertEquals(OK, resultado.status());
         
-		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
 		
         resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.addJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("POST"));
         assertEquals(CONFLICT, resultado.status());
 
-		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
     }
 
     @Test
@@ -289,15 +290,15 @@ public class OpiniaoControllerTest extends WithAuthentication {
         UUID opiniaoUUID = Json.fromJson(Json.parse(Helpers.contentAsString(resultado)), Opiniao.class).getId();
 		uuidDeOpinioesPraRemover.add(opiniaoUUID);
         
-		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
 		
         resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.addJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("POST"));
         
-		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
 		
         resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.removeJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("DELETE"));
         
-		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
     }
 
     @Test
@@ -307,7 +308,7 @@ public class OpiniaoControllerTest extends WithAuthentication {
         UUID opiniaoUUID = Json.fromJson(Json.parse(Helpers.contentAsString(resultado)), Opiniao.class).getId();
 		uuidDeOpinioesPraRemover.add(opiniaoUUID);
         
-		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).ehApoiada(admin)));
+		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
 
 		
         resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.removeJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("DELETE"));
@@ -321,5 +322,35 @@ public class OpiniaoControllerTest extends WithAuthentication {
         assertEquals(NOT_FOUND, resultado.status());
     }
 
+
+    @Test
+    public void deveRetornarMarcadorDeJoinhaDadoEmOpinioes() throws IOException {
+        JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\", \"conteudo\": \"Topíssimo\"}");
+        Result resultado = enviaPOSTAddOpiniao(json, iniciativaExemplo, token);
+        UUID opiniaoUUID = Json.fromJson(Json.parse(Helpers.contentAsString(resultado)), Opiniao.class).getId();
+		uuidDeOpinioesPraRemover.add(opiniaoUUID);
+        
+		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
+		
+        resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 100).url()).method("GET"));
+        List<Opiniao> opinioes = new ObjectMapper().readValue(contentAsString(resultado), new TypeReference<List<Opiniao>>() {});
+        for (Opiniao opiniao : opinioes) {
+			assertFalse(opiniao.isApoiada());
+		}
+        
+		
+        resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.addJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("POST"));
+        
+		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
+        resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 100).url()).method("GET"));
+        opinioes = new ObjectMapper().readValue(contentAsString(resultado), new TypeReference<List<Opiniao>>() {});
+        for (Opiniao opiniao : opinioes) {
+			if(opiniao.getId().equals(opiniaoUUID)){
+				assertTrue(opiniao.isApoiada());
+			}else{
+				assertFalse(opiniao.isApoiada());
+			}
+		}
+    }
 
 }

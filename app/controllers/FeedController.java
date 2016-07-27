@@ -2,12 +2,15 @@ package controllers;
 
 import static play.libs.Json.toJson;
 
+import java.util.List;
 import java.util.UUID;
 
 import javax.inject.Inject;
 
 import models.Cidadao;
 import models.CidadaoDAO;
+import models.Novidade;
+import models.TipoDaNovidade;
 import play.db.jpa.Transactional;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -31,7 +34,15 @@ public class FeedController extends Controller {
 		Cidadao cidadao = daoCidadao
 				.find(UUID.fromString(request().username()));
 		
-		return ok(toJson(daoCidadao.getNovidadesRecentes(cidadao.getId(),
-				pagina, tamanhoPagina)));
+		List<Novidade> recentes = daoCidadao.getNovidadesRecentes(cidadao.getId(),
+				pagina, tamanhoPagina);
+		
+		for (Novidade novidade : recentes) {
+			if(TipoDaNovidade.NOVA_OPINIAO.equals(novidade.getTipo())){
+				novidade.getOpiniao().setApoiada(cidadao);
+			}
+		}
+		
+		return ok(toJson(recentes));
 	}
 }

@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.GenericGenerator;
 
@@ -67,6 +68,9 @@ public class Opiniao implements Serializable {
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonIgnore
     private Set<Cidadao> apoiadores;
+
+	@Transient
+    private boolean apoiada;
 
     public Opiniao(){
         this.criadaEm = new Date();
@@ -176,9 +180,20 @@ public class Opiniao implements Serializable {
 		return true;
 	}
 
-	public boolean ehApoiada(Cidadao cidadao) {
-		System.out.println(this.apoiadores);
+	public boolean isApoiada(Cidadao cidadao) {
 		return this.apoiadores.contains(cidadao);
+	}
+
+	public boolean isApoiada() {
+		return apoiada;
+	}
+    
+	public void setApoiada(Cidadao cidadao) {
+		this.apoiada = isApoiada(cidadao);
+	}
+
+	public void setApoiada(boolean apoiada) {
+		this.apoiada = apoiada;
 	}
     
 }

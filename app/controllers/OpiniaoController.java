@@ -6,9 +6,7 @@ import static play.mvc.Results.badRequest;
 import static play.mvc.Results.notFound;
 import static play.mvc.Results.ok;
 import static play.mvc.Results.status;
-import static play.mvc.Results.unauthorized;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,7 +20,6 @@ import play.Logger;
 import play.data.Form;
 import play.data.FormFactory;
 import play.db.jpa.Transactional;
-import play.mvc.BodyParser;
 import play.mvc.Result;
 import play.mvc.Security;
 
@@ -57,6 +54,9 @@ public class OpiniaoController {
         }
 
         List<Opiniao> opinioes = opiniaoDAO.findByIniciativa(idIniciativa, pagina, tamanhoPagina);
+        for (Opiniao opiniao : opinioes) {
+			opiniao.setApoiada(getUsuarioLogado());
+		}
         return ok(toJson(opinioes));
     }
 
@@ -127,59 +127,8 @@ public class OpiniaoController {
     	}
     }
 
-
-
     private Cidadao getUsuarioLogado() {
     	
     	return cidadaoDAO.find(UUID.fromString(request().username()));
-    }
-
-    /**
-     * Usado para testes. Hoje não precisa de rota.
-     */
-    @Transactional
-    @Deprecated
-    public Result removeOpiniao(String idOpiniao) {
-        Logger.debug("Removendo opinião " + idOpiniao);
-
-        Opiniao paraRemover = opiniaoDAO.find(UUID.fromString(idOpiniao));
-        if (paraRemover == null) {
-            return notFound("Opinião não encontrada");
-        }
-        
-        Cidadao usuarioLogado = getUsuarioLogado();
-        
-        if(!paraRemover.getAutor().equals(usuarioLogado)){
-        	return unauthorized("Acesso negado a essa opinião");
-        }
-
-        Iniciativa iniciativa = paraRemover.getIniciativa();
-        iniciativa.removeOpiniao(paraRemover);
-        removeOpiniaoDoBD(paraRemover);
-
-        return ok(toJson(paraRemover));
-    }
-    
-    private void removeOpiniaoDoBD(Opiniao paraRemover) {
-        opiniaoDAO.delete(paraRemover);
-    }
-
-    /**
-     * Usado para testes. Hoje não precisa e não tem rota.
-     */
-    @Transactional
-    @Deprecated
-    public Result removeOpinioes(Long idIniciativa) {
-        Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
-        Logger.debug(""+iniciativa);
-        List<Opiniao> opinioes = iniciativa.getOpinioes();
-        Logger.debug(""+opinioes);
-		Iterator<Opiniao> it = opinioes.iterator();
-        while (it.hasNext()){
-            Opiniao o = it.next();
-            removeOpiniaoDoBD(o);
-            it.remove();
-        }
-        return ok();
     }
 }
