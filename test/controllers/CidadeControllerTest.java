@@ -254,8 +254,16 @@ public class CidadeControllerTest extends WithAuthentication {
 		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeID).url()).method("POST"));
 		assertEquals(Status.OK, result.status());
 		
-		result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+        result = Helpers.route(builder.uri(controllers.routes.CidadeController.get(2513406L).url()).method("GET"));
+        Cidade cidade = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Cidade.class);
+        assertTrue(cidade.isSeguidaPeloRequisitante());
+
+        result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
 		assertEquals(Status.OK, result.status());
+
+        result = Helpers.route(builder.uri(controllers.routes.CidadeController.get(2513406L).url()).method("GET"));
+        cidade = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Cidade.class);
+        assertFalse(cidade.isSeguidaPeloRequisitante());
 	}
 	
 	@Test

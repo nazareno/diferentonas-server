@@ -75,6 +75,7 @@ public class Iniciativa implements Serializable {
     /* Adicionados para facilitar no json retornado para o cliente:    */
     @Transient
     private Map<String, Long> sumario;
+
     @Transient
     private boolean seguidaPeloRequisitante;
 

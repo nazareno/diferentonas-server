@@ -2,6 +2,7 @@ package controllers;
 
 import static controllers.util.ControllersTestUtils.enviaPOSTAddOpiniao;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -82,8 +83,10 @@ public class FeedControllerTest extends WithAuthentication {
 		resultado = enviaPOSTAddOpiniao("A novidade veio dar na praia. Na qualidade rara de sereia", iniciativaUsada, token);
 		uuidDeOpinioesPraRemover.add(Json.fromJson(Json.parse(Helpers.contentAsString(resultado)), Opiniao.class).getId());
 
-        Result result = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 10).url()).method("GET"));
+        Result result = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 100).url()).method("GET"));
         List<Novidade> novidades = jsonToList(contentAsString(result));
+        
+        System.out.println(novidades.size());
 
         // TODO Esse teste só é possível quando tivermos diferentes usuários:
         // assertEquals(1, novidades.size());
@@ -99,6 +102,51 @@ public class FeedControllerTest extends WithAuthentication {
 		result = Helpers.route(builder.uri(controllers.routes.IniciativaController.removeInscrito(iniciativaUsada).url()).method("DELETE"));
 		assertEquals(Status.OK, result.status());
 
+    }
+
+    @Test
+    public void deveNotificarCidadeQueSegui() throws IOException {
+    	
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeDaIniciativaUsada).url()).method("POST"));
+		assertEquals(Status.OK, result.status());
+
+        result = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 100).url()).method("GET"));
+        List<Novidade> novidades = jsonToList(contentAsString(result));
+        
+        for (Novidade novidade : novidades) {
+            assertNotEquals(TipoDaNovidade.NOVA_OPINIAO, novidade.getTipo());
+            assertEquals(cidadeDaIniciativaUsada, novidade.getCidade().getId());
+		}
+        
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeDaIniciativaUsada).url()).method("DELETE"));
+		assertEquals(Status.OK, result.status());
+    }
+
+    @Test
+    public void deveNotificarCidadeQueSeguiSemNotificarOpinioes() throws IOException {
+    	
+    	// Inscreve em cidade
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeDaIniciativaUsada).url()).method("POST"));
+		assertEquals(Status.OK, result.status());
+
+		// Adiciona Opinião
+        result = enviaPOSTAddOpiniao(conteudoExemplo, iniciativaUsada, token);
+		uuidDeOpinioesPraRemover.add(Json.fromJson(Json.parse(Helpers.contentAsString(result)), Opiniao.class).getId());
+
+		// Desinscreve da Iniciativa
+		result = Helpers.route(builder.uri(controllers.routes.IniciativaController.removeInscrito(iniciativaUsada).url()).method("DELETE"));
+		assertEquals(Status.OK, result.status());
+		
+		result = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 100).url()).method("GET"));
+        List<Novidade> novidades = jsonToList(contentAsString(result));
+        
+        for (Novidade novidade : novidades) {
+            assertNotEquals(TipoDaNovidade.NOVA_OPINIAO, novidade.getTipo());
+            assertEquals(cidadeDaIniciativaUsada, novidade.getCidade().getId());
+		}
+        
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeDaIniciativaUsada).url()).method("DELETE"));
+		assertEquals(Status.OK, result.status());
     }
 
 

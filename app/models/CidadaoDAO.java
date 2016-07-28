@@ -42,11 +42,20 @@ public class CidadaoDAO {
     public List<Novidade> getNovidadesRecentes(UUID cidadaoId, int pagina, int tamanhoDaPagina) {
         TypedQuery<Novidade> query = jpaAPI.em()
                 .createQuery("SELECT n "
-                        + "FROM Cidadao c "
-                        + "JOIN c.iniciativasAcompanhadas as acompanhadas "
-                        + "JOIN acompanhadas.novidades as n "
-                        + "WHERE c.id = :cidadao_id AND n.tipo = 'NOVA_OPINIAO' "
-                        + "ORDER BY n.criadaEm DESC", Novidade.class)
+	        				+ "FROM Novidade n "
+	        				+ "WHERE n.id IN ( "
+	            				+ "SELECT n.id "
+	            				+ "FROM Cidadao c "
+	            				+ "JOIN c.iniciativasAcompanhadas AS acompanhadas "
+	            				+ "JOIN acompanhadas.novidades AS n "
+	            				+ "WHERE c.id = :cidadao_id ) "
+	        				+ "OR n.id IN ( "
+	            				+ "SELECT n.id "
+	            				+ "FROM Cidadao c "
+	            				+ "JOIN c.cidadesAcompanhadas AS acompanhadas "
+	            				+ "JOIN acompanhadas.novidades AS n "
+	            				+ "WHERE c.id = :cidadao_id AND n.tipo != 'NOVA_OPINIAO' ) "
+	        				+ "ORDER BY n.criadaEm DESC", Novidade.class)
                 .setParameter("cidadao_id", cidadaoId)
                 .setFirstResult(pagina * tamanhoDaPagina)
                 .setMaxResults(tamanhoDaPagina);

@@ -202,4 +202,8 @@ public class Cidadao implements Serializable {
 	public void setCidadesAcompanhadas(Set<Cidade> cidadesAcompanhadas) {
 		this.cidadesAcompanhadas = cidadesAcompanhadas;
 	}
+
+	public boolean isInscritoEm(Cidade cidade) {
+		return this.cidadesAcompanhadas.contains(cidade);
+	}
 }

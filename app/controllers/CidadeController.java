@@ -29,6 +29,8 @@ public class CidadeController extends Controller {
 
     @Transactional(readOnly = true)
     public Result get(Long id) {
+    	
+    	
         Cidade cidade = dao.find(id);
 
         if (cidade == null) {
@@ -37,6 +39,9 @@ public class CidadeController extends Controller {
             return notFound(toJson(result));
         }
 
+        Cidadao cidadao = getCidadaoLogado();
+        cidade.setSeguidaPeloRequisitante(cidadao.isInscritoEm(cidade));
+        
         Logger.debug("Acesso a " + cidade.getNome());
 
         ObjectNode node = (ObjectNode) toJson(cidade);

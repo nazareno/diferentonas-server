@@ -15,6 +15,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -60,7 +61,10 @@ public class Cidade implements Serializable {
     @JsonIgnore
     private List<Novidade> novidades;
 
+    @Transient
+    private boolean seguidaPeloRequisitante;
 
+    
     public Cidade() {
         this.similares = new LinkedList<>();
         this.scores = new LinkedList<>();
@@ -258,5 +262,13 @@ public class Cidade implements Serializable {
 		iniciativas.add(iniciativa);
 		iniciativa.setCidade(this);
 		novidades.add(new Novidade(TipoDaNovidade.NOVA_INICIATIVA, dataDaAtualizacao, this, iniciativa));
+	}
+
+	public boolean isSeguidaPeloRequisitante() {
+		return seguidaPeloRequisitante;
+	}
+
+	public void setSeguidaPeloRequisitante(boolean seguidaPeloRequisitante) {
+		this.seguidaPeloRequisitante = seguidaPeloRequisitante;
 	}
 }
