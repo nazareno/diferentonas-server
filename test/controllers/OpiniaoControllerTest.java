@@ -48,7 +48,7 @@ public class OpiniaoControllerTest extends WithAuthentication {
 
     private JPAApi jpaAPI;
 
-    private Long iniciativaExemplo = 818977L;
+    private Long iniciativaExemplo = 805265L;
     private String conteudoExemplo = "Essa iniciativa é absolutamente estrogonófica para a cidade.";
     private List<UUID> uuidDeOpinioesPraRemover = new ArrayList<UUID>();
 	private OpiniaoDAO daoOpiniao;
