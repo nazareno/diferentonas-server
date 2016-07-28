@@ -28,6 +28,7 @@ import org.junit.Test;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.Result;
+import play.mvc.Http.Status;
 import play.test.Helpers;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -47,6 +48,7 @@ public class CidadeControllerTest extends WithAuthentication {
     private CidadeDAO dao;
     private List<Novidade> novidadesParaDeletar = new ArrayList<>();
     private List<Score> scoresParaDeletar = new ArrayList<>();
+	private long cidadeID = 2513406L;
 
     @Before
     public void setUp() {
@@ -100,7 +102,7 @@ public class CidadeControllerTest extends WithAuthentication {
 
     @Test
     public void deveRetornarNenhumaNovidade() throws JsonParseException, JsonMappingException, IOException {
-        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(2513406L, 1, 10).url()).method("GET"));
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(cidadeID, 1, 10).url()).method("GET"));
         assertEquals(OK, result.status());
 
         String conteudoResposta = contentAsString(result);
@@ -237,4 +239,42 @@ public class CidadeControllerTest extends WithAuthentication {
 		assertEquals(novoScore, novidadeDeNovoScore.getScore());
         assertEquals(TipoDaNovidade.NOVO_SCORE, novidadeDeNovoScore.getTipo());
     }
+    
+    
+	@Test
+	public void deveriaFalharNaInscricaoNumaCidadeInexistente() {
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(0L).url()).method("POST"));
+		assertEquals(Status.NOT_FOUND, result.status());
+	}
+
+	@Test
+	public void deveriaInscreverEDesinscreverCidadaoNaCidade() {
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeID).url()).method("POST"));
+		assertEquals(Status.OK, result.status());
+		
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+		assertEquals(Status.OK, result.status());
+	}
+	
+	@Test
+	public void deveriaReportarCidadaoJaInscritoNumaCidade() {
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeID).url()).method("POST"));
+		assertEquals(Status.OK, result.status());
+		
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeID).url()).method("POST"));
+		assertEquals(Status.CONFLICT, result.status());
+		
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+		assertEquals(Status.OK, result.status());
+	}
+
+	@Test
+	public void deveriaFalharAoRemoverCidadaoNaoInscritoNaCidade() {
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+		assertEquals(Status.NOT_FOUND, result.status());
+	}
 }

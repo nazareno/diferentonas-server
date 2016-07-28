@@ -11,6 +11,8 @@ GET      /cidade/:id                                         controllers.CidadeC
 GET      /cidade/:id/similares                               controllers.CidadeController.getSimilares(id: Long)
 GET      /cidade/:id/iniciativas                             controllers.IniciativaController.getIniciativas(id: Long)
 GET      /cidade/:id/linhadotempo                            controllers.CidadeController.getNovidades(id: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
+POST     /cidade/:id/inscritos                               controllers.CidadeController.adicionaInscrito(id: Long)
+DELETE   /cidade/:id/inscritos                               controllers.CidadeController.removeInscrito(id: Long)
 
 # Mensagens do Governo
 GET      /mensagens                                          controllers.MensagemController.getMensagens(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)

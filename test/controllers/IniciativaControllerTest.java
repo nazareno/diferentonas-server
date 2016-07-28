@@ -84,18 +84,6 @@ public class IniciativaControllerTest extends WithAuthentication {
 	}
 
 	@Test
-	@Ignore
-	public void deveriaInscreverDoisCidadaosNaMesmaIniciativa() {
-		long id = 797935L;
-		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
-		assertEquals(Status.OK, result.status());
-		
-		//FIXME troca usuário e resubmete
-		result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));
-		assertEquals(Status.OK, result.status());
-}
-
-	@Test
 	public void deveriaReportarCidadaoJaInscritoNumaIniciativa() {
 		long id = 797935L;
 		Result result = Helpers.route(builder.uri(controllers.routes.IniciativaController.adicionaInscrito(id).url()).method("POST"));

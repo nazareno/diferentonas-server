@@ -36,6 +36,10 @@ public class Cidadao implements Serializable {
 	@JsonIgnore
 	private Set<Iniciativa> iniciativasAcompanhadas;
 
+	@ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonIgnore
+	private Set<Cidade> cidadesAcompanhadas;
+
 	// se o cidadao é funcionário de um ministério
 	private boolean funcionario;
 	// o ministério, caso seja funcionaário
@@ -50,6 +54,7 @@ public class Cidadao implements Serializable {
 
 	public Cidadao() {
 		this.iniciativasAcompanhadas = new HashSet<>();
+		this.cidadesAcompanhadas = new HashSet<>();
 	}
 	
 	public Cidadao(String nome, String login) {
@@ -181,6 +186,20 @@ public class Cidadao implements Serializable {
 	public void setUrlDaFoto(String urlDaFoto) {
 		this.urlDaFoto = urlDaFoto;
 	}
-	
-	
+
+	public boolean inscreverEm(Cidade cidade) {
+		return this.cidadesAcompanhadas.add(cidade);
+	}
+
+	public boolean desinscreverDe(Cidade cidade) {
+		return this.cidadesAcompanhadas.remove(cidade);
+	}
+
+	public Set<Cidade> getCidadesAcompanhadas() {
+		return cidadesAcompanhadas;
+	}
+
+	public void setCidadesAcompanhadas(Set<Cidade> cidadesAcompanhadas) {
+		this.cidadesAcompanhadas = cidadesAcompanhadas;
+	}
 }

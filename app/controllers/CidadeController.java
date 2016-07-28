@@ -1,6 +1,11 @@
 package controllers;
 
 import static play.libs.Json.toJson;
+
+import java.util.UUID;
+
+import models.Cidadao;
+import models.CidadaoDAO;
 import models.Cidade;
 import models.CidadeDAO;
 import play.Logger;
@@ -16,12 +21,11 @@ import com.google.inject.Inject;
 @Security.Authenticated(AcessoCidadao.class)
 public class CidadeController extends Controller {
 
-    private CidadeDAO dao;
-
     @Inject
-    public CidadeController(CidadeDAO dao) {
-        this.dao = dao;
-    }
+    private CidadeDAO dao;
+    
+    @Inject
+    private CidadaoDAO daoCidadao;
 
     @Transactional(readOnly = true)
     public Result get(Long id) {
@@ -83,5 +87,31 @@ public class CidadeController extends Controller {
         return ok(toJson(dao.getNovidades(id, pagina, tamanhoPagina)));
     }
 
+    @Transactional
+    public Result adicionaInscrito(Long id) {
+        Cidade cidade = dao.find(id);
+        if (cidade == null) {
+            return notFound();
+        }
+        Cidadao cidadao = getCidadaoLogado();
+        boolean inscreveu = cidadao.inscreverEm(cidade);
+        return inscreveu ? ok() : status(CONFLICT,
+                "Cidadão " + cidadao.getId() + " já inscrito em " + cidade.getId());
+    }
+
+    @Transactional
+    public Result removeInscrito(Long id) {
+        Cidade cidade = dao.find(id);
+        if (cidade == null) {
+            return notFound();
+        }
+        Cidadao cidadao = getCidadaoLogado();
+        boolean desinscreveu = cidadao.desinscreverDe(cidade);
+        return desinscreveu ? ok() : notFound("Cidadão " + cidadao.getId() + " não está inscrito em " + cidade.getId());
+    }
+
+	private Cidadao getCidadaoLogado() {
+		return daoCidadao.find(UUID.fromString(request().username()));
+	}
 
 }
