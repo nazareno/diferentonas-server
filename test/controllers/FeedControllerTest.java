@@ -114,6 +114,7 @@ public class FeedControllerTest extends WithAuthentication {
         assertFalse(novidades.isEmpty());
         assertEquals(opiniaoUUID, novidades.get(0).getOpiniao().getId());
         assertFalse(novidades.get(0).getOpiniao().isApoiada());
+        assertEquals(0, novidades.get(0).getOpiniao().getNumeroDeApoiadores());
         
         resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.addJoinha(iniciativaUsada, opiniaoUUID.toString()).url()).method("POST"));
         assertEquals(Status.OK, resultado.status());
@@ -123,6 +124,17 @@ public class FeedControllerTest extends WithAuthentication {
         assertFalse(novidades.isEmpty());
         assertEquals(opiniaoUUID, novidades.get(0).getOpiniao().getId());
         assertTrue(novidades.get(0).getOpiniao().isApoiada());
+        assertEquals(1, novidades.get(0).getOpiniao().getNumeroDeApoiadores());
+
+        resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.removeJoinha(iniciativaUsada, opiniaoUUID.toString()).url()).method("DELETE"));
+        assertEquals(Status.OK, resultado.status());
+
+        resultado = Helpers.route(builder.uri(controllers.routes.FeedController.getNovidades(0, 10).url()).method("GET"));
+        novidades = jsonToList(contentAsString(resultado));
+        assertFalse(novidades.isEmpty());
+        assertEquals(opiniaoUUID, novidades.get(0).getOpiniao().getId());
+        assertFalse(novidades.get(0).getOpiniao().isApoiada());
+        assertEquals(0, novidades.get(0).getOpiniao().getNumeroDeApoiadores());
     }
 
 }

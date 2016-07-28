@@ -72,6 +72,9 @@ public class Opiniao implements Serializable {
 	@Transient
     private boolean apoiada;
 
+	@Transient
+	private int numeroDeApoiadores;
+
     public Opiniao(){
         this.criadaEm = new Date();
         this.apoiadores = new HashSet<Cidadao>();
@@ -190,10 +193,18 @@ public class Opiniao implements Serializable {
     
 	public void setApoiada(Cidadao cidadao) {
 		this.apoiada = isApoiada(cidadao);
+		this.numeroDeApoiadores = this.apoiadores.size();
 	}
 
 	public void setApoiada(boolean apoiada) {
 		this.apoiada = apoiada;
 	}
-    
+
+	public int getNumeroDeApoiadores() {
+		return numeroDeApoiadores;
+	}
+
+	public void setNumeroDeApoiadores(int numeroDeApoiadores) {
+		this.numeroDeApoiadores = numeroDeApoiadores;
+	}
 }

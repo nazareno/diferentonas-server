@@ -6,9 +6,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.BAD_REQUEST;
+import static play.mvc.Http.Status.CONFLICT;
 import static play.mvc.Http.Status.NOT_FOUND;
 import static play.mvc.Http.Status.OK;
-import static play.mvc.Http.Status.CONFLICT;
 import static play.test.Helpers.contentAsString;
 
 import java.io.IOException;
@@ -19,7 +19,6 @@ import java.util.UUID;
 
 import models.Iniciativa;
 import models.IniciativaDAO;
-import models.Novidade;
 import models.Opiniao;
 import models.OpiniaoDAO;
 
@@ -60,7 +59,6 @@ public class OpiniaoControllerTest extends WithAuthentication {
         this.daoOpiniao = app.injector().instanceOf(OpiniaoDAO.class);
     }
 
-    // Efeito colateral: não restarão opiniões em iniciativaExemplo no BD após esses testes.
     @After
     public void tearDown() {
         IniciativaDAO daoIniciativa = app.injector().instanceOf(IniciativaDAO.class);
@@ -249,21 +247,6 @@ public class OpiniaoControllerTest extends WithAuthentication {
     }
     
     @Test
-    public void deveAdicionarApoiador() throws IOException {
-        JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\", \"conteudo\": \"Topíssimo\"}");
-        Result resultado = enviaPOSTAddOpiniao(json, iniciativaExemplo, token);
-        UUID opiniaoUUID = Json.fromJson(Json.parse(Helpers.contentAsString(resultado)), Opiniao.class).getId();
-		uuidDeOpinioesPraRemover.add(opiniaoUUID);
-        
-		assertFalse(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
-		
-        resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.addJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("POST"));
-        
-		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
-
-    }
-
-    @Test
     public void deveDarErroAoAdicionarApoiadorNovamente() throws IOException {
         JsonNode json = new ObjectMapper().readTree("{\"tipo\": \"bomba\", \"conteudo\": \"Topíssimo\"}");
         Result resultado = enviaPOSTAddOpiniao(json, iniciativaExemplo, token);
@@ -281,6 +264,9 @@ public class OpiniaoControllerTest extends WithAuthentication {
         assertEquals(CONFLICT, resultado.status());
 
 		assertTrue(jpaAPI.withTransaction(() -> daoOpiniao.find(opiniaoUUID).isApoiada(admin)));
+		
+		resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.removeJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("DELETE"));
+        assertEquals(OK, resultado.status());
     }
 
     @Test
@@ -336,6 +322,7 @@ public class OpiniaoControllerTest extends WithAuthentication {
         List<Opiniao> opinioes = new ObjectMapper().readValue(contentAsString(resultado), new TypeReference<List<Opiniao>>() {});
         for (Opiniao opiniao : opinioes) {
 			assertFalse(opiniao.isApoiada());
+			assertEquals(0, opiniao.getNumeroDeApoiadores());
 		}
         
 		
@@ -347,9 +334,20 @@ public class OpiniaoControllerTest extends WithAuthentication {
         for (Opiniao opiniao : opinioes) {
 			if(opiniao.getId().equals(opiniaoUUID)){
 				assertTrue(opiniao.isApoiada());
+				assertEquals(1, opiniao.getNumeroDeApoiadores());
 			}else{
 				assertFalse(opiniao.isApoiada());
+				assertEquals(0, opiniao.getNumeroDeApoiadores());
 			}
+		}
+
+        resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.removeJoinha(iniciativaExemplo, opiniaoUUID.toString()).url()).method("DELETE"));
+        
+        resultado = Helpers.route(builder.uri(controllers.routes.OpiniaoController.getOpinioes(iniciativaExemplo, 0, 100).url()).method("GET"));
+        opinioes = new ObjectMapper().readValue(contentAsString(resultado), new TypeReference<List<Opiniao>>() {});
+        for (Opiniao opiniao : opinioes) {
+			assertFalse(opiniao.isApoiada());
+			assertEquals(0, opiniao.getNumeroDeApoiadores());
 		}
     }
 
