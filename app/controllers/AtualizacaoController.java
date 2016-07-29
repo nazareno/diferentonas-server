@@ -64,7 +64,7 @@ public class AtualizacaoController extends Controller {
 			return ok(toJson(statusDaAtualizacao));
 		}
 
-		ask(atualizador, new AtualizadorActorProtocol.AtualizaScores(), 1000L);
+		ask(atualizador, new AtualizadorActorProtocol.AtualizaIniciativasEScores(), 1000L);
 		
 		try {
 			Thread.sleep(2000);

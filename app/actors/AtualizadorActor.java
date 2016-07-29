@@ -24,8 +24,6 @@ import org.h2.tools.Csv;
 
 import play.Logger;
 import play.db.jpa.JPAApi;
-import actors.AtualizadorActorProtocol.AtualizaIniciativas;
-import actors.AtualizadorActorProtocol.AtualizaScores;
 import akka.actor.UntypedActor;
 
 public class AtualizadorActor extends UntypedActor {
@@ -47,10 +45,7 @@ public class AtualizadorActor extends UntypedActor {
 	public void onReceive(Object msg) throws Exception {
 
 		Logger.debug("AtualizadorActor.onReceive()");
-		if (msg instanceof AtualizaIniciativas) {
-			// sender().tell("Hello, " + ((AtualizaIniciativas) msg).name,
-			// self());
-		} else if (msg instanceof AtualizaScores) {
+		if (msg instanceof AtualizadorActorProtocol.AtualizaIniciativasEScores) {
 			jpaAPI.withTransaction(() -> daoAtualizacao.inicia());
 			
 			jpaAPI.withTransaction(() -> {
@@ -59,11 +54,11 @@ public class AtualizadorActor extends UntypedActor {
 					Date proximaData = formatoDataAtualizacao.parse(proxima);
 
 					String scoresDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + proxima + ".csv";
-					Logger.debug(scoresDataPath);
+					Logger.debug("Usando arquivo de scores: " + scoresDataPath);
 					atualizaScores(scoresDataPath, proximaData);
 			    	
 					String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + proxima + ".csv";
-					Logger.debug(iniciativasDataPath);
+					Logger.debug("Arquivo de inciativas: " + iniciativasDataPath);
 			    	atualizaIniciativas(iniciativasDataPath, proximaData);
 
 			    	daoAtualizacao.finaliza(false);
@@ -74,6 +69,8 @@ public class AtualizadorActor extends UntypedActor {
 					sender().tell(false, self());
 				}
 			});
+		} else {
+			Logger.warn("Mensagem de tipo desconhecido: " + msg.getClass().toString());
 		}
 	}
 	
