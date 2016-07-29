@@ -104,7 +104,7 @@ public class LoginController extends Controller {
 
 		DadosLogin payload = formFactory.form(DadosLogin.class)
 				.bindFromRequest().get();
-
+		
 	    final String accessTokenUrl = "https://accounts.google.com/o/oauth2/token";
 	    final String peopleApiUrl = "https://www.googleapis.com/plus/v1/people/me/openIdConnect";
 
@@ -120,9 +120,10 @@ public class LoginController extends Controller {
 		return requisicaoDeToken.post(builder.toString()).thenComposeAsync(respostaComToken -> {
 
 			JsonNode jsonComToken = respostaComToken.asJson();
+			
 			if(!jsonComToken.has("access_token")){
 				return CompletableFuture.supplyAsync(() -> {
-					return ok(toJson(""));
+					return internalServerError(jsonComToken);
 				});
 			}
 			
