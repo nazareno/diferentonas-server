@@ -23,7 +23,7 @@ public class DadosUtil {
 
         Path dir = Paths.get(folder);
 
-        Logger.debug("Procurando autalizações em " + dir.toAbsolutePath().toString());
+        Logger.debug("Procurando atualizações em " + dir.toAbsolutePath().toString());
 
         try (DirectoryStream<Path> ds = Files.newDirectoryStream(dir,
                 "iniciativas-[0-9]*.csv");) {
