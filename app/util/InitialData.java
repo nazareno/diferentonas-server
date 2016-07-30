@@ -83,13 +83,17 @@ public class InitialData {
 				admin = dao.saveAndUpdate(cidadao);
 				
 				// Usuários para demonstração
-                for(int i = 0; i < 1000; i++ ){
+				int total = 1000;
+                for(int i = 0; i < total; i++ ){
                 	Cidadao cidadaoParaDemonstracao = new Cidadao("Anônimo", String.format("cidadao_%03d@mail.com", i));
                 	cidadaoParaDemonstracao.setUrlDaFoto("http://www.gravatar.com/avatar/" + cidadaoParaDemonstracao.getLogin().hashCode()
 							+ "?f=y&d=retro");
 					cidadaos.add(dao.saveAndUpdate(cidadaoParaDemonstracao).getId());
                 }
-            }
+				Logger.info(total + " cidadãos mais o admin cadastrados.");
+            } else {
+				Logger.info("Admin já cadastrado, assumimos que já temos usuários");
+			}
         });
 	}
 
