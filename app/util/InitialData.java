@@ -1,39 +1,23 @@
 package util;
 
+import com.google.inject.Inject;
+import models.*;
+import org.h2.tools.Csv;
+import play.Configuration;
+import play.Logger;
+import play.db.jpa.JPAApi;
+
+import javax.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
-
-import javax.persistence.EntityManager;
-
-import models.AtualizacaoDAO;
-import models.Cidadao;
-import models.CidadaoDAO;
-import models.Cidade;
-import models.Iniciativa;
-import models.Opiniao;
-import models.Score;
-
-import org.h2.tools.Csv;
-
-import play.Configuration;
-import play.Logger;
-import play.db.jpa.JPAApi;
-
-import com.google.inject.Inject;
 
 /**
  * Loads data into database the first time the application is executed.
@@ -43,6 +27,7 @@ import com.google.inject.Inject;
 public class InitialData {
 	
 	private static final String DIST_DATA = "dist/data/";
+	private final String dataDir;
 	private String [] tipoOpiniao = {"coracao", "coracao_partido", "bomba"};
 	private String [][] opinioes = {{
 		"Ainda bem que iniciativas como essa estão sendo feitas aqui!",
@@ -72,7 +57,9 @@ public class InitialData {
     @Inject
     public InitialData(JPAApi jpaAPI, CidadaoDAO daoCidadao, AtualizacaoDAO daoAtualizacao, Configuration configuration) throws SQLException {
         Logger.info("Na inicialização da aplicação.");
-        
+
+		dataDir = configuration.getString("diferentonas.data", DIST_DATA);
+
         jpaAPI.withTransaction(()->{
         	daoAtualizacao.create();
         });
@@ -85,6 +72,7 @@ public class InitialData {
     }
 
 	private void populaCidadaos(JPAApi jpaAPI, CidadaoDAO dao, String adminEmail) {
+		Logger.info("Populando cidadãos.");
 		jpaAPI.withTransaction(() -> {
             Cidadao admin = dao.findByLogin(adminEmail);
             if (admin == null) {
@@ -111,14 +99,15 @@ public class InitialData {
 		});
 	
 		if (!cidades.isEmpty()) {
-			Logger.info("BD já populado com cidades, vizinhos e scores");
+			Logger.info("BD já populado com cidades, vizinhos e diferentices");
 			return;
 		}
 	
-		Logger.info("Populando BD com cidades, vizinhos e scores");
+		Logger.info("Populando BD com cidades, vizinhos e diferentices");
 		jpaAPI.withTransaction(() -> {
 			try {
-				String dataPath = "dist/data/dados2010.csv";
+				String dataPath = dataDir + "dados2010.csv";
+				Logger.info("Cidades vêm de " + dataPath);
 	
 				ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
 				int count = 0;
@@ -139,7 +128,7 @@ public class InitialData {
 					jpaAPI.em().persist(cidade);
 	
 					count++;
-					if (count % 500 == 0) {
+					if (count % 1000 == 0) {
 						Logger.info("Inseri " + count + " cidades.");
 					}
 				}
@@ -149,11 +138,12 @@ public class InitialData {
 				Logger.error(e.getMessage(), e);
 			}
 		});
-		Logger.info("Populou BD com cidades, vizinhos e scores.");
+		Logger.info("Populou BD com cidades, vizinhos e diferentices.");
 	}
 
 	private void populaVizinhos(JPAApi jpaAPI) throws SQLException {
-		String dataPath = "dist/data/vizinhos.euclidiano.csv";
+		String dataPath = dataDir + "/vizinhos.euclidiano.csv";
+		Logger.info("Cidades semelhantes vêm de " + dataPath);
 		int count = 0;
 
 		final ResultSet vizinhosResultSet = new Csv().read(dataPath, null, "utf-8");
@@ -191,9 +181,10 @@ public class InitialData {
 
     private void populaScores(JPAApi jpaAPI) throws SQLException, IOException {
     	
-    	List<String> listaAtualizacoes = DadosUtil.listaAtualizacoes(DIST_DATA);
-    	
-    	String dataPath = DIST_DATA + "diferentices-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
+    	List<String> listaAtualizacoes = DadosUtil.listaAtualizacoes(dataDir);
+    	String dataPath = dataDir + "diferentices-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
+		Logger.info("Diferentices vêm de " + dataPath);
+
     	int count = 0;
     	EntityManager em = jpaAPI.em();
 
@@ -219,8 +210,8 @@ public class InitialData {
     		em.persist(score);
     		
     		count++;
-    		if (count % 2000 == 0) {
-    			Logger.info("Inseri " + count + " scores nas cidades.");
+    		if (count % 20000 == 0) {
+    			Logger.info("Inseri " + count + " diferentices nas cidades.");
     		}
     	}
 		new File(dataPath).delete();
@@ -228,8 +219,7 @@ public class InitialData {
 	}
 
 	private void populaIniciativas(JPAApi jpaAPI, CidadaoDAO daoCidadao) {
-		
-		Random r = new Random(); 
+		Random r = new Random();
     	
         List<Iniciativa> iniciativas = jpaAPI.withTransaction(entityManager -> {
             return entityManager.createQuery("FROM Iniciativa", Iniciativa.class).setMaxResults(2).getResultList();
@@ -243,11 +233,11 @@ public class InitialData {
         jpaAPI.withTransaction(() -> {
             try {
                 EntityManager em = jpaAPI.em();
-                // TODO estou perdendo a primeira linha (?)
-                
-                List<String> listaAtualizacoes = DadosUtil.listaAtualizacoes(DIST_DATA);
+
+                List<String> listaAtualizacoes = DadosUtil.listaAtualizacoes(dataDir);
             	
-            	String dataPath = DIST_DATA + "iniciativas-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
+            	String dataPath = dataDir + "iniciativas-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
+				Logger.info("Iniciativas vêm de " + dataPath);
 
                 ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
                 int count = 0;
@@ -265,7 +255,7 @@ public class InitialData {
                 		continue;
                 	}
                 	
-                	Iniciativa iniciativa = parseIniciativa(resultSet);
+                	Iniciativa iniciativa = DadosUtil.parseIniciativa(resultSet);
                 	
                 	if(iniciativa == null){
                 		continue;
@@ -303,39 +293,4 @@ public class InitialData {
         });
     }
 
-	private Iniciativa parseIniciativa(ResultSet resultSet) {
-		try{
-			float verbaGovernoFederal = resultSet.getString("VL_REPASSE_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_REPASSE_CONV"); // repasse
-			float verbaMunicipio = resultSet.getString("VL_CONTRAPARTIDA_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_CONTRAPARTIDA_CONV");    // contrapartida
-
-			DateFormat formatter = new SimpleDateFormat("dd/mm/yyyy");
-			Date dataConclusao = formatter.parse(resultSet.getString("DIA_FIM_VIGENC_CONV"));
-
-			// Adicionando 2 meses para o prazo de prestação de contas
-			Calendar cal = GregorianCalendar.getInstance();
-			cal.setTime(dataConclusao);
-			cal.add(GregorianCalendar.MONTH, 2);
-			Date dataConclusaoGovernoFederal = cal.getTime();
-
-
-			return new Iniciativa(
-					resultSet.getLong("NR_CONVENIO"),        // id
-					resultSet.getInt("ANO"),        // ano
-					resultSet.getString("OBJETO_PROPOSTA"),    // titulo
-					resultSet.getString("Nome Programa"),    // programa
-					resultSet.getString("funcao.imputada"),    // area
-					resultSet.getString("DESC_ORGAO_SUP"),        // fonte
-					resultSet.getString("DESC_ORGAO"),    // concedente
-					resultSet.getString("TX_STATUS"),    // status
-					false,//resultSet.getBoolean(50),    // temAditivo
-					verbaGovernoFederal,        // verba do governo federal
-					verbaMunicipio,                // verba do municipio
-					formatter.parse(resultSet.getString("DIA_INIC_VIGENC_CONV")),        // data de inicio
-					dataConclusao,    // data de conclusao municipio
-					dataConclusaoGovernoFederal);	
-		}catch(SQLException | ParseException e){
-			Logger.error("Erro no parsing da iniciativa em: " + resultSet.toString());
-		}
-		return null;
-	}
 }

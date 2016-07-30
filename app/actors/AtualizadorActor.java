@@ -127,7 +127,7 @@ public class AtualizadorActor extends UntypedActor {
 				continue;
 			}
 
-			Iniciativa iniciativaAtualizada = parseIniciativa(resultSet);
+			Iniciativa iniciativaAtualizada = util.DadosUtil.parseIniciativa(resultSet);
 			if(iniciativaAtualizada == null){
 				continue;
 			}
@@ -149,41 +149,5 @@ public class AtualizadorActor extends UntypedActor {
 		
 		new File(dataPath).delete();
     }
-
-	private Iniciativa parseIniciativa(ResultSet resultSet) {
-		try{
-			float verbaGovernoFederal = resultSet.getString("VL_REPASSE_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_REPASSE_CONV"); // repasse
-			float verbaMunicipio = resultSet.getString("VL_CONTRAPARTIDA_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_CONTRAPARTIDA_CONV");    // contrapartida
-
-			DateFormat formatter = new SimpleDateFormat("dd/mm/yyyy");
-			Date dataConclusao = formatter.parse(resultSet.getString("DIA_FIM_VIGENC_CONV"));
-
-			// Adicionando 2 meses para o prazo de prestação de contas
-			Calendar cal = GregorianCalendar.getInstance();
-			cal.setTime(dataConclusao);
-			cal.add(GregorianCalendar.MONTH, 2);
-			Date dataConclusaoGovernoFederal = cal.getTime();
-
-
-			return new Iniciativa(
-					resultSet.getLong("NR_CONVENIO"),        // id
-					resultSet.getInt("ANO"),        // ano
-					resultSet.getString("OBJETO_PROPOSTA"),    // titulo
-					resultSet.getString("Nome Programa"),    // programa
-					resultSet.getString("funcao.imputada"),    // area
-					resultSet.getString("DESC_ORGAO_SUP"),        // fonte
-					resultSet.getString("DESC_ORGAO"),    // concedente
-					resultSet.getString("TX_STATUS"),    // status
-					false,//resultSet.getBoolean(50),    // temAditivo
-					verbaGovernoFederal,        // verba do governo federal
-					verbaMunicipio,                // verba do municipio
-					formatter.parse(resultSet.getString("DIA_INIC_VIGENC_CONV")),        // data de inicio
-					dataConclusao,    // data de conclusao municipio
-					dataConclusaoGovernoFederal);	
-		}catch(SQLException | ParseException e){
-			Logger.error("Erro no parsing da iniciativa em: " + resultSet.toString());
-		}
-		return null;
-	}
 
 }
