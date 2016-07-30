@@ -10,6 +10,7 @@ import play.db.jpa.JPAApi;
 import javax.persistence.EntityManager;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -58,7 +59,7 @@ public class InitialData {
     public InitialData(JPAApi jpaAPI, CidadaoDAO daoCidadao, AtualizacaoDAO daoAtualizacao, Configuration configuration) throws SQLException {
         Logger.info("Na inicialização da aplicação.");
 
-		dataDir = configuration.getString("diferentonas.data", DIST_DATA);
+		dataDir = Paths.get(configuration.getString("diferentonas.data", DIST_DATA)).toAbsolutePath().toString();
 
         jpaAPI.withTransaction(()->{
         	daoAtualizacao.create();
@@ -106,7 +107,7 @@ public class InitialData {
 		Logger.info("Populando BD com cidades, vizinhos e diferentices");
 		jpaAPI.withTransaction(() -> {
 			try {
-				String dataPath = dataDir + "dados2010.csv";
+				String dataPath = dataDir + "/dados2010.csv";
 				Logger.info("Cidades vêm de " + dataPath);
 	
 				ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
@@ -182,7 +183,7 @@ public class InitialData {
     private void populaScores(JPAApi jpaAPI) throws SQLException, IOException {
     	
     	List<String> listaAtualizacoes = DadosUtil.listaAtualizacoes(dataDir);
-    	String dataPath = dataDir + "diferentices-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
+    	String dataPath = dataDir + "/diferentices-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
 		Logger.info("Diferentices vêm de " + dataPath);
 
     	int count = 0;
@@ -236,7 +237,7 @@ public class InitialData {
 
                 List<String> listaAtualizacoes = DadosUtil.listaAtualizacoes(dataDir);
             	
-            	String dataPath = dataDir + "iniciativas-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
+            	String dataPath = dataDir + "/iniciativas-" + listaAtualizacoes.get(listaAtualizacoes.size()-1) + ".csv";
 				Logger.info("Iniciativas vêm de " + dataPath);
 
                 ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
