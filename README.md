@@ -6,7 +6,7 @@ Só minha cidade que investe verba federal assim?
 
 Usamos dados dos convênios que os municípios celebram com o governo federal e a sua execução, cruzados com dados socioeconômicos sobre os municípios do Brasil para examinar no que uma cidade é diferentona com relação aos convênios que celebrou com o governo federal. Melhor explicado aqui: https://vimeo.com/162919268 .
 
-Este repositório tem nosso servidor. Um cliente Ionic existe [neste outro repositório](https://github.com/luizaugustomm/diferentonas-client). Você pode acessar [uma versão html do app atual na web](https://luizaugustomm.github.io/diferentonas-client), também. Deixe usuário e senha em branco, e lembre que o leiaute foi feito para a tela de um celular. 
+Este repositório tem nosso servidor. Um cliente Ionic existe [neste outro repositório](https://github.com/luizaugustomm/diferentonas-client).  
 
 ## Participe
 
@@ -38,7 +38,7 @@ R: `Rscript R/test_diferentices.R`
 É preciso ter os pacotes R necessários instalados. No terminal R: 
 
 ```
-pks = c("tidyr", "dplyr", "reshape2")
+pks = c("tidyr", "dplyr", "reshape2", "futile.logger", "FastKNN", "testthat")
 install.packages(pks, dependencies = TRUE))
 ```
 
@@ -49,4 +49,4 @@ cd dados-externos
 ./cria_snapshot_completo.sh 
 ```
 
-O script criará os dois arquivos necessários para povoar ou atualizar o BD: um com as iniciativas dos municípios e outro com os scores de diferentices calculados. 
+O script criará os arquivos necessários para povoar ou atualizar o BD: um com as iniciativas dos municípios e outro com os scores de diferentices calculados. 
