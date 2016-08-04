@@ -4,7 +4,7 @@ import javax.persistence.EntityManager;
 
 import play.Configuration;
 import play.db.jpa.JPAApi;
-import util.DadosUtil;
+import play.libs.ws.WSClient;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -16,7 +16,7 @@ public class AtualizacaoDAO {
 	private String folder;
 
     @Inject
-    public AtualizacaoDAO(JPAApi jpaAPI, Configuration configuration) {
+    public AtualizacaoDAO(JPAApi jpaAPI, Configuration configuration, WSClient client) {
         this.jpaAPI = jpaAPI;
 		this.folder = configuration.getString("diferentonas.data", "dist/data");
     }
@@ -26,18 +26,6 @@ public class AtualizacaoDAO {
 		if(em.find(Atualizacao.class, 0L) == null){
     		em.persist(new Atualizacao());
     	}
-    }
-
-    public Atualizacao verifica(){
-    	Atualizacao atualizacao = find();
-    	if(atualizacao.estaAtualizando()){
-    		return atualizacao;
-    	}
-    	atualizacao.atualiza(DadosUtil.listaAtualizacoes(folder));
-    	jpaAPI.em().persist(atualizacao);
-    	jpaAPI.em().flush();
-    	jpaAPI.em().refresh(atualizacao);
-		return atualizacao;
     }
 
     public Atualizacao find() {

@@ -1,5 +1,6 @@
 package util;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -10,14 +11,17 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import models.Iniciativa;
 import play.Logger;
 
 public class DadosUtil {
 
-    public static List<String> listaAtualizacoes(String folder) {
+    public static List<String> listaAtualizacoes(String folder, String ultimaDataAtualizada) {
 
         List<String> paths = new ArrayList<>();
 
@@ -30,9 +34,14 @@ public class DadosUtil {
 
             for (Path path : ds) {
                 String name = path.getFileName().toString();
+                String data = name.substring(name.lastIndexOf("-") + 1, name.indexOf(".csv"));
+                
+                if(data.compareTo(ultimaDataAtualizada) <= 0){
+                	apagaArquivosVelhos(folder, data);
+                }else{
+                	paths.add(data);
+                }
 
-                paths.add(name.substring(name.lastIndexOf("-") + 1,
-                        name.indexOf(".csv")));
             }
 
             Collections.sort(paths);
@@ -43,7 +52,14 @@ public class DadosUtil {
     }
 
 
-    public static Iniciativa parseIniciativa(ResultSet resultSet) {
+    private static void apagaArquivosVelhos(String folder, String data) {
+		new File(folder, "iniciativas-" + data + ".csv").delete();
+		new File(folder, "diferentices-" + data + ".csv").delete();
+		new File(folder, "historico-" + data + ".csv").delete();
+	}
+
+
+	public static Iniciativa parseIniciativa(ResultSet resultSet) {
         try {
             float verbaGovernoFederal = resultSet.getString("VL_REPASSE_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_REPASSE_CONV"); // repasse
             float verbaMunicipio = resultSet.getString("VL_CONTRAPARTIDA_CONV").contains("NA") ? 0f : resultSet.getFloat("VL_CONTRAPARTIDA_CONV");    // contrapartida

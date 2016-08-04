@@ -41,8 +41,7 @@ GET      /funcionarios                                       controllers.Cidadao
 # Map static resources from the /public folder to the /assets URL path
 GET      /admin/*file                                        controllers.Assets.at(path="/public", file)
 
-GET      /atualizacoes                                       controllers.AtualizacaoController.getAtualizacoes()
-GET      /atualizacoes/aplica                                controllers.AtualizacaoController.aplica()
+GET      /status                                             controllers.AtualizacaoController.getStatus()
 
 
 # Login de Cidadão
