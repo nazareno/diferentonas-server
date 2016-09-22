@@ -40,7 +40,7 @@ sudo apt-get -y install zip
 git clone http://github.com/nazareno/diferentonas-server
 cd diferentonas-server
 ./activator clean compile stage
-./target/universal/stage/bin/diferentonas-server -J-server -Dhttp.port=9000 -Dplay.evolutions.db.default.autoApply=false -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=${DATABASE_URL} -Ddb.default.username=diferentonas -Ddb.default.password=${DATABASE_PASSWORD} -Ddiferentonas.data="data/" -DDIFERENTONAS_ADMIN_EMAIL=${ADMIN_EMAIL}
+./target/universal/stage/bin/diferentonas-server -J-server -Dhttp.port=9000 -Dplay.evolutions.db.default.autoApply=false -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=${DATABASE_URL} -Ddb.default.username=diferentonas -Ddb.default.password=${DATABASE_PASSWORD} -Ddiferentonas.data="data/" -DDIFERENTONAS_ADMIN_EMAIL=${ADMIN_EMAIL} -DDIFERENTONAS_SECRET_FACEBOOK=${DIFERENTONAS_SECRET_FACEBOOK} -DDIFERENTONAS_SECRET_GOOGLE=${DIFERENTONAS_SECRET_GOOGLE}
 ```
 
 
