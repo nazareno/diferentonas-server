@@ -2,6 +2,16 @@
 
 Testadas em uma VM Ubuntu 16.04.
 
+## Pré-requisitos
+
+Antes de executar o servidor pela primeira vez, assegure que as seguintes variáveis de ambiente existem ou que seus valores no arquivo de configurações estão atualizados:
+
+* DIFERENTONAS_ADMIN_EMAIL: email usado como administrador do sistema
+* DIFERENTONAS_SECRET_FACEBOOK: secret key do Facebook para habilitar "Login com Facebook"
+* DIFERENTONAS_SECRET_GOOGLE: secret key do Google para habilitar "Login com Google"
+
+Iniciar o diferentonas-server sem configurar o "DIFERENTONAS_ADMIN_EMAIL" implicará num sistema sem administrador. Será necessário alterar o usuário no banco de dados manualmente ou recriar as tabelas.
+
 ## Nós web
 
 **R**
