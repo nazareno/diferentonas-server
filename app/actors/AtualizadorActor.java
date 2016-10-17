@@ -1,18 +1,18 @@
 package actors;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import models.Atualizacao;
 import models.AtualizacaoDAO;
 import models.Cidade;
 import models.CidadeDAO;
@@ -22,8 +22,10 @@ import models.Score;
 
 import org.h2.tools.Csv;
 
+import play.Configuration;
 import play.Logger;
 import play.db.jpa.JPAApi;
+import util.DadosUtil;
 import akka.actor.UntypedActor;
 
 public class AtualizadorActor extends UntypedActor {
@@ -33,6 +35,9 @@ public class AtualizadorActor extends UntypedActor {
 	
 	@Inject
 	private AtualizacaoDAO daoAtualizacao;
+	
+	@Inject
+	private Configuration configuration;
 	
 	@Inject
 	private CidadeDAO cidadeDAO;
@@ -48,33 +53,59 @@ public class AtualizadorActor extends UntypedActor {
 		if (msg instanceof AtualizadorActorProtocol.AtualizaIniciativasEScores) {
 			jpaAPI.withTransaction(() -> daoAtualizacao.inicia());
 			
-			jpaAPI.withTransaction(() -> {
-				try {
-					String proxima = daoAtualizacao.find().getProxima();
-					Date proximaData = formatoDataAtualizacao.parse(proxima);
+			Atualizacao status = jpaAPI.withTransaction(() -> daoAtualizacao.find());
+			List<String> datasDisponiveis = preparaDados(status.getUltima());
+			
+			if(datasDisponiveis == null){
+				daoAtualizacao.finaliza(true);
+				sender().tell(false, self());
+				return;
+			}
+			
+			
+			for (String data: datasDisponiveis) {
+				jpaAPI.withTransaction(() -> {
+					try {
+						
+						boolean primeiraExecucao = status.getUltima().isEmpty();
 
-					String scoresDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + proxima + ".csv";
-					Logger.debug("Usando arquivo de scores: " + scoresDataPath);
-					atualizaScores(scoresDataPath, proximaData);
-			    	
-					String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + proxima + ".csv";
-					Logger.debug("Arquivo de inciativas: " + iniciativasDataPath);
-			    	atualizaIniciativas(iniciativasDataPath, proximaData);
+						Date proximaData = formatoDataAtualizacao.parse(data);
 
-			    	daoAtualizacao.finaliza(false);
-					sender().tell(true, self());
-				} catch (Exception e) {
-					e.printStackTrace();
-					daoAtualizacao.finaliza(true);
-					sender().tell(false, self());
-				}
-			});
+						String scoresDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + data + ".csv";
+						Logger.debug("Usando arquivo de scores: " + scoresDataPath);
+						atualizaScores(scoresDataPath, proximaData, primeiraExecucao);
+
+						String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + data + ".csv";
+						Logger.debug("Arquivo de inciativas: " + iniciativasDataPath);
+						atualizaIniciativas(iniciativasDataPath, proximaData, primeiraExecucao);
+
+					} catch (Exception e) {
+						e.printStackTrace();
+						daoAtualizacao.finaliza(true);
+						sender().tell(false, self());
+						return;
+					}
+				});
+			}
+			
+			jpaAPI.withTransaction(() -> daoAtualizacao.finaliza(false));
+			sender().tell(true, self());
 		} else {
 			Logger.warn("Mensagem de tipo desconhecido: " + msg.getClass().toString());
 		}
 	}
 	
-	private void atualizaScores(String dataPath, Date dataDaAtualizacao) throws SQLException {
+	private List<String> preparaDados(String ultimaDataAtualizada) throws IOException, InterruptedException {
+		Process process = Runtime.getRuntime().exec(configuration.getString("diferentonas.atualizacao", "false"));
+		boolean ok = process.waitFor(2, TimeUnit.HOURS);
+		if(!ok){
+			return null;
+		}
+
+		return DadosUtil.listaAtualizacoes(configuration.getString("diferentonas.data", "dist/data"), ultimaDataAtualizada);
+	}
+
+	private void atualizaScores(String dataPath, Date dataDaAtualizacao, boolean primeiraExecucao) throws SQLException {
     	
     	int count = 0;
 
@@ -95,7 +126,11 @@ public class AtualizadorActor extends UntypedActor {
     				scoreResultSet.getFloat(5),
     				scoreResultSet.getFloat(6));
     		
-    		cidade.atualizaScore(score, dataDaAtualizacao);
+    		if(primeiraExecucao){
+    			cidade.criaScore(score);
+    		}else{
+    			cidade.atualizaScore(score, dataDaAtualizacao);
+    		}
     		
     		cidadeDAO.save(cidade);
     		
@@ -113,7 +148,7 @@ public class AtualizadorActor extends UntypedActor {
 
 
 	
-	private void atualizaIniciativas(String dataPath, Date dataDaAtualizacao) throws SQLException {
+	private void atualizaIniciativas(String dataPath, Date dataDaAtualizacao, boolean primeiraExecucao) throws SQLException {
 
 		ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
 		int count = 0;
@@ -134,11 +169,13 @@ public class AtualizadorActor extends UntypedActor {
 			
 			Iniciativa iniciativa = iniciativaDAO.find(idIniciativa);
 			if (iniciativa == null) {
-				cidadeDaIniciativa.addIniciativa(iniciativaAtualizada, dataDaAtualizacao);
+				cidadeDaIniciativa.addIniciativa(iniciativaAtualizada, dataDaAtualizacao, !primeiraExecucao);
 				cidadeDAO.save(cidadeDaIniciativa);
 			}else{
-				iniciativa.atualiza(iniciativaAtualizada, dataDaAtualizacao);
-				iniciativaDAO.save(iniciativa);
+				if(!primeiraExecucao){
+					iniciativa.atualiza(iniciativaAtualizada, dataDaAtualizacao);
+					iniciativaDAO.save(iniciativa);
+				}
 			}
 
 			count++;
