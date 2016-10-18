@@ -26,5 +26,5 @@ libraryDependencies ++= Seq(
 herokuAppName in Compile := "diferentonas"
 
 herokuIncludePaths in Compile := Seq(
-  "app", "conf/routes", "dist/data"
+  "app", "conf/routes", "dist/data", "dados-externos"
 )
