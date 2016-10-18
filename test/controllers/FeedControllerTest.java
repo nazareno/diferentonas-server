@@ -11,18 +11,27 @@ import static play.test.Helpers.contentAsString;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
+import models.Cidadao;
+import models.CidadaoDAO;
+import models.Cidade;
+import models.CidadeDAO;
 import models.Iniciativa;
 import models.IniciativaDAO;
 import models.Novidade;
 import models.Opiniao;
+import models.OpiniaoDAO;
 import models.TipoDaNovidade;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import play.Configuration;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
 import play.mvc.Result;
@@ -36,14 +45,33 @@ import controllers.util.WithAuthentication;
 
 public class FeedControllerTest extends WithAuthentication {
 
-    private Long iniciativaUsada = 805265L;
-    private Long cidadeDaIniciativaUsada = 2922706L;
+	private static final Long INICIATIVA_TESTE = -1L;
+	private static final Long CIDADE_TESTE = -1L;
+
+	private Long iniciativaUsada = INICIATIVA_TESTE;
+    private Long cidadeDaIniciativaUsada = CIDADE_TESTE;
     private String conteudoExemplo = "Das que conheço, essa iniciativa é uma delas!";
     private List<UUID> uuidDeOpinioesPraRemover = new ArrayList<UUID>();
+
+	@Before
+	public void limpaBancoParaTestes() {
+		JPAApi jpaAPI = app.injector().instanceOf(JPAApi.class);
+		Cidade cidadeTeste = new Cidade(CIDADE_TESTE, "Pasárgada", "PB", 1f, 1f, 1f, 1f, 1000L, 1f, 1f, 0f);
+		Iniciativa iniciativaTeste = new Iniciativa(INICIATIVA_TESTE, 2015, "iniciativa para melhorar condições da cidade", "programa do governo federal", "area de atuação", "fonte", "concedente", "status", false, 1000f, 1000f, new Date(), new Date(), new Date());
+		cidadeTeste.addIniciativa(iniciativaTeste, new Date(), false);
+		
+		CidadeDAO cidadeDAO = app.injector().instanceOf(CidadeDAO.class);
+		jpaAPI.withTransaction(() ->{
+			if(cidadeDAO.find(-1L) == null){
+				cidadeDAO.save(cidadeTeste);
+			}
+		});
+	}
 
     @After
     public void limpaBancoAposTeste() {
         IniciativaDAO daoIniciativa = app.injector().instanceOf(IniciativaDAO.class);
+        OpiniaoDAO daoOpiniao = app.injector().instanceOf(OpiniaoDAO.class);
         JPAApi jpaAPI = app.injector().instanceOf(JPAApi.class);
         jpaAPI.withTransaction(() -> {
             Iniciativa i = daoIniciativa.find(iniciativaUsada);
@@ -51,9 +79,24 @@ public class FeedControllerTest extends WithAuthentication {
             	Opiniao paraRemover = new Opiniao();
             	paraRemover.setId(uuid);
             	i.removeOpiniao(paraRemover);
+            	daoOpiniao.delete(daoOpiniao.find(uuid));
             }
             daoIniciativa.save(i);
         });
+        
+        desautenticaAdmin();
+        
+		CidadeDAO cidadeDAO = app.injector().instanceOf(CidadeDAO.class);
+		IniciativaDAO iniciativaDAO = app.injector().instanceOf(IniciativaDAO.class);
+		jpaAPI.withTransaction(() ->{
+			if(cidadeDAO.find(-1L) != null){
+				cidadeDAO.remove(cidadeDAO.find(-1L));
+			}
+			if(iniciativaDAO.find(-1L) != null){
+				iniciativaDAO.remove(iniciativaDAO.find(-1L));
+			}
+		});
+
     }
 
     @Test
