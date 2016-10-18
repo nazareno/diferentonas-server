@@ -33,7 +33,7 @@ if [ -z "$data_dados_siconv" ]; then
     {print $4 date[$3] $2}
   }'`
 else
-  echo "Usando data de dados siconv fornecida: " $data_dados_siconv
+  echo "[`date`] Usando data de dados siconv fornecida: " $data_dados_siconv
   reusando_dados_locais=true
 fi
 
@@ -67,7 +67,7 @@ if [ ! -e $output_siafi ]; then
   echo "[`date`] Baixando dados do siafi para $output_siafi"
   ./get_dados_siafi.sh $output_siafi
 else
-  echo "Já temos os dados mais recentes do SIAFI"
+  echo "[`date`] Já temos os dados mais recentes do SIAFI"
 fi
 # Calcula o que queremos --------
 cd ..
