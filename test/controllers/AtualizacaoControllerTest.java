@@ -2,6 +2,7 @@ package controllers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.contentAsString;
 
@@ -51,7 +52,7 @@ public class AtualizacaoControllerTest extends WithAuthentication {
     }
 
     @Test
-    public void deveListarAtualizacaoDisponivel() throws JsonParseException, JsonMappingException, IOException {
+    public void deveListarAtualizacaoInicial() throws JsonParseException, JsonMappingException, IOException {
     	
     	RequestBuilder request = builder
         .method("GET")
@@ -61,8 +62,10 @@ public class AtualizacaoControllerTest extends WithAuthentication {
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);
+        System.err.println(conteudoResposta);
         Atualizacao atualizacao = Json.fromJson(Json.parse(conteudoResposta), Atualizacao.class);
-        assertEquals(data, atualizacao.getProxima());
-        assertEquals(Atualizacao.Status.DESATUALIZADO, atualizacao.getStatus());
+        assertTrue(atualizacao.getProxima().isEmpty());
+        assertTrue(atualizacao.getUltima().isEmpty());
+        assertEquals(Atualizacao.Status.SERVIDOR_FORA_DO_AR, atualizacao.getStatus());
     }
 }

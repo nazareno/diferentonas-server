@@ -2,22 +2,19 @@ package controllers;
 
 import static controllers.util.ControllersTestUtils.enviaPOSTAddOpiniao;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 import static play.mvc.Http.Status.OK;
 import static play.test.Helpers.contentAsString;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
-import models.Cidadao;
-import models.CidadaoDAO;
 import models.Cidade;
 import models.CidadeDAO;
 import models.Iniciativa;
@@ -31,11 +28,10 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import play.Configuration;
 import play.db.jpa.JPAApi;
 import play.libs.Json;
-import play.mvc.Result;
 import play.mvc.Http.Status;
+import play.mvc.Result;
 import play.test.Helpers;
 
 import com.fasterxml.jackson.core.type.TypeReference;
