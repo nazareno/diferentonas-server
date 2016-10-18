@@ -21,14 +21,17 @@ public class WithAuthentication extends WithApplication {
 	protected RequestBuilder builder;
 	protected Cidadao admin;
 
-
     @Before
     public void autenticaAdmin() throws JOSEException{
     	
     	admin = app.injector().instanceOf(JPAApi.class).withTransaction(()->{
     		Configuration configuration = app.injector().instanceOf(Configuration.class);
     		String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
+    		Cidadao cidadao = new Cidadao("Governo Federal", adminEmail);
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
+    		if(cidadaoDAO.findByLogin(adminEmail) == null){
+				return cidadaoDAO.saveAndUpdate(cidadao);
+    		}
     		return cidadaoDAO.findByLogin(adminEmail);
     	});
     	
@@ -43,7 +46,8 @@ public class WithAuthentication extends WithApplication {
     		String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
     		Cidadao admin = cidadaoDAO.findByLogin(adminEmail);
-    		cidadaoDAO.saveAndUpdate(admin);
+    		cidadaoDAO.remove(admin);
+//    		cidadaoDAO.saveAndUpdate(admin);
     	});
     }
 }

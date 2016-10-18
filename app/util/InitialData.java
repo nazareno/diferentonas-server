@@ -15,6 +15,7 @@ import models.AtualizacaoDAO;
 import models.Cidadao;
 import models.CidadaoDAO;
 import models.Cidade;
+import models.ProvedorDeLogin;
 
 import org.h2.tools.Csv;
 
@@ -49,12 +50,29 @@ public class InitialData {
         	daoAtualizacao.create();
         });
         
-        populaCidadaos(jpaAPI, daoCidadao, configuration.getString(Cidadao.ADMIN_EMAIL));
+        String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
+		if(adminEmail == null || adminEmail.trim().isEmpty()){
+        	throw new RuntimeException("Atribua um valor a diferentonas.admin.email no seu arquivo de configuração!");
+        }
+
+		for (ProvedorDeLogin provedorDeLogin : ProvedorDeLogin.values()) {
+			String token = configuration.getString(provedorDeLogin
+					.getSecretProp());
+			if (token == null || token.trim().isEmpty()) {
+				throw new RuntimeException(
+						"Atribua um valor a "
+								+ provedorDeLogin.getSecretProp()
+								+ " no seu arquivo de configuração ou seus usuários não poderão se autenticar usando o "
+								+ provedorDeLogin.getName());
+			}
+		}
+
+        populaCidadaos(jpaAPI, daoCidadao, adminEmail, configuration.getInt("diferentonas.demo.numerodecidadaos", 0));
 
         populaCidades(jpaAPI);
     }
 
-	private void populaCidadaos(JPAApi jpaAPI, CidadaoDAO dao, String adminEmail) {
+	private void populaCidadaos(JPAApi jpaAPI, CidadaoDAO dao, String adminEmail, Integer numeroDeCidadaos) {
 		Logger.info("Populando cidadãos.");
 		jpaAPI.withTransaction(() -> {
             Cidadao admin = dao.findByLogin(adminEmail);
@@ -65,14 +83,13 @@ public class InitialData {
 				admin = dao.saveAndUpdate(cidadao);
 				
 				// Usuários para demonstração
-				int total = 1000;
-                for(int i = 0; i < total; i++ ){
+                for(int i = 0; i < numeroDeCidadaos; i++ ){
                 	Cidadao cidadaoParaDemonstracao = new Cidadao("Anônimo", String.format("cidadao_%03d@mail.com", i));
                 	cidadaoParaDemonstracao.setUrlDaFoto("http://www.gravatar.com/avatar/" + cidadaoParaDemonstracao.getLogin().hashCode()
 							+ "?f=y&d=retro");
 					cidadaos.add(dao.saveAndUpdate(cidadaoParaDemonstracao).getId());
                 }
-				Logger.info(total + " cidadãos mais o admin cadastrados.");
+				Logger.info(numeroDeCidadaos + " cidadãos mais o admin cadastrados.");
             } else {
 				Logger.info("Admin já cadastrado, assumimos que já temos usuários");
 			}
