@@ -30,6 +30,8 @@ public class WithAuthentication extends WithApplication {
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
     		if(cidadaoDAO.findByLogin(adminEmail) == null){
     			Cidadao cidadao = new Cidadao("Governo Federal", adminEmail);
+                cidadao.setFuncionario(true);
+                cidadao.setMinisterioDeAfiliacao("Governo Federal");
 				return cidadaoDAO.saveAndUpdate(cidadao);
     		}
     		return cidadaoDAO.findByLogin(adminEmail);
