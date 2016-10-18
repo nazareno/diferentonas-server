@@ -49,14 +49,16 @@ public class AtualizadorActor extends UntypedActor {
 	
 	public void onReceive(Object msg) throws Exception {
 
-		Logger.debug("AtualizadorActor.onReceive()");
+		Logger.info("AtualizadorActor.onReceive()");
 		if (msg instanceof AtualizadorActorProtocol.AtualizaIniciativasEScores) {
+			Logger.info("mensagem");
 			jpaAPI.withTransaction(() -> daoAtualizacao.inicia());
 			
 			Atualizacao status = jpaAPI.withTransaction(() -> daoAtualizacao.find());
 			List<String> datasDisponiveis = preparaDados(status.getUltima());
 			
 			if(datasDisponiveis == null){
+				Logger.info("Não existem dados para atualização.");
 				daoAtualizacao.finaliza(true);
 				sender().tell(false, self());
 				return;
@@ -64,6 +66,8 @@ public class AtualizadorActor extends UntypedActor {
 			
 			
 			for (String data: datasDisponiveis) {
+				Logger.info("Atualizando com dados de: " + data);
+
 				jpaAPI.withTransaction(() -> {
 					try {
 						
@@ -96,10 +100,16 @@ public class AtualizadorActor extends UntypedActor {
 	}
 	
 	private List<String> preparaDados(String ultimaDataAtualizada) throws IOException, InterruptedException {
-		Process process = Runtime.getRuntime().exec(configuration.getString("diferentonas.atualizacao", "false"));
-		boolean ok = process.waitFor(2, TimeUnit.HOURS);
-		if(!ok){
-			return null;
+		String comando = configuration.getString("diferentonas.atualizacao.comando");
+		if(!comando.isEmpty()){
+			Logger.info("Preparando dados para atualização com: " + comando);
+			Process process = Runtime.getRuntime().exec(comando);
+			boolean ok = process.waitFor(2, TimeUnit.HOURS);
+			if(!ok){
+				return null;
+			}
+		}else{
+			Logger.info("Não foi definido um comando para atualização. Verifique a propriedade diferentonas.atualizacao.comando");
 		}
 
 		return DadosUtil.listaAtualizacoes(configuration.getString("diferentonas.data", "dist/data"), ultimaDataAtualizada);

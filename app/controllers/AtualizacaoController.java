@@ -5,6 +5,8 @@ import static akka.pattern.Patterns.ask;
 import static play.libs.Json.toJson;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +22,7 @@ import models.AtualizacaoDAO;
 import models.Cidadao;
 import models.CidadaoDAO;
 import play.Configuration;
+import play.Logger;
 import play.db.jpa.JPAApi;
 import play.db.jpa.Transactional;
 import play.libs.ws.WSClient;
@@ -55,7 +58,7 @@ public class AtualizacaoController extends Controller {
 		this.atualizador = atualizador;
 		this.system = system;
 		this.jpaAPI = jpaAPI;
-		this.atualizacaoAtivada = configuration.getBoolean("diferentonas.atualizacao", false);
+		this.atualizacaoAtivada = configuration.getBoolean("diferentonas.atualizacao.automatica", false);
 		if(atualizacaoAtivada){
 			this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(10, TimeUnit.SECONDS), 
 					Duration.create(1, TimeUnit.DAYS), () -> {
@@ -81,7 +84,6 @@ public class AtualizacaoController extends Controller {
 	}
 
 	public void atualiza() {
-		
 		if(atualizacaoAtivada){
 
 			if(jpaAPI.withTransaction(()->daoAtualizacao.find().estaAtualizando())){
@@ -95,23 +97,32 @@ public class AtualizacaoController extends Controller {
 			}
 
 		}
-		atualizacaoURL.get().thenAccept(response -> {
-			Matcher matcher = padraoDaDataDePublicacao.matcher(response.getBody());
+		
+		Logger.info("Tentando atualizar usando dados de: " + atualizacaoURL.getUrl());
+
+		atualizacaoURL.get().thenApply(response -> {
+			Logger.info("Conexão realizada.");
+			String body = response.getBody();
+			Matcher matcher = padraoDaDataDePublicacao.matcher(body);
 			if(matcher.find()){
 				Atualizacao status = jpaAPI.withTransaction((em) -> {
-					Atualizacao result = daoAtualizacao.find();
-					String data = matcher.group(1);
-					result.atualiza(Arrays.asList(data));
-					em.persist(result);
+					Atualizacao dao = daoAtualizacao.find();
+					String data = matcher.group(0);
+					Logger.info("Iniciando atualização de dados às: " + new Date() + " com dados publicados em: " + data);
+					dao.atualiza(Arrays.asList(data));
+					em.persist(dao);
 					em.flush();
-					em.refresh(result);
-					return result;
+					em.refresh(dao);
+					return dao;
 				});
 
 				if (status.estaDesatualizado()) {
 					ask(atualizador, new AtualizadorActorProtocol.AtualizaIniciativasEScores(), 1000L);
 				}
+			}else{
+				Logger.info("Problemas ao acessar página em: " + atualizacaoURL.getUrl());
 			}
+			return ok();
 		});
 
 	}
