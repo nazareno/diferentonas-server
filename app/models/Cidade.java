@@ -242,6 +242,10 @@ public class Cidade implements Serializable {
         return true;
     }
 
+	public void criaScore(Score score) {
+		scores.add(score);
+	}
+
 	public void atualizaScore(Score scoreAtualizado, Date dataDaAtualizacao) {
 		for (Score score : scores) {
 			if (score.getArea().equals(scoreAtualizado.getArea())) {
@@ -258,10 +262,12 @@ public class Cidade implements Serializable {
 		novidades.add(new Novidade(TipoDaNovidade.NOVO_SCORE, dataDaAtualizacao, this, scoreAtualizado));
 	}
 
-	public void addIniciativa(Iniciativa iniciativa, Date dataDaAtualizacao) {
+	public void addIniciativa(Iniciativa iniciativa, Date dataDaAtualizacao, boolean publicaNovidade) {
 		iniciativas.add(iniciativa);
 		iniciativa.setCidade(this);
-		novidades.add(new Novidade(TipoDaNovidade.NOVA_INICIATIVA, dataDaAtualizacao, this, iniciativa));
+		if(publicaNovidade){
+			novidades.add(new Novidade(TipoDaNovidade.NOVA_INICIATIVA, dataDaAtualizacao, this, iniciativa));
+		}
 	}
 
 	public boolean isSeguidaPeloRequisitante() {
