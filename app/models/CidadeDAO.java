@@ -51,6 +51,16 @@ public class CidadeDAO {
     }
 
     /**
+     * Remove uma Cidade
+     *
+     * @param Cidade model
+     * @return Cidade
+     */
+    public void remove(Cidade cidade) {
+        jpaAPI.em().remove(cidade);
+    }
+
+    /**
      * Get all Cidades
      *
      * @return List<Cidade>

@@ -30,6 +30,10 @@ public class IniciativaDAO {
 		jpaAPI.em().persist(iniciativa);
 	}
 
+	public void remove(Iniciativa iniciativa){
+		jpaAPI.em().remove(iniciativa);
+	}
+	
 	public void flush() {
 		jpaAPI.em().flush();
 	}
@@ -75,6 +79,7 @@ public class IniciativaDAO {
 									.setParameter(4, id)
 									.setParameter(5, quantidade.intValue());
 
+			@SuppressWarnings("unchecked")
 			List<Iniciativa> retorno = (List<Iniciativa>) query.getResultList();
 
 			return adicionaSumarios(retorno, cidadao);
@@ -107,6 +112,7 @@ public class IniciativaDAO {
 		Query query = jpaAPI.em().createQuery("SELECT o.tipo as tipo, count(id) as quantidade FROM Opiniao o "
 				+ "WHERE o.iniciativa.id = :paramId "
 				+ "GROUP BY o.tipo").setParameter("paramId", id);
+		@SuppressWarnings("unchecked")
 		List<Object[]> resultList = query.getResultList();
 		for (Object[] objects : resultList) {
 			hashMap.put((String)objects[0], (Long)objects[1]);

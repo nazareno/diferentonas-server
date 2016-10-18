@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 
 import play.Configuration;
-import play.Logger;
 import play.db.jpa.JPAApi;
 import play.mvc.Http.RequestBuilder;
 import play.test.WithApplication;
