@@ -2,16 +2,6 @@
 
 Testadas em uma VM Ubuntu 16.04.
 
-## Pré-requisitos
-
-Antes de executar o servidor pela primeira vez, assegure que as seguintes variáveis de ambiente existem ou que seus valores no arquivo de configurações estão atualizados:
-
-* DIFERENTONAS_ADMIN_EMAIL: email usado como administrador do sistema
-* DIFERENTONAS_SECRET_FACEBOOK: secret key do Facebook para habilitar "Login com Facebook"
-* DIFERENTONAS_SECRET_GOOGLE: secret key do Google para habilitar "Login com Google"
-
-Iniciar o diferentonas-server sem configurar o "DIFERENTONAS_ADMIN_EMAIL" implicará num sistema sem administrador. Será necessário alterar o usuário no banco de dados manualmente ou recriar as tabelas.
-
 ## Nós web
 
 **R**
@@ -49,8 +39,9 @@ sudo apt-get -y install zip
 ```
 git clone http://github.com/nazareno/diferentonas-server
 cd diferentonas-server
+## --> EDITE conf/prod.conf
 ./activator clean compile stage
-./target/universal/stage/bin/diferentonas-server -J-server -Dhttp.port=9000 -Dplay.evolutions.db.default.autoApply=false -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=${DATABASE_URL} -Ddb.default.username=diferentonas -Ddb.default.password=${DATABASE_PASSWORD} -Ddiferentonas.data="data/" -DDIFERENTONAS_ADMIN_EMAIL=${ADMIN_EMAIL} -DDIFERENTONAS_SECRET_FACEBOOK=${DIFERENTONAS_SECRET_FACEBOOK} -DDIFERENTONAS_SECRET_GOOGLE=${DIFERENTONAS_SECRET_GOOGLE}
+./target/universal/stage/bin/diferentonas-server -J-server -Dconfig.resource=prod.conf
 ```
 
 
