@@ -13,10 +13,13 @@ import static play.test.Helpers.contentAsString;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
+import models.Cidade;
+import models.CidadeDAO;
 import models.Iniciativa;
 import models.IniciativaDAO;
 import models.Opiniao;
@@ -43,11 +46,15 @@ import controllers.util.WithAuthentication;
  */
 public class OpiniaoControllerTest extends WithAuthentication {
 
-    private OpiniaoController controller;
+    private static final Long CIDADE_TESTE = -1L;
+
+	private static final Long INICIATIVA_TESTE = -1L;
+
+	private OpiniaoController controller;
 
     private JPAApi jpaAPI;
 
-    private Long iniciativaExemplo = 805265L;
+    private Long iniciativaExemplo = INICIATIVA_TESTE;
     private String conteudoExemplo = "Essa iniciativa é absolutamente estrogonófica para a cidade.";
     private List<UUID> uuidDeOpinioesPraRemover = new ArrayList<UUID>();
 	private OpiniaoDAO daoOpiniao;
@@ -57,6 +64,18 @@ public class OpiniaoControllerTest extends WithAuthentication {
         this.controller = app.injector().instanceOf(OpiniaoController.class);
         this.jpaAPI = app.injector().instanceOf(JPAApi.class);
         this.daoOpiniao = app.injector().instanceOf(OpiniaoDAO.class);
+        
+		Cidade cidadeTeste = new Cidade(CIDADE_TESTE, "Pasárgada", "PB", 1f, 1f, 1f, 1f, 1000L, 1f, 1f, 0f);
+		Iniciativa iniciativaTeste = new Iniciativa(INICIATIVA_TESTE, 2015, "iniciativa para melhorar condições da cidade", "programa do governo federal", "area de atuação", "fonte", "concedente", "status", false, 1000f, 1000f, new Date(), new Date(), new Date());
+		cidadeTeste.addIniciativa(iniciativaTeste, new Date(), false);
+		
+		CidadeDAO cidadeDAO = app.injector().instanceOf(CidadeDAO.class);
+		jpaAPI.withTransaction(() ->{
+			if(cidadeDAO.find(-1L) == null){
+				cidadeDAO.save(cidadeTeste);
+			}
+		});
+
     }
 
     @After
@@ -73,6 +92,20 @@ public class OpiniaoControllerTest extends WithAuthentication {
             daoIniciativa.save(i);
         });
         uuidDeOpinioesPraRemover.clear();
+   
+    	desautenticaAdmin();
+
+		CidadeDAO cidadeDAO = app.injector().instanceOf(CidadeDAO.class);
+		IniciativaDAO iniciativaDAO = app.injector().instanceOf(IniciativaDAO.class);
+		jpaAPI.withTransaction(() ->{
+			if(cidadeDAO.find(-1L) != null){
+				cidadeDAO.remove(cidadeDAO.find(-1L));
+			}
+			if(iniciativaDAO.find(-1L) != null){
+				iniciativaDAO.remove(iniciativaDAO.find(-1L));
+			}
+		});
+
     }
 
     @Test
@@ -84,7 +117,7 @@ public class OpiniaoControllerTest extends WithAuthentication {
     @Test
     public void deveRetornar404EmCidadeInexistente() {
         jpaAPI.withTransaction(() -> {
-            long inexistente = -1L;
+            long inexistente = 0L;
             Result result = controller.getOpinioes(inexistente, 0, 100);
             assertEquals(NOT_FOUND, result.status());
             assertEquals("Iniciativa não encontrada", Helpers.contentAsString(result));
