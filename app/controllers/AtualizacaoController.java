@@ -45,6 +45,7 @@ public class AtualizacaoController extends Controller {
 	private WSRequest atualizacaoURL;
 	private Pattern padraoDaDataDePublicacao;
 	private JPAApi jpaAPI;
+	private boolean atualizacaoAtivada;
 
 	@Inject
 	public AtualizacaoController(AtualizacaoDAO daoAtualizacao, CidadaoDAO daoCidadao,
@@ -54,13 +55,16 @@ public class AtualizacaoController extends Controller {
 		this.atualizador = atualizador;
 		this.system = system;
 		this.jpaAPI = jpaAPI;
-		this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(10, TimeUnit.SECONDS), 
-				Duration.create(1, TimeUnit.DAYS), () -> {
-					this.atualiza();
-				}, 
-				system.dispatcher());
-		this.atualizacaoURL = client.url(configuration.getString("diferentonas.url", "http://portal.convenios.gov.br/download-de-dados"));
-		this.padraoDaDataDePublicacao = Pattern.compile("\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d\\s\\d\\d:\\d\\d:\\d\\d");
+		this.atualizacaoAtivada = configuration.getBoolean("diferentonas.atualizacao", false);
+		if(atualizacaoAtivada){
+			this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(10, TimeUnit.SECONDS), 
+					Duration.create(1, TimeUnit.DAYS), () -> {
+						this.atualiza();
+					}, 
+					system.dispatcher());
+			this.atualizacaoURL = client.url(configuration.getString("diferentonas.url", "http://portal.convenios.gov.br/download-de-dados"));
+			this.padraoDaDataDePublicacao = Pattern.compile("\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d\\s\\d\\d:\\d\\d:\\d\\d");
+		}
 		
 	}
 
@@ -78,16 +82,19 @@ public class AtualizacaoController extends Controller {
 
 	public void atualiza() {
 		
-		if(jpaAPI.withTransaction(()->daoAtualizacao.find().estaAtualizando())){
-			this.atualizacaoAgendada.cancel();
-			this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(new Random().nextInt(12), TimeUnit.HOURS), 
-					Duration.create(1, TimeUnit.DAYS), () -> {
-						this.atualiza();
-					}, 
-					system.dispatcher());
-			return;
+		if(atualizacaoAtivada){
+
+			if(jpaAPI.withTransaction(()->daoAtualizacao.find().estaAtualizando())){
+				this.atualizacaoAgendada.cancel();
+				this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(new Random().nextInt(12), TimeUnit.HOURS), 
+						Duration.create(1, TimeUnit.DAYS), () -> {
+							this.atualiza();
+						}, 
+						system.dispatcher());
+				return;
+			}
+
 		}
-		
 		atualizacaoURL.get().thenAccept(response -> {
 			Matcher matcher = padraoDaDataDePublicacao.matcher(response.getBody());
 			if(matcher.find()){
@@ -100,11 +107,12 @@ public class AtualizacaoController extends Controller {
 					em.refresh(result);
 					return result;
 				});
-				
+
 				if (status.estaDesatualizado()) {
 					ask(atualizador, new AtualizadorActorProtocol.AtualizaIniciativasEScores(), 1000L);
 				}
 			}
 		});
+
 	}
 }

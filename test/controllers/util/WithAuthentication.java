@@ -7,7 +7,6 @@ import org.junit.After;
 import org.junit.Before;
 
 import play.Configuration;
-import play.Logger;
 import play.db.jpa.JPAApi;
 import play.mvc.Http.RequestBuilder;
 import play.test.WithApplication;
@@ -22,7 +21,6 @@ public class WithAuthentication extends WithApplication {
 	protected RequestBuilder builder;
 	protected Cidadao admin;
 
-
     @Before
     public void autenticaAdmin() throws JOSEException{
     	
@@ -30,6 +28,10 @@ public class WithAuthentication extends WithApplication {
     		Configuration configuration = app.injector().instanceOf(Configuration.class);
     		String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
+    		if(cidadaoDAO.findByLogin(adminEmail) == null){
+    			Cidadao cidadao = new Cidadao("Governo Federal", adminEmail);
+				return cidadaoDAO.saveAndUpdate(cidadao);
+    		}
     		return cidadaoDAO.findByLogin(adminEmail);
     	});
     	
@@ -44,7 +46,10 @@ public class WithAuthentication extends WithApplication {
     		String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
     		CidadaoDAO cidadaoDAO = app.injector().instanceOf(CidadaoDAO.class);
     		Cidadao admin = cidadaoDAO.findByLogin(adminEmail);
-    		cidadaoDAO.saveAndUpdate(admin);
+    		if(admin != null){
+    			cidadaoDAO.remove(admin);
+    		}
+//    		cidadaoDAO.saveAndUpdate(admin);
     	});
     }
 }

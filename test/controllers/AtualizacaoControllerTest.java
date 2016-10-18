@@ -55,7 +55,7 @@ public class AtualizacaoControllerTest extends WithAuthentication {
     	
     	RequestBuilder request = builder
         .method("GET")
-        .uri(controllers.routes.AtualizacaoController.getAtualizacoes().url());
+        .uri(controllers.routes.AtualizacaoController.getStatus().url());
     	
         Result result = Helpers.route(request);
         assertEquals(OK, result.status());

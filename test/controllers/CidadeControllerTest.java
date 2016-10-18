@@ -48,12 +48,19 @@ public class CidadeControllerTest extends WithAuthentication {
     private CidadeDAO dao;
     private List<Novidade> novidadesParaDeletar = new ArrayList<>();
     private List<Score> scoresParaDeletar = new ArrayList<>();
-	private long cidadeID = 2513406L;
+	private static Long CIDADE_TESTE = -1L;
 
     @Before
     public void setUp() {
         this.dao = app.injector().instanceOf(CidadeDAO.class);
         this.jpaAPI = app.injector().instanceOf(JPAApi.class);
+        
+        this.jpaAPI.withTransaction(()->{
+    		Cidade cidadeTeste = new Cidade(CIDADE_TESTE, "Pasárgada", "PB", 1f, 1f, 1f, 1f, 1000L, 1f, 1f, 0f);
+			if(dao.find(-1L) == null){
+				dao.save(cidadeTeste);
+			}
+        });
     }
     
     @After
@@ -67,6 +74,10 @@ public class CidadeControllerTest extends WithAuthentication {
 			}
     		novidadesParaDeletar.clear();
     		scoresParaDeletar.clear();
+			if(dao.find(CIDADE_TESTE) != null){
+				dao.remove(dao.find(CIDADE_TESTE));
+			}
+
     	});
     }
 
@@ -87,7 +98,7 @@ public class CidadeControllerTest extends WithAuthentication {
 
     @Test
     public void deveRetornarCidadeExistente() {
-        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.get(2513406L).url()).method("GET"));
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.get(CIDADE_TESTE).url()).method("GET"));
         assertEquals(OK, result.status());
 
         JsonNode node = Json.parse(Helpers.contentAsString(result));
@@ -95,14 +106,14 @@ public class CidadeControllerTest extends WithAuthentication {
 
         Cidade cidade = Json.fromJson(node, Cidade.class);
 
-        assertEquals(2513406L, cidade.getId().longValue());
-        assertEquals("Santa Luzia", cidade.getNome());
+        assertEquals(CIDADE_TESTE, cidade.getId());
+        assertEquals("Pasárgada", cidade.getNome());
     }
 
 
     @Test
     public void deveRetornarNenhumaNovidade() throws JsonParseException, JsonMappingException, IOException {
-		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(cidadeID, 1, 10).url()).method("GET"));
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(CIDADE_TESTE, 1, 10).url()).method("GET"));
         assertEquals(OK, result.status());
 
         String conteudoResposta = contentAsString(result);
@@ -117,7 +128,7 @@ public class CidadeControllerTest extends WithAuthentication {
     public void deveRetornarNovidadesDeNovoScore() throws JsonParseException, JsonMappingException, IOException {
     	
     	Score novoScore = jpaAPI.withTransaction( (em) -> {
-    		Cidade cidade = dao.find(2513406L);
+    		Cidade cidade = dao.find(CIDADE_TESTE);
     		Score score = new Score("teste", 0f, 0f, 0f, 0f);
     		cidade.atualizaScore(score, new Date());
     		em.persist(score);
@@ -129,7 +140,7 @@ public class CidadeControllerTest extends WithAuthentication {
     	});
     	scoresParaDeletar.add(novoScore);
     	
-        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(2513406L, 0, 10).url()).method("GET"));
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(CIDADE_TESTE, 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
 
         String conteudoResposta = contentAsString(result);
@@ -149,7 +160,7 @@ public class CidadeControllerTest extends WithAuthentication {
     public void deveRetornarNovidadesDeNovoScoreEScoreAtualizado() throws JsonParseException, JsonMappingException, IOException, InterruptedException {
     	
     	Score novoScore = jpaAPI.withTransaction( (em) -> {
-    		Cidade cidade = dao.find(2513406L);
+    		Cidade cidade = dao.find(CIDADE_TESTE);
     		Score score = new Score("teste", 0f, 0f, 0f, 0f);
     		cidade.atualizaScore(score, new Date());
     		em.persist(score);
@@ -166,7 +177,7 @@ public class CidadeControllerTest extends WithAuthentication {
     	float novoValor = 1f;
     	
     	jpaAPI.withTransaction( () -> {
-    		Cidade cidade = dao.find(2513406L);
+    		Cidade cidade = dao.find(CIDADE_TESTE);
 			Score score = new Score("teste", novoValor, 0f, 0f, 0f);
     		cidade.atualizaScore(score, new Date());
     		EntityManager em = jpaAPI.em();
@@ -176,7 +187,7 @@ public class CidadeControllerTest extends WithAuthentication {
     	});
     	
     	
-        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(2513406L, 0, 10).url()).method("GET"));
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(CIDADE_TESTE, 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
 
         String conteudoResposta = contentAsString(result);
@@ -201,7 +212,7 @@ public class CidadeControllerTest extends WithAuthentication {
     public void deveRetornarSomenteNovidadesDeNovoScoreParaMaiorQueDois() throws JsonParseException, JsonMappingException, IOException {
     	
     	Score novoScore = jpaAPI.withTransaction( (em) -> {
-    		Cidade cidade = dao.find(2513406L);
+    		Cidade cidade = dao.find(CIDADE_TESTE);
     		Score score = new Score("teste", 2f, 0f, 0f, 0f);
     		cidade.atualizaScore(score, new Date());
     		em.persist(score);
@@ -216,7 +227,7 @@ public class CidadeControllerTest extends WithAuthentication {
     	float novoValor = 3f;
     	
     	jpaAPI.withTransaction( () -> {
-    		Cidade cidade = dao.find(2513406L);
+    		Cidade cidade = dao.find(CIDADE_TESTE);
 			Score score = new Score("teste", novoValor, 0f, 0f, 0f);
     		cidade.atualizaScore(score, new Date());
     		EntityManager em = jpaAPI.em();
@@ -225,7 +236,7 @@ public class CidadeControllerTest extends WithAuthentication {
     		em.refresh(cidade);
     	});
     	
-        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(2513406L, 0, 10).url()).method("GET"));
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.getNovidades(CIDADE_TESTE, 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
 
         String conteudoResposta = contentAsString(result);
@@ -249,40 +260,40 @@ public class CidadeControllerTest extends WithAuthentication {
 
 	@Test
 	public void deveriaInscreverEDesinscreverCidadaoNaCidade() {
-		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(CIDADE_TESTE).url()).method("DELETE"));
 
-		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeID).url()).method("POST"));
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(CIDADE_TESTE).url()).method("POST"));
 		assertEquals(Status.OK, result.status());
 		
-        result = Helpers.route(builder.uri(controllers.routes.CidadeController.get(2513406L).url()).method("GET"));
+        result = Helpers.route(builder.uri(controllers.routes.CidadeController.get(CIDADE_TESTE).url()).method("GET"));
         Cidade cidade = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Cidade.class);
         assertTrue(cidade.isSeguidaPeloRequisitante());
 
-        result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+        result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(CIDADE_TESTE).url()).method("DELETE"));
 		assertEquals(Status.OK, result.status());
 
-        result = Helpers.route(builder.uri(controllers.routes.CidadeController.get(2513406L).url()).method("GET"));
+        result = Helpers.route(builder.uri(controllers.routes.CidadeController.get(CIDADE_TESTE).url()).method("GET"));
         cidade = Json.fromJson(Json.parse(Helpers.contentAsString(result)), Cidade.class);
         assertFalse(cidade.isSeguidaPeloRequisitante());
 	}
 	
 	@Test
 	public void deveriaReportarCidadaoJaInscritoNumaCidade() {
-		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(CIDADE_TESTE).url()).method("DELETE"));
 
-		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeID).url()).method("POST"));
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(CIDADE_TESTE).url()).method("POST"));
 		assertEquals(Status.OK, result.status());
 		
-		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(cidadeID).url()).method("POST"));
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.adicionaInscrito(CIDADE_TESTE).url()).method("POST"));
 		assertEquals(Status.CONFLICT, result.status());
 		
-		result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+		result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(CIDADE_TESTE).url()).method("DELETE"));
 		assertEquals(Status.OK, result.status());
 	}
 
 	@Test
 	public void deveriaFalharAoRemoverCidadaoNaoInscritoNaCidade() {
-		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(cidadeID).url()).method("DELETE"));
+		Result result = Helpers.route(builder.uri(controllers.routes.CidadeController.removeInscrito(CIDADE_TESTE).url()).method("DELETE"));
 		assertEquals(Status.NOT_FOUND, result.status());
 	}
 }
