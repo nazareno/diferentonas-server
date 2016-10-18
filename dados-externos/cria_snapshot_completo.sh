@@ -41,12 +41,22 @@ set -u
 # Saídas que geraremos
 #diretorio_saida='dist/data/'
 diretorio_saida=$1
+if [[ ! -d "./$diretorio_saida" ]]; then
+  echo "[`date`] Diretório de saída $1 não existe. Para tudo."
+  exit 2
+fi
+diretorio_saida=$( cd "$(dirname "$1/.")" ; pwd -P )
+
 saida_iniciativas=../${diretorio_saida}/iniciativas-${data_dados_siconv}.csv
 saida_diferentices=../${diretorio_saida}/diferentices-${data_dados_siconv}.csv
 saida_historico=../${diretorio_saida}/historico-${data_dados_siconv}.csv
 
 # arquivo com cidades semelhantes, por enquanto estático:
 ARQUIVO_VIZINHOS=$diretorio_saida/vizinhos.euclidiano.csv
+
+# Entrar no diretório do script
+parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
+cd "$parent_path"
 
 # A menos que existam
 if [[ -f $saida_iniciativas && -f $saida_diferentices && -f $saida_historico ]]; then
