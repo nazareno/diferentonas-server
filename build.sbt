@@ -28,3 +28,11 @@ herokuAppName in Compile := "diferentonas"
 herokuIncludePaths in Compile := Seq(
   "app", "conf/routes", "dist/data", "dados-externos"
 )
+
+mappings in Universal ++=
+  (baseDirectory.value / "dados-externos" * "*" get) map
+    (x => x -> ("dados-externos/" + x.getName))
+
+mappings in Universal ++=
+  (baseDirectory.value / "R" * "*" get) map
+    (x => x -> ("R/" + x.getName))

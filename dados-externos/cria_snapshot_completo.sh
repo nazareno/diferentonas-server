@@ -6,9 +6,6 @@
 # --datasiconv=<data> faz com que o script use os dados em siconv-<data> em
 # lugar de baixar novos dados do siconv. Útil para reprocessar dados.
 
-# arquivo com cidades semelhantes, por enquanto estático:
-ARQUIVO_VIZINHOS=dist/data/vizinhos.euclidiano.csv
-
 for i in "$@"
 do
 case $i in
@@ -42,10 +39,14 @@ set -e
 set -u
 
 # Saídas que geraremos
-diretorio_saida='dist/data/'
+#diretorio_saida='dist/data/'
+diretorio_saida=$1
 saida_iniciativas=../${diretorio_saida}/iniciativas-${data_dados_siconv}.csv
 saida_diferentices=../${diretorio_saida}/diferentices-${data_dados_siconv}.csv
 saida_historico=../${diretorio_saida}/historico-${data_dados_siconv}.csv
+
+# arquivo com cidades semelhantes, por enquanto estático:
+ARQUIVO_VIZINHOS=$diretorio_saida/vizinhos.euclidiano.csv
 
 # A menos que existam
 if [[ -f $saida_iniciativas && -f $saida_diferentices && -f $saida_historico ]]; then
