@@ -3,7 +3,6 @@ package controllers;
 import static akka.pattern.Patterns.ask;
 import static play.libs.Json.toJson;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -70,10 +69,13 @@ public class AtualizacaoController extends Controller {
 	}
 
 	private void atualiza() {
+		Logger.info("Hora deste servidor tentar atualizar os dados do SICONV e SIAFI");
 		if(atualizacaoAtivada){
 			if(jpaAPI.withTransaction(()->daoAtualizacao.find().estaAtualizando())){
 				this.atualizacaoAgendada.cancel();
-				this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(new Random().nextInt(12), TimeUnit.HOURS), 
+				long quando = new Random().nextInt(12);
+				Logger.info("Há um servidor atualizando agora. Vou escolher um novo horário para verificações periódicas. Daqui a " + quando + " horas.");
+				this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(quando, TimeUnit.HOURS),
 						Duration.create(1, TimeUnit.DAYS), () -> {
 							this.atualiza();
 						}, 

@@ -60,7 +60,7 @@ sudo -u postgres psql template1
 > ALTER USER postgres with encrypted password 'your_password';
 > CREATE USER diferentonas with encrypted password 'your_password';
 > CREATE DATABASE diferentonas;
-> GRANT ALL privileges ON diferentonas TO diferentonas;
+> GRANT ALL privileges ON DATABASE diferentonas TO diferentonas;
 
 # em /etc/postgresql/9.1/main/pg_hba.conf
 local   all         postgres                          md5

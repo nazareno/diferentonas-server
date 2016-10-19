@@ -42,7 +42,7 @@ public class InitialData {
      */
     @Inject
     public InitialData(JPAApi jpaAPI, CidadaoDAO daoCidadao, AtualizacaoDAO daoAtualizacao, Configuration configuration) throws SQLException {
-        Logger.info("Na inicialização da aplicação.");
+        Logger.debug("Iniciando a aplicação.");
 
 		dataDir = Paths.get(configuration.getString("diferentonas.data", DIST_DATA)).toAbsolutePath().toString();
 
