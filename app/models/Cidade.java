@@ -244,6 +244,7 @@ public class Cidade implements Serializable {
 
 	public void criaScore(Score score) {
 		scores.add(score);
+		score.setCidade(this);
 	}
 
 	public void atualizaScore(Score scoreAtualizado, Date dataDaAtualizacao) {

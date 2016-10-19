@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Arrays;
+
 import javax.persistence.EntityManager;
 
 import play.Configuration;
@@ -32,17 +34,28 @@ public class AtualizacaoDAO {
     	return jpaAPI.em().find(Atualizacao.class, 0L);
     }
 
+    public Atualizacao atualiza(String... datas) {
+    	EntityManager em = jpaAPI.em();
+		Atualizacao atualizacao = em.find(Atualizacao.class, 0L);
+		atualizacao.atualiza(Arrays.asList(datas));
+		em.persist(atualizacao);
+		em.flush();
+		em.refresh(atualizacao);
+		return atualizacao;
+    }
+
 	public String getFolder() {
 		return folder;
 	}
 	
-	public void inicia(){
-		Atualizacao status = find();
-		status.inicia();
+	public boolean inicia(){
 		EntityManager em = jpaAPI.em();
+		Atualizacao status = em.find(Atualizacao.class, 0L);
+		boolean iniciado = status.inicia();
 		em.persist(status);
 		em.flush();
 		em.refresh(status);
+		return iniciado;
 	}
 	
 	public void finaliza(boolean comErro){

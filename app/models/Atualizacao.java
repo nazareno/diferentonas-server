@@ -126,8 +126,13 @@ public class Atualizacao implements Serializable {
 		return Status.DESATUALIZADO.equals(status);
 	}
 
-	public void inicia() {
-		this.status = Status.ATUALIZANDO;
+	public boolean inicia() {
+		if(Status.ATUALIZANDO.equals(this.status)){
+			return false; 
+		}else{
+			this.status = Status.ATUALIZANDO;
+			return true;
+		}
 	}
 
 	public void finaliza(boolean comErro) {

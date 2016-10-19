@@ -37,7 +37,8 @@ public class WithAuthentication extends WithApplication {
     		return cidadaoDAO.findByLogin(adminEmail);
     	});
     	
-		token = AuthUtils.createToken("localhost", admin).getToken();
+    	AuthUtils authenticator = app.injector().instanceOf(AuthUtils.class);
+		token = authenticator.createToken("localhost", admin).getToken();
     	builder = new RequestBuilder().header("authorization", "token " + token);
     }
 
@@ -51,7 +52,6 @@ public class WithAuthentication extends WithApplication {
     		if(admin != null){
     			cidadaoDAO.remove(admin);
     		}
-//    		cidadaoDAO.saveAndUpdate(admin);
     	});
     }
 }

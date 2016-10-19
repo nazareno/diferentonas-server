@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -64,14 +65,16 @@ public class AtualizadorActor extends UntypedActor {
 				return;
 			}
 			
-			
 			for (String data: datasDisponiveis) {
 				Logger.info("Atualizando com dados de: " + data);
 
 				jpaAPI.withTransaction(() -> {
 					try {
+						Atualizacao emExecucao = daoAtualizacao.find();
 						
-						boolean primeiraExecucao = status.getUltima().isEmpty();
+						emExecucao.atualiza(Arrays.asList(data));
+						
+						boolean primeiraExecucao = emExecucao.getUltima().isEmpty();
 
 						Date proximaData = formatoDataAtualizacao.parse(data);
 
@@ -82,7 +85,7 @@ public class AtualizadorActor extends UntypedActor {
 						String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + data + ".csv";
 						Logger.debug("Arquivo de inciativas: " + iniciativasDataPath);
 						atualizaIniciativas(iniciativasDataPath, proximaData, primeiraExecucao);
-
+						daoAtualizacao.finaliza(false);
 					} catch (Exception e) {
 						e.printStackTrace();
 						daoAtualizacao.finaliza(true);
@@ -99,20 +102,25 @@ public class AtualizadorActor extends UntypedActor {
 		}
 	}
 	
-	private List<String> preparaDados(String ultimaDataAtualizada) throws IOException, InterruptedException {
+	private List<String> preparaDados(String ultimaDataAtualizada){
 		String comando = configuration.getString("diferentonas.atualizacao.comando");
-		if(!comando.isEmpty()){
-			Logger.info("Preparando dados para atualização com: " + comando);
-			Process process = Runtime.getRuntime().exec(comando);
-			boolean ok = process.waitFor(2, TimeUnit.HOURS);
-			if(!ok){
-				return null;
+		try{
+			if(!comando.isEmpty()){
+				Logger.info("Preparando dados para atualização com: " + comando);
+				Process process = Runtime.getRuntime().exec(comando);
+				boolean ok = process.waitFor(2, TimeUnit.HOURS);
+				if(!ok){
+					return null;
+				}
+			}else{
+				Logger.info("Não foi definido um comando para atualização. Verifique a propriedade diferentonas.atualizacao.comando");
 			}
-		}else{
-			Logger.info("Não foi definido um comando para atualização. Verifique a propriedade diferentonas.atualizacao.comando");
+			
+			return DadosUtil.listaAtualizacoes(configuration.getString("diferentonas.data", "dist/data"), ultimaDataAtualizada);
+		}catch(IOException | InterruptedException e){
+			Logger.error("Erro durante a execução do comando de atualização: " + comando, e);
+			return null;
 		}
-
-		return DadosUtil.listaAtualizacoes(configuration.getString("diferentonas.data", "dist/data"), ultimaDataAtualizada);
 	}
 
 	private void atualizaScores(String dataPath, Date dataDaAtualizacao, boolean primeiraExecucao) throws SQLException {
@@ -137,8 +145,14 @@ public class AtualizadorActor extends UntypedActor {
     				scoreResultSet.getFloat(6));
     		
     		if(primeiraExecucao){
+    			if(cidade.getId() == 4209102L){
+    				Logger.info("Novo score em Joinville: " + score.getArea());
+    			}
     			cidade.criaScore(score);
     		}else{
+    			if(cidade.getId() == 4209102L){
+    				Logger.info("Atualizando score em Joinville: " + score.getArea());
+    			}
     			cidade.atualizaScore(score, dataDaAtualizacao);
     		}
     		

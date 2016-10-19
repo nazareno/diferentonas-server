@@ -41,14 +41,16 @@ public class LoginController extends Controller {
 	private String facebookSecret;
 	private String googleSecret;
 	private JPAApi api;
+	private AuthUtils authenticator;
 
 	@Inject 
 	public LoginController(CidadaoDAO dao, WSClient ws, FormFactory formFactory,
-			Configuration configuration, JPAApi api) {
+			Configuration configuration, JPAApi api, AuthUtils authenticator) {
 		this.dao = dao;
 		this.ws = ws;
 		this.formFactory = formFactory;
 		this.api = api;
+		this.authenticator = authenticator;
 		this.facebookSecret = configuration.getString(ProvedorDeLogin.FACEBOOK.getSecretProp());
 		this.googleSecret = configuration.getString(ProvedorDeLogin.GOOGLE.getSecretProp());
 	}
@@ -153,7 +155,7 @@ public class LoginController extends Controller {
 		return api.withTransaction(() -> {
 			try{
 
-				final String authHeader = request.getHeader(AuthUtils.AUTH_HEADER_KEY);
+				final String authHeader = request.getHeader(authenticator.AUTH_HEADER_KEY);
 
 				Cidadao cidadao = dao.findByProvider(provider, idNoProvider);
 				if (authHeader != null && !authHeader.isEmpty()) { // existe um header
@@ -161,7 +163,7 @@ public class LoginController extends Controller {
 						return status(CONFLICT, "Cidadão já está logado!");
 					}
 
-					String uuid = AuthUtils.getSubject(authHeader);
+					String uuid = authenticator.getSubject(authHeader);
 					Cidadao cidadaoDoHeader = dao.find(UUID.fromString(uuid));
 					if (cidadaoDoHeader == null) { // fez login antes mas deletou usuário e tá tentando usar header
 						return notFound("Cidadão não encontrado no banco de dados. Limpe seu cache e tente novamente.");
@@ -179,7 +181,7 @@ public class LoginController extends Controller {
 				cidadao.setNome(nome);
 				cidadao.setUrlDaFoto(urlDaFoto);
 				cidadao = dao.saveAndUpdate(cidadao);
-				Token token = AuthUtils.createToken(request.remoteAddress(), cidadao);
+				Token token = authenticator.createToken(request.remoteAddress(), cidadao);
 				Logger.debug("authorization: [token " + token.getToken() + "]");
 				return ok(toJson(token));
 			}catch(Exception e){
