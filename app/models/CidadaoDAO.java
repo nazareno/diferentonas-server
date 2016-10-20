@@ -66,8 +66,8 @@ public class CidadaoDAO {
         TypedQuery<Cidadao> query = jpaAPI.em()
                 .createQuery("SELECT c "
                         + "FROM Cidadao c "
-                        + "WHERE c.login LIKE :query_string "
-                        + "ORDER BY c.login", Cidadao.class)
+                        + "WHERE (c.login LIKE :query_string OR c.nome LIKE :query_string)"
+                        + "ORDER BY c.nome", Cidadao.class)
                 .setParameter("query_string", "%" + queryString + "%")
                 .setFirstResult(pagina * tamanhoDaPagina)
                 .setMaxResults(tamanhoDaPagina);
@@ -87,9 +87,9 @@ public class CidadaoDAO {
         TypedQuery<Cidadao> query = jpaAPI.em()
                 .createQuery("SELECT c "
                         + "FROM Cidadao c "
-                        + "WHERE c.login LIKE :query_string "
+                        + "WHERE (c.login LIKE :query_string OR c.nome LIKE :query_string)"
                         + "AND c.funcionario = true "
-                        + "ORDER BY c.login", Cidadao.class)
+                        + "ORDER BY c.nome", Cidadao.class)
                 .setParameter("query_string", "%" + queryString + "%")
                 .setFirstResult(pagina * tamanhoDaPagina)
                 .setMaxResults(tamanhoDaPagina);

@@ -38,9 +38,9 @@ public class CidadaoControllerTest extends WithAuthentication {
     @Before
     public void preparaBancoParaTeste() {
 		cidadaosCobaia = new LinkedList<>();
-        cidadaosCobaia.add(new Cidadao("root", "root"));
-        cidadaosCobaia.add(new Cidadao("raquel", "raquel"));
-        cidadaosCobaia.add(new Cidadao("toinho", "toinho"));
+        cidadaosCobaia.add(new Cidadao("root maria", "root@zazaza.com"));
+        cidadaosCobaia.add(new Cidadao("raquel maria", "raquel@zazaza.com"));
+        cidadaosCobaia.add(new Cidadao("toinho", "toinho@zozozo.com"));
 
         controller = app.injector().instanceOf(CidadaoController.class);
         jpaAPI = app.injector().instanceOf(JPAApi.class);
@@ -59,14 +59,12 @@ public class CidadaoControllerTest extends WithAuthentication {
     }
 
 	private void limpaBanco() {
-
         jpaAPI.withTransaction(() -> {
             for (Cidadao c:
                  cidadaosCobaia) {
                 controller.removeCidadaoPorLogin(c.getLogin());
             }
         });
-
 	}
 
     private static List<Cidadao> jsonToList(String jsonResposta) throws IOException {
@@ -75,8 +73,18 @@ public class CidadaoControllerTest extends WithAuthentication {
 
     @Test
     public void deveBuscarPorLogin() throws IOException {
-    	
-        Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("r", 0, 10).url()).method("GET"));
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("maria", 0, 10).url()).method("GET"));
+        assertEquals(OK, result.status());
+        String conteudoResposta = contentAsString(result);
+        assertNotNull(conteudoResposta);
+        assertTrue(Json.parse(conteudoResposta).isArray());
+        List<Cidadao> cidadaos = jsonToList(conteudoResposta);
+        assertEquals(2, cidadaos.size());
+    }
+
+    @Test
+    public void deveBuscarPorEmail() throws IOException {
+        Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("zaza", 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);
@@ -87,7 +95,6 @@ public class CidadaoControllerTest extends WithAuthentication {
 
     @Test
     public void deveRetornarListaVaziaAoNaoEncontrar() throws IOException {
-    	
         Result result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getCidadaos("ieyqwfasdkljhfrsd", 0, 10).url()).method("GET"));
         assertEquals(OK, result.status());
         String conteudoResposta = contentAsString(result);
@@ -198,10 +205,10 @@ public class CidadaoControllerTest extends WithAuthentication {
         String umMinisterio = "Ministério que ainda vão inventar";
         Helpers.route(builder.uri(controllers.routes.CidadaoController.promoveAFuncionario(cidadao.getId().toString(), umMinisterio).url()).method("POST"));
 
-        result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getFuncionarios("r", 0, 10).url()).method("GET"));
+        result = Helpers.route(builder.uri(controllers.routes.CidadaoController.getFuncionarios("maria", 0, 10).url()).method("GET"));
         cidadaos = jsonToList(contentAsString(result));
         Cidadao cidadao2 = cidadaos.get(0);
         assertEquals(1, cidadaos.size());
-        assertEquals("raquel", cidadao2.getNome());
+        assertEquals("raquel maria", cidadao2.getNome());
     }
 }
