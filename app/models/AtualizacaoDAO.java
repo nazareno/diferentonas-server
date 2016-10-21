@@ -28,8 +28,9 @@ public class AtualizacaoDAO {
 
     public List<Atualizacao> getMaisRecentes() {
     	EntityManager em = jpaAPI.em();
-    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status != 'DISPONIVEL' ORDER BY a.dataDePublicacao DESC, a.servidorResponsavel DESC", Atualizacao.class);
+    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status != :status ORDER BY a.dataDePublicacao DESC, a.servidorResponsavel DESC", Atualizacao.class);
     	query.setMaxResults(10);
+    	query.setParameter("status", Status.DISPONIVEL);
 		List<Atualizacao> list = query.getResultList();
     	return list;
     }
@@ -44,7 +45,8 @@ public class AtualizacaoDAO {
 	
 	public Atualizacao getLider(String dataVotada) {
     	EntityManager em = jpaAPI.em();
-    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status = 'DISPONIVEL' AND a.dataDePublicacao = :dataVotada ORDER BY a.servidorResponsavel DESC, a.horaDaAtualizacao DESC", Atualizacao.class);
+    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status = :status AND a.dataDePublicacao = :dataVotada ORDER BY a.servidorResponsavel DESC, a.horaDaAtualizacao DESC", Atualizacao.class);
+    	query.setParameter("status", Status.DISPONIVEL);
     	query.setParameter("dataVotada", dataVotada);
     	query.setMaxResults(1);
 		List<Atualizacao> list = query.getResultList();
@@ -71,15 +73,17 @@ public class AtualizacaoDAO {
 
 	public Atualizacao getUltimaRealizada() {
     	EntityManager em = jpaAPI.em();
-    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status = 'ATUALIZADO' ORDER BY a.dataDePublicacao DESC, a.servidorResponsavel DESC", Atualizacao.class);
+    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status = :status ORDER BY a.dataDePublicacao DESC, a.servidorResponsavel DESC", Atualizacao.class);
     	query.setMaxResults(1);
+    	query.setParameter("status", Status.ATUALIZADO);
     	List<Atualizacao> list = query.getResultList();
     	return list.isEmpty()? null: list.get(0);
 	}
 	
 	public Atualizacao getUltimaPendente() {
     	EntityManager em = jpaAPI.em();
-    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status = 'ATUALIZANDO' ORDER BY a.dataDePublicacao DESC, a.servidorResponsavel DESC", Atualizacao.class);
+    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status = :status ORDER BY a.dataDePublicacao DESC, a.servidorResponsavel DESC", Atualizacao.class);
+    	query.setParameter("status", Status.ATUALIZANDO);
     	query.setMaxResults(1);
 		List<Atualizacao> list = query.getResultList();
     	return list.isEmpty()? null: list.get(0);
