@@ -38,6 +38,9 @@ public class Atualizacao implements Serializable {
 	
 	private Status status;
 	
+	public Atualizacao() {
+		// TODO Auto-generated constructor stub
+	}
 	
 	public Atualizacao(String dataDePublicacao, String servidorResponsavel,
 			Date horaDaAtualizacao) {
@@ -52,6 +55,14 @@ public class Atualizacao implements Serializable {
 		this.status = status;
 	}
 	
+	public UUID getId() {
+		return id;
+	}
+
+	public void setId(UUID id) {
+		this.id = id;
+	}
+
 	public String getDataDePublicacao() {
 		return dataDePublicacao;
 	}
