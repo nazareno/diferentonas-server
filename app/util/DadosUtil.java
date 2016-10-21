@@ -21,7 +21,7 @@ import play.Logger;
 
 public class DadosUtil {
 
-    public static List<String> listaAtualizacoes(String folder, String ultimaDataAtualizada) {
+    public static String listaAtualizacoes(String folder) {
 
         List<String> paths = new ArrayList<>();
 
@@ -35,20 +35,22 @@ public class DadosUtil {
             for (Path path : ds) {
                 String name = path.getFileName().toString();
                 String data = name.substring(name.lastIndexOf("-") + 1, name.indexOf(".csv"));
-                
-                if(data.compareTo(ultimaDataAtualizada) <= 0){
-                	apagaArquivosVelhos(folder, data);
-                }else{
-                	paths.add(data);
-                }
-
+               	paths.add(data);
             }
 
             Collections.sort(paths);
+            Collections.reverse(paths);
+            if(!paths.isEmpty()){
+            	String maisNovo = paths.remove(0);
+            	for (String data : paths) {
+            		apagaArquivosVelhos(folder, data);
+				}
+            	return maisNovo;
+            }
         } catch (IOException e) {
             Logger.error(" Listagem de Atualizações: ", e);
         }
-        return paths;
+        return null;
     }
 
 

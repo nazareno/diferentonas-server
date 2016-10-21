@@ -3,8 +3,10 @@ package controllers;
 import static akka.pattern.Patterns.ask;
 import static play.libs.Json.toJson;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
-import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,83 +30,91 @@ import scala.concurrent.duration.Duration;
 import actors.AtualizadorActorProtocol;
 import akka.actor.ActorRef;
 import akka.actor.ActorSystem;
-import akka.actor.Cancellable;
 
 @Singleton
 public class AtualizacaoController extends Controller {
 
 	private ActorRef atualizador;
 	private AtualizacaoDAO daoAtualizacao;
-	private ActorSystem system;
-	private Cancellable atualizacaoAgendada;
 	private WSRequest atualizacaoURL;
 	private Pattern padraoDaDataDePublicacao;
 	private JPAApi jpaAPI;
 	private boolean atualizacaoAtivada;
+	private String identificadorUnicoDoServidor;
+	private String dataVotada;
 
 	@Inject
 	public AtualizacaoController(AtualizacaoDAO daoAtualizacao, CidadaoDAO daoCidadao,
 			@Named("atualizador-actor") ActorRef atualizador, ActorSystem system, Configuration configuration, WSClient client, JPAApi jpaAPI) {
 		this.daoAtualizacao = daoAtualizacao;
 		this.atualizador = atualizador;
-		this.system = system;
 		this.jpaAPI = jpaAPI;
 		this.atualizacaoAtivada = configuration.getBoolean("diferentonas.atualizacao.automatica", false);
+		
 		if(atualizacaoAtivada){
-			this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(10, TimeUnit.SECONDS), 
-					Duration.create(1, TimeUnit.DAYS), () -> {
-						this.atualiza();
+			LocalDateTime now = LocalDateTime.now();
+			LocalDateTime manha = LocalDateTime.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 6, 0);
+			LocalDateTime noite = LocalDateTime.of(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), 18, 0);
+			
+			long delay;
+			if(now.isBefore(manha)){
+				delay = manha.atZone(ZoneOffset.systemDefault()).toEpochSecond() - now.atZone(ZoneOffset.systemDefault()).toEpochSecond();
+			}else if(now.isBefore(noite)){
+				delay = noite.atZone(ZoneOffset.systemDefault()).toEpochSecond() - now.atZone(ZoneOffset.systemDefault()).toEpochSecond();
+			}else{
+				delay = manha.plusDays(1).atZone(ZoneOffset.systemDefault()).toEpochSecond() - now.atZone(ZoneOffset.systemDefault()).toEpochSecond();
+			}
+			
+			system.scheduler().schedule(Duration.create(delay, TimeUnit.SECONDS), 
+					Duration.create(12, TimeUnit.HOURS), () -> {
+						this.votaEmLider();
+					}, 
+					system.dispatcher());
+			system.scheduler().schedule(Duration.create(delay + 3600, TimeUnit.SECONDS), 
+					Duration.create(12, TimeUnit.HOURS), () -> {
+						this.elegeLiderEAtualiza();
 					}, 
 					system.dispatcher());
 			this.atualizacaoURL = client.url(configuration.getString("diferentonas.url", "http://portal.convenios.gov.br/download-de-dados"));
 			this.padraoDaDataDePublicacao = Pattern.compile("\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d\\s\\d\\d:\\d\\d:\\d\\d");
+			this.identificadorUnicoDoServidor = UUID.randomUUID().toString();
 		}
 		
 	}
 
-	@Transactional
-	public Result getStatus() {
-		
-		return ok(toJson(daoAtualizacao.find()));
-	}
 
-	private void atualiza() {
-		Logger.info("Hora deste servidor tentar atualizar os dados do SICONV e SIAFI");
-		if(atualizacaoAtivada){
-			if(jpaAPI.withTransaction(()->daoAtualizacao.find().estaAtualizando())){
-				this.atualizacaoAgendada.cancel();
-				long quando = new Random().nextInt(12);
-				Logger.info("Há um servidor atualizando agora. Vou escolher um novo horário para verificações periódicas. Daqui a " + quando + " horas.");
-				this.atualizacaoAgendada = system.scheduler().schedule(Duration.create(quando, TimeUnit.HOURS),
-						Duration.create(1, TimeUnit.DAYS), () -> {
-							this.atualiza();
-						}, 
-						system.dispatcher());
-				return;
-			}
-		}
-		
-		Logger.info("Tentando atualizar usando dados de: " + atualizacaoURL.getUrl());
-
+	private void votaEmLider() {
 		atualizacaoURL.get().thenApply(response -> {
 			Logger.info("Conexão realizada.");
 			String body = response.getBody();
 			Matcher matcher = padraoDaDataDePublicacao.matcher(body);
 			if(matcher.find()){
-				Atualizacao status = jpaAPI.withTransaction((em) -> {
-					String data = matcher.group(0);
-					Logger.info("Iniciando atualização de dados às: " + new Date() + " com dados publicados em: " + data);
-					return daoAtualizacao.atualiza(data);
-				});
-
-				if (status.estaDesatualizado()) {
-					ask(atualizador, new AtualizadorActorProtocol.AtualizaIniciativasEScores(), 1000L);
-				}
+				String data = matcher.group(0);
+				this.dataVotada = data;
+				Logger.info("Votando para " + data + " em " + identificadorUnicoDoServidor);
+				jpaAPI.withTransaction(()->daoAtualizacao.vota(data, identificadorUnicoDoServidor));
 			}else{
 				Logger.info("Problemas ao acessar página em: " + atualizacaoURL.getUrl());
 			}
 			return ok();
 		});
+	}
 
+	private void elegeLiderEAtualiza() {
+		Atualizacao lider = jpaAPI.withTransaction(()->daoAtualizacao.getLider(dataVotada));
+		if(lider == null){
+			Logger.warn("Impossível eleger lider! Não houveram votos para data: " + dataVotada);
+			return;
+		}
+		
+		if(this.identificadorUnicoDoServidor.equals(lider.getServidorResponsavel())){
+			Logger.info("Iniciando atualização de dados às: " + new Date() + " com dados publicados em: " + dataVotada);
+			ask(atualizador, new AtualizadorActorProtocol.AtualizaIniciativasEScores(dataVotada, identificadorUnicoDoServidor), 1000L);
+		}
+	}
+
+	@Transactional
+	public Result getStatus() {
+		return ok(toJson(daoAtualizacao.getMaisRecentes()));
 	}
 }

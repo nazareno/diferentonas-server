@@ -46,10 +46,6 @@ public class InitialData {
 
 		dataDir = Paths.get(configuration.getString("diferentonas.data", DIST_DATA)).toAbsolutePath().toString();
 
-        jpaAPI.withTransaction(()->{
-        	daoAtualizacao.create();
-        });
-        
         String adminEmail = configuration.getString(Cidadao.ADMIN_EMAIL);
 		if(adminEmail == null || adminEmail.trim().isEmpty()){
         	throw new RuntimeException("Atribua um valor a diferentonas.admin.email no seu arquivo de configuração!");

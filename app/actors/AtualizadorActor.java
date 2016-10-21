@@ -2,13 +2,12 @@ package actors;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -21,12 +20,14 @@ import models.Iniciativa;
 import models.IniciativaDAO;
 import models.Score;
 
+import org.apache.commons.io.IOUtils;
 import org.h2.tools.Csv;
 
 import play.Configuration;
 import play.Logger;
 import play.db.jpa.JPAApi;
 import util.DadosUtil;
+import actors.AtualizadorActorProtocol.AtualizaIniciativasEScores;
 import akka.actor.UntypedActor;
 
 public class AtualizadorActor extends UntypedActor {
@@ -53,74 +54,81 @@ public class AtualizadorActor extends UntypedActor {
 		Logger.info("AtualizadorActor.onReceive()");
 		if (msg instanceof AtualizadorActorProtocol.AtualizaIniciativasEScores) {
 			Logger.info("mensagem");
-			jpaAPI.withTransaction(() -> daoAtualizacao.inicia());
+			AtualizaIniciativasEScores mensagem = (AtualizadorActorProtocol.AtualizaIniciativasEScores)msg;
 			
-			Atualizacao status = jpaAPI.withTransaction(() -> daoAtualizacao.find());
-			List<String> datasDisponiveis = preparaDados(status.getUltima());
+			String dataVotada = mensagem.getDataVotada();
+			String servidorResponsavel = mensagem.getIdentificadorUnicoDoServidor();
 			
-			if(datasDisponiveis == null){
-				Logger.info("Não existem dados para atualização.");
-				daoAtualizacao.finaliza(true);
+			Atualizacao maisRecente = jpaAPI.withTransaction(() -> {
+				daoAtualizacao.inicia(dataVotada, servidorResponsavel);
+				return daoAtualizacao.getUltimaRealizada();
+			});
+			
+			if(maisRecente != null && maisRecente.equals(dataVotada)){
+				Logger.info("Dados já atualizados para data: " + dataVotada);
+				daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false);
 				sender().tell(false, self());
 				return;
 			}
 			
-			for (String data: datasDisponiveis) {
-				Logger.info("Atualizando com dados de: " + data);
-
-				jpaAPI.withTransaction(() -> {
-					try {
-						Atualizacao emExecucao = daoAtualizacao.find();
-						
-						emExecucao.atualiza(Arrays.asList(data));
-						
-						boolean primeiraExecucao = emExecucao.getUltima().isEmpty();
-
-						Date proximaData = formatoDataAtualizacao.parse(data);
-
-						String scoresDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + data + ".csv";
-						Logger.debug("Usando arquivo de scores: " + scoresDataPath);
-						atualizaScores(scoresDataPath, proximaData, primeiraExecucao);
-
-						String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + data + ".csv";
-						Logger.debug("Arquivo de inciativas: " + iniciativasDataPath);
-						atualizaIniciativas(iniciativasDataPath, proximaData, primeiraExecucao);
-						daoAtualizacao.finaliza(false);
-					} catch (Exception e) {
-						e.printStackTrace();
-						daoAtualizacao.finaliza(true);
-						sender().tell(false, self());
-						return;
-					}
-				});
+			String dataDisponivel = preparaDados(maisRecente == null?"":maisRecente.getDataDePublicacao());
+			
+			if(dataDisponivel == null){
+				Logger.info("Não existem dados para atualização.");
+				daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false);
+				sender().tell(false, self());
+				return;
 			}
 			
-			jpaAPI.withTransaction(() -> daoAtualizacao.finaliza(false));
-			sender().tell(true, self());
+			Logger.info("Tentando atualizar com dados de: " + dataVotada);
+			
+			boolean primeiraExecucao = maisRecente == null;
+
+			jpaAPI.withTransaction(() -> {
+				try {
+					Date proximaData = formatoDataAtualizacao.parse(dataDisponivel);
+
+					String scoresDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/diferentices-" + dataDisponivel + ".csv";
+					Logger.debug("Arquivo de scores: " + scoresDataPath);
+					atualizaScores(scoresDataPath, proximaData, primeiraExecucao);
+
+					String iniciativasDataPath = Paths.get(daoAtualizacao.getFolder()).toAbsolutePath().toString() + "/iniciativas-" + dataDisponivel + ".csv";
+					Logger.debug("Arquivo de inciativas: " + iniciativasDataPath);
+					atualizaIniciativas(iniciativasDataPath, proximaData, primeiraExecucao);
+					jpaAPI.withTransaction(() -> daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false));
+					sender().tell(true, self());
+				} catch (Exception e) {
+					Logger.error("Atualização com dados de " + dataVotada + " não terminou com sucesso.", e);
+					jpaAPI.withTransaction(() -> daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false));
+					sender().tell(true, self());
+				}
+			});
 		} else {
 			Logger.warn("Mensagem de tipo desconhecido: " + msg.getClass().toString());
 		}
 	}
 	
-	private List<String> preparaDados(String ultimaDataAtualizada){
+	private String preparaDados(String ultimaDataAtualizada){
 		String comando = configuration.getString("diferentonas.atualizacao.comando");
+		String dados = null;
 		try{
 			if(!comando.isEmpty()){
 				Logger.info("Preparando dados para atualização com: " + comando);
-				Process process = Runtime.getRuntime().exec(comando);
-				boolean ok = process.waitFor(2, TimeUnit.HOURS);
-				if(!ok){
-					return null;
+				Process process;
+				process = Runtime.getRuntime().exec(comando);
+				if(process.waitFor(2, TimeUnit.HOURS)){
+					dados = DadosUtil.listaAtualizacoes(daoAtualizacao.getFolder());
 				}
-			}else{
-				Logger.info("Não foi definido um comando para atualização. Verifique a propriedade diferentonas.atualizacao.comando");
+				String output = IOUtils.toString(process.getInputStream(), Charset.defaultCharset());
+				Logger.info(output);
+				String error = IOUtils.toString(process.getErrorStream(), Charset.defaultCharset());
+				Logger.error(error);
 			}
-			
-			return DadosUtil.listaAtualizacoes(configuration.getString("diferentonas.data", "dist/data"), ultimaDataAtualizada);
+			Logger.info("Não foi definido um comando para atualização. Verifique a propriedade diferentonas.atualizacao.comando");
 		}catch(IOException | InterruptedException e){
 			Logger.error("Erro durante a execução do comando de atualização: " + comando, e);
-			return null;
 		}
+		return dados;
 	}
 
 	private void atualizaScores(String dataPath, Date dataDaAtualizacao, boolean primeiraExecucao) throws SQLException {

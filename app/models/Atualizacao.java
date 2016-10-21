@@ -1,22 +1,24 @@
 package models;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.hibernate.annotations.GenericGenerator;
 
 @Entity
 public class Atualizacao implements Serializable {
-
-	public enum Status {
-		ATUALIZADO, ATUALIZANDO, DESATUALIZADO, SERVIDOR_FORA_DO_AR;
+	
+	enum Status{
+		DISPONIVEL,
+		ATUALIZANDO,
+		ATUALIZADO,
+		SEM_SUCESSO, 
+		ABANDONADA
 	}
 
 	/**
@@ -24,53 +26,56 @@ public class Atualizacao implements Serializable {
 	 */
 	private static final long serialVersionUID = -1889826274385838076L;
 	@Id
-	@JsonIgnore
-	private Long id;
+    @GeneratedValue(generator = "uuid2")
+    @GenericGenerator(name = "uuid2", strategy = "uuid2")
+	private UUID id;
 
-	private String proxima;
+	private String dataDePublicacao;
 
-	@Enumerated(EnumType.STRING)
+	private String servidorResponsavel;
+	
+	private Date horaDaAtualizacao;
+	
 	private Status status;
-
-	private String ultima;
-
-	public Atualizacao() {
-		this.id = 0L;
-		this.ultima = "";
-		this.proxima = "";
-		this.status = Status.SERVIDOR_FORA_DO_AR;
+	
+	
+	public Atualizacao(String dataDePublicacao, String servidorResponsavel,
+			Date horaDaAtualizacao) {
+		this(dataDePublicacao, servidorResponsavel, horaDaAtualizacao, Status.DISPONIVEL);
+	}
+	
+	public Atualizacao(String dataDePublicacao, String servidorResponsavel,
+			Date horaDaAtualizacao, Status status) {
+		this.dataDePublicacao = dataDePublicacao;
+		this.servidorResponsavel = servidorResponsavel;
+		this.horaDaAtualizacao = horaDaAtualizacao;
+		this.status = status;
+	}
+	
+	public String getDataDePublicacao() {
+		return dataDePublicacao;
 	}
 
-	public void atualiza(List<String> atualizacoesDisponiveis) {
-		if (atualizacoesDisponiveis.isEmpty()) {
-			this.status = Status.ATUALIZADO;
-		} else{
-			atualizacoesDisponiveis = atualizacoesDisponiveis.stream().filter(atualizacao -> atualizacao.compareTo(ultima) > 0).collect(Collectors.toList());
-			if(atualizacoesDisponiveis.isEmpty()){
-				this.status = Status.ATUALIZADO;
-			}else{
-				this.status = Status.DESATUALIZADO;
-				this.proxima = atualizacoesDisponiveis.get(0);
-			}
-		}
+	public void setDataDePublicacao(String dataDePublicacao) {
+		this.dataDePublicacao = dataDePublicacao;
 	}
 
-	public Long getId() {
-		return id;
+	public String getServidorResponsavel() {
+		return servidorResponsavel;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public void setServidorResponsavel(String servidorResponsavel) {
+		this.servidorResponsavel = servidorResponsavel;
 	}
 
-	public String getProxima() {
-		return proxima;
+	public Date getHoraDaAtualizacao() {
+		return horaDaAtualizacao;
 	}
 
-	public void setProxima(String proxima) {
-		this.proxima = proxima;
+	public void setHoraDaAtualizacao(Date horaDaAtualizacao) {
+		this.horaDaAtualizacao = horaDaAtualizacao;
 	}
-
+	
 	public Status getStatus() {
 		return status;
 	}
@@ -79,19 +84,13 @@ public class Atualizacao implements Serializable {
 		this.status = status;
 	}
 
-	public String getUltima() {
-		return ultima;
-	}
-
-	public void setUltima(String ultima) {
-		this.ultima = ultima;
-	}
-
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime
+				* result
+				+ ((dataDePublicacao == null) ? 0 : dataDePublicacao.hashCode());
 		return result;
 	}
 
@@ -104,44 +103,15 @@ public class Atualizacao implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Atualizacao other = (Atualizacao) obj;
-		if (id == null) {
-			if (other.id != null)
+		if (dataDePublicacao == null) {
+			if (other.dataDePublicacao != null)
 				return false;
-		} else if (!id.equals(other.id))
+		} else if (!dataDePublicacao.equals(other.dataDePublicacao))
 			return false;
 		return true;
 	}
 
-	@Override
-	public String toString() {
-		return "Atualizacao [id=" + id + ", ultima=" + ultima + ", proxima="
-				+ proxima + ", status=" + status + "]";
-	}
-
 	public boolean estaAtualizando() {
-		return Status.ATUALIZANDO.equals(status);
+		return Status.ATUALIZANDO.equals(this.status);
 	}
-
-	public boolean estaDesatualizado() {
-		return Status.DESATUALIZADO.equals(status);
-	}
-
-	public boolean inicia() {
-		if(Status.ATUALIZANDO.equals(this.status)){
-			return false; 
-		}else{
-			this.status = Status.ATUALIZANDO;
-			return true;
-		}
-	}
-
-	public void finaliza(boolean comErro) {
-		if(comErro){
-			this.status = Status.SERVIDOR_FORA_DO_AR;
-		}else{
-			this.ultima = this.proxima;
-			this.status = Status.ATUALIZADO;
-		}
-	}
-
 }
