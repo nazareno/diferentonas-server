@@ -2,7 +2,6 @@ package actors;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,7 +19,6 @@ import models.Iniciativa;
 import models.IniciativaDAO;
 import models.Score;
 
-import org.apache.commons.io.IOUtils;
 import org.h2.tools.Csv;
 
 import play.Configuration;
@@ -125,6 +123,7 @@ public class AtualizadorActor extends UntypedActor {
 				Logger.info("Preparando dados para atualização com: " + comando);
 				ProcessBuilder builder = new ProcessBuilder(comando.split(" +"));
 				File saidaDeErro = new File("/tmp/diferentonas_" + data + ".err");
+				Logger.info("Acompanhe a execução em: /tmp/diferentonas_" + data + ".out e " + "/tmp/diferentonas_" + data + ".err");
 				saidaDeErro.createNewFile();
 				builder.redirectError(saidaDeErro);
 				File saidaPadrao = new File("/tmp/diferentonas_" + data + ".out");
@@ -134,12 +133,9 @@ public class AtualizadorActor extends UntypedActor {
 				if(process.waitFor(2, TimeUnit.HOURS)){
 					dados = DadosUtil.listaAtualizacoes(daoAtualizacao.getFolder(), data);
 				}
-				String output = IOUtils.toString(process.getInputStream(), Charset.defaultCharset());
-				Logger.info(output);
-				String error = IOUtils.toString(process.getErrorStream(), Charset.defaultCharset());
-				Logger.error(error);
+			}else{
+				Logger.info("Não foi definido um comando para atualização. Verifique a propriedade diferentonas.atualizacao.comando");
 			}
-			Logger.info("Não foi definido um comando para atualização. Verifique a propriedade diferentonas.atualizacao.comando");
 		}catch(IOException | InterruptedException e){
 			Logger.error("Erro durante a execução do comando de atualização: " + comando, e);
 		}

@@ -21,7 +21,7 @@ import play.Logger;
 
 public class DadosUtil {
 
-    public static String listaAtualizacoes(String folder, String data2) {
+    public static String listaAtualizacoes(String folder, String dataEsperada) {
 
         List<String> paths = new ArrayList<>();
 
@@ -40,8 +40,8 @@ public class DadosUtil {
 
             Collections.sort(paths);
             Collections.reverse(paths);
-            Logger.debug("Arquivos disponíveis para atualização: " + paths);
-            if(!paths.isEmpty()){
+            Logger.debug("Arquivos de dados encontrados para atualização: " + paths);
+            if(!paths.isEmpty() && paths.get(0).equals(dataEsperada)){
             	String maisNovo = paths.remove(0);
             	for (String data : paths) {
             		apagaArquivosVelhos(folder, data);
