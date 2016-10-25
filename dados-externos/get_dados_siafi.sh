@@ -64,6 +64,5 @@ echo "[$(date)] Consolidando em um só arquivo"
 
 of='../'$ofn
 ../consolida_siafi.R utf8-*_Transferencias.csv > $of
+echo "[$(date)] Resultado em " $PWD/$of
 cd -
-
-echo "[$(date)] Resultado em " $ofn
