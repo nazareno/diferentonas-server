@@ -80,7 +80,7 @@ if [ ! -e $output_siafi ]; then
   echo "[`date`] Baixando dados do siafi para $output_siafi"
   ./get_dados_siafi.sh $output_siafi
 else
-  echo "[`date`] Já temos os dados mais recentes do SIAFI"
+  echo "[`date`] Já temos os dados mais recentes do SIAFI em $output_siafi"
 fi
 # Calcula o que queremos --------
 cd ..
