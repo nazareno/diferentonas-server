@@ -33,15 +33,24 @@ cruza_dados = function(convenios_siconv,
   # --------------------------------------
   # Primeiro carregar todo mundo
   # --------------------------------------
-  
   # 1. Dados dos convênios no SICONV 
   convenios.d = filtra_convenios(convenios_siconv)
   
   # 2. Dados do IBGE e IDH
-  municipios = readr::read_csv(arquivo_idh)
-  flog.info("Carreguei dados do de código e IDH")
+  library(readr)
+  municipios = read_csv(arquivo_idh, 
+                        col_types = cols(.default = col_double(), 
+                                         cod6 = col_character(), 
+                                         cod7 = col_character(), 
+                                         municipio = col_character(), 
+                                         UF = col_character()))
+  flog.info("Carreguei dados de código e IDH")
   # para pegar as UFs: 
-  populacao = readr::read_csv2(arquivo_populacao)
+  populacao = read_csv2(arquivo_populacao, 
+                        col_types = cols(.default = col_integer(), 
+                                         Sigla = col_character(), 
+                                         `Código` = col_character(), 
+                                         `Município` = col_character()))
   names(populacao)[1:3] = c("Sigla", "Codigo", "Municipio") # lidar com https://github.com/hadley/dplyr/issues/848
   flog.info("Carreguei dados de UF")
   

@@ -51,8 +51,10 @@ saida_iniciativas=../${diretorio_saida}/iniciativas-${data_dados_siconv}.csv
 saida_diferentices=../${diretorio_saida}/diferentices-${data_dados_siconv}.csv
 saida_historico=../${diretorio_saida}/historico-${data_dados_siconv}.csv
 
-# arquivo com cidades semelhantes, por enquanto estático:
-ARQUIVO_VIZINHOS=$diretorio_saida/vizinhos.euclidiano.csv
+# arquivos com dados de idh, populacao e vizinhos
+arquivo_vizinhos=$diretorio_saida/vizinhos.euclidiano.csv
+arquivo_idh=$diretorio_saida/dados2010.csv
+arquivo_populacao=$diretorio_saida/populacao.csv
 
 # Entrar no diretório do script
 parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
@@ -86,7 +88,7 @@ f1=/tmp/iniciativas-${data_dados_siconv}.csv
 f2=/tmp/diferentices-${data_dados_siconv}.csv
 f3=/tmp/historico-${data_dados_siconv}.csv
 
-./R/atualiza_dados_cli.R dados-externos/$output_siconv dados-externos/$output_siafi $ARQUIVO_VIZINHOS $f1 $f2 $f3
+./R/atualiza_dados_cli.R dados-externos/$output_siconv dados-externos/$output_siafi $arquivo_vizinhos $arquivo_idh $arquivo_populacao $f1 $f2 $f3
 # Deu tudo certo, copia para dist/data
 # mv $f1 $f2 $f3 ${diretorio_saida}
 # Temporariamente decidimos não usar o arquivo de histórico (fica tudo mais rápido assim)
@@ -94,6 +96,6 @@ mv $f1 $f2 ${diretorio_saida}
 echo "[`date`] Dados movidos para ${diretorio_saida} : " $f1 " " $f2 " " $f3
 cd -
 
-# TODO apagar $output_siconv
+rm -rf $output_siconv
 
 echo "[`date`] Fim da aquisição e pré-processamento de dados do siconv"
