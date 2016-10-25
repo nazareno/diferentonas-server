@@ -21,7 +21,7 @@ import play.Logger;
 
 public class DadosUtil {
 
-    public static String listaAtualizacoes(String folder) {
+    public static String listaAtualizacoes(String folder, String data2) {
 
         List<String> paths = new ArrayList<>();
 

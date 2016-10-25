@@ -59,6 +59,10 @@ public class AtualizadorActor extends UntypedActor {
 			String dataVotada = mensagem.getDataVotada();
 			String servidorResponsavel = mensagem.getIdentificadorUnicoDoServidor();
 			
+			String[] dataVotadaSplit = dataVotada.split(" +")[0].split("/");
+			String dataVotadaFormatada = dataVotadaSplit[2]+dataVotadaSplit[1]+dataVotadaSplit[0];
+			
+			
 			Atualizacao maisRecente = jpaAPI.withTransaction(() -> {
 				daoAtualizacao.inicia(dataVotada, servidorResponsavel);
 				return daoAtualizacao.getUltimaRealizada();
@@ -74,7 +78,7 @@ public class AtualizadorActor extends UntypedActor {
 				return;
 			}
 			
-			String dataDisponivel = preparaDados(maisRecente == null?"":maisRecente.getDataDePublicacao(), dataVotada);
+			String dataDisponivel = preparaDados(maisRecente == null?"":maisRecente.getDataDePublicacao(), dataVotadaFormatada);
 			
 			if(dataDisponivel == null){
 				Logger.info("Não existem dados para atualização.");
@@ -120,16 +124,15 @@ public class AtualizadorActor extends UntypedActor {
 			if(!comando.isEmpty()){
 				Logger.info("Preparando dados para atualização com: " + comando);
 				ProcessBuilder builder = new ProcessBuilder(comando.split(" +"));
-				String[] strings = data.split(" +")[0].split("/");
-				File saidaDeErro = new File("/tmp/diferentonas_" + strings[2]+strings[1]+strings[0] + ".err");
+				File saidaDeErro = new File("/tmp/diferentonas_" + data + ".err");
 				saidaDeErro.createNewFile();
 				builder.redirectError(saidaDeErro);
-				File saidaPadrao = new File("/tmp/diferentonas_" + strings[2]+strings[1]+strings[0] + ".out");
+				File saidaPadrao = new File("/tmp/diferentonas_" + data + ".out");
 				saidaPadrao.createNewFile();
 				builder.redirectOutput(saidaPadrao);
 				Process process = builder.start();
 				if(process.waitFor(2, TimeUnit.HOURS)){
-					dados = DadosUtil.listaAtualizacoes(daoAtualizacao.getFolder());
+					dados = DadosUtil.listaAtualizacoes(daoAtualizacao.getFolder(), data);
 				}
 				String output = IOUtils.toString(process.getInputStream(), Charset.defaultCharset());
 				Logger.info(output);
