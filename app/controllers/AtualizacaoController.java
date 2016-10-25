@@ -78,8 +78,20 @@ public class AtualizacaoController extends Controller {
 			this.atualizacaoURL = client.url(configuration.getString("diferentonas.url", "http://portal.convenios.gov.br/download-de-dados"));
 			this.padraoDaDataDePublicacao = Pattern.compile("\\d\\d\\/\\d\\d\\/\\d\\d\\d\\d\\s\\d\\d:\\d\\d:\\d\\d");
 			this.identificadorUnicoDoServidor = UUID.randomUUID().toString();
+			Logger.info("ID do servidor: " + this.identificadorUnicoDoServidor);
+			
+			if(configuration.getBoolean("diferentonas.demo.forcaatualizacao", false)){
+				Logger.info("Iniciando votação extraordinária!");
+				this.votaEmLider();
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					Logger.error("Dormiu durante a eleição!", e);
+				}
+				Logger.info("Elegendo lider para atualização de urgência!");
+				this.elegeLiderEAtualiza();
+			}
 		}
-		
 	}
 
 

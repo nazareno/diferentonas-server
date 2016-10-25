@@ -64,18 +64,23 @@ public class AtualizadorActor extends UntypedActor {
 				return daoAtualizacao.getUltimaRealizada();
 			});
 			
-			if(maisRecente != null && maisRecente.equals(dataVotada)){
+			if (maisRecente != null && maisRecente.equals(dataVotada)) {
 				Logger.info("Dados já atualizados para data: " + dataVotada);
-				daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false);
+				jpaAPI.withTransaction(() -> {
+					daoAtualizacao.finaliza(dataVotada, servidorResponsavel,
+							false);
+				});
 				sender().tell(false, self());
 				return;
 			}
 			
-			String dataDisponivel = preparaDados(maisRecente == null?"":maisRecente.getDataDePublicacao());
+			String dataDisponivel = preparaDados(maisRecente == null?"":maisRecente.getDataDePublicacao(), dataVotada);
 			
 			if(dataDisponivel == null){
 				Logger.info("Não existem dados para atualização.");
-				daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false);
+				jpaAPI.withTransaction(() -> {
+					daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false);
+				});
 				sender().tell(false, self());
 				return;
 			}
@@ -108,14 +113,21 @@ public class AtualizadorActor extends UntypedActor {
 		}
 	}
 	
-	private String preparaDados(String ultimaDataAtualizada){
+	private String preparaDados(String ultimaDataAtualizada, String data){
 		String comando = configuration.getString("diferentonas.atualizacao.comando");
 		String dados = null;
 		try{
 			if(!comando.isEmpty()){
 				Logger.info("Preparando dados para atualização com: " + comando);
-				Process process;
-				process = Runtime.getRuntime().exec(comando);
+				ProcessBuilder builder = new ProcessBuilder(comando.split(" +"));
+				String[] strings = data.split(" +")[0].split("/");
+				File saidaDeErro = new File("/tmp/diferentonas_" + strings[2]+strings[1]+strings[0] + ".err");
+				saidaDeErro.createNewFile();
+				builder.redirectError(saidaDeErro);
+				File saidaPadrao = new File("/tmp/diferentonas_" + strings[2]+strings[1]+strings[0] + ".out");
+				saidaPadrao.createNewFile();
+				builder.redirectOutput(saidaPadrao);
+				Process process = builder.start();
 				if(process.waitFor(2, TimeUnit.HOURS)){
 					dados = DadosUtil.listaAtualizacoes(daoAtualizacao.getFolder());
 				}

@@ -40,6 +40,7 @@ public class DadosUtil {
 
             Collections.sort(paths);
             Collections.reverse(paths);
+            Logger.debug("Arquivos disponíveis para atualização: " + paths);
             if(!paths.isEmpty()){
             	String maisNovo = paths.remove(0);
             	for (String data : paths) {
@@ -55,6 +56,7 @@ public class DadosUtil {
 
 
     private static void apagaArquivosVelhos(String folder, String data) {
+        Logger.debug("Deletando arquivos de atualização para data: " + data);
 		new File(folder, "iniciativas-" + data + ".csv").delete();
 		new File(folder, "diferentices-" + data + ".csv").delete();
 		new File(folder, "historico-" + data + ".csv").delete();
