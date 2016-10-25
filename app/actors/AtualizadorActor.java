@@ -104,6 +104,7 @@ public class AtualizadorActor extends UntypedActor {
 					atualizaIniciativas(iniciativasDataPath, proximaData, primeiraExecucao);
 					jpaAPI.withTransaction(() -> daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false));
 					sender().tell(true, self());
+					Logger.info("Atualização concluída");
 				} catch (Exception e) {
 					Logger.error("Atualização com dados de " + dataVotada + " não terminou com sucesso.", e);
 					jpaAPI.withTransaction(() -> daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false));
@@ -132,6 +133,10 @@ public class AtualizadorActor extends UntypedActor {
 				Process process = builder.start();
 				if(process.waitFor(2, TimeUnit.HOURS)){
 					dados = DadosUtil.listaAtualizacoes(daoAtualizacao.getFolder(), data);
+				}
+				if(process.exitValue() != 0){
+					Logger.error("Erro durante a execução do comando de atualização. Finalizado com: " + process.exitValue());
+					Logger.error("Verifique o que aconteceu em /tmp/diferentonas_" + data + ".err");
 				}
 			}else{
 				Logger.info("Não foi definido um comando para atualização. Verifique a propriedade diferentonas.atualizacao.comando");
