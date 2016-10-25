@@ -104,6 +104,7 @@ public class AtualizadorActor extends UntypedActor {
 					atualizaIniciativas(iniciativasDataPath, proximaData, primeiraExecucao);
 					jpaAPI.withTransaction(() -> daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false));
 					sender().tell(true, self());
+					Logger.info("Atualização concluída");
 				} catch (Exception e) {
 					Logger.error("Atualização com dados de " + dataVotada + " não terminou com sucesso.", e);
 					jpaAPI.withTransaction(() -> daoAtualizacao.finaliza(dataVotada, servidorResponsavel, false));
