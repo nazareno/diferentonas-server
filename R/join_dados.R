@@ -52,8 +52,8 @@ cruza_dados = function(convenios_siconv,
                                          `Código` = col_character(), 
                                          `Município` = col_character()), 
                         col_names = c("Sigla",
-                                      "Codigo",
-                                      "Municipio",
+                                      "Código",
+                                      "Município",
                                       "1991", "1996", "2000", "2007", "2010", "VAZIA"))
   names(populacao)[1:3] = c("Sigla", "Codigo", "Municipio") # lidar com https://github.com/hadley/dplyr/issues/848
   flog.info("Carreguei dados de UF")
