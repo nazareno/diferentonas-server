@@ -28,7 +28,7 @@ public class AtualizacaoDAO {
 
     public List<Atualizacao> getMaisRecentes() {
     	EntityManager em = jpaAPI.em();
-    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status != :status ORDER BY a.dataDePublicacao DESC, a.servidorResponsavel DESC", Atualizacao.class);
+    	TypedQuery<Atualizacao> query = em.createQuery("FROM Atualizacao a WHERE a.status != :status ORDER BY a.dataDePublicacao DESC, a.servidorResponsavel DESC, a.horaDaAtualizacao DESC", Atualizacao.class);
     	query.setMaxResults(10);
     	query.setParameter("status", Status.DISPONIVEL);
 		List<Atualizacao> list = query.getResultList();

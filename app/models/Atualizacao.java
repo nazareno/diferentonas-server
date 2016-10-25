@@ -10,6 +10,8 @@ import javax.persistence.Id;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 public class Atualizacao implements Serializable {
 	
@@ -34,6 +36,7 @@ public class Atualizacao implements Serializable {
 
 	private String servidorResponsavel;
 	
+	@JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd/MM/yyyy HH:mm", timezone="America/Recife")
 	private Date horaDaAtualizacao;
 	
 	private Status status;

@@ -10,9 +10,11 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import models.Atualizacao;
 import models.AtualizacaoDAO;
+import models.Novidade;
 
 import org.junit.After;
 import org.junit.Before;
@@ -24,7 +26,9 @@ import play.mvc.Result;
 import play.test.Helpers;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import controllers.util.WithAuthentication;
 
@@ -63,9 +67,7 @@ public class AtualizacaoControllerTest extends WithAuthentication {
         String conteudoResposta = contentAsString(result);
         assertNotNull(conteudoResposta);
         System.err.println(conteudoResposta);
-        Atualizacao atualizacao = Json.fromJson(Json.parse(conteudoResposta), Atualizacao.class);
-        assertTrue(atualizacao.getProxima().isEmpty());
-        assertTrue(atualizacao.getUltima().isEmpty());
-//        assertEquals(Atualizacao.Status.SERVIDOR_FORA_DO_AR, atualizacao.getStatus());
+        List<Atualizacao> atualizacoes = new ObjectMapper().readValue(conteudoResposta, new TypeReference<List<Atualizacao>>() {});
+        assertTrue(atualizacoes.isEmpty());
     }
 }
