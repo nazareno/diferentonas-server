@@ -40,12 +40,16 @@ fi
 set -e
 set -u
 
+# Entra no diretório do script
+parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
+cd "$parent_path"
+
 # Saídas que geraremos
 #diretorio_saida='dist/data/'
-diretorio_saida=$1
-if [[ ! -d "./$diretorio_saida" ]]; then
+diretorio_saida=../$1
+if [[ ! -d "$diretorio_saida" ]]; then
   diretorio_saida=$( cd "$(dirname "$1/.")" ; pwd -P )
-  echo "[`date`] Diretório de saída $1 (ou $diretorio_saida) não existe. Para tudo."
+  echo "[`date`] Diretório de saída $diretorio_saida (a partir do informado: $1) não existe. Para tudo."
   exit 2
 fi
 
@@ -58,12 +62,8 @@ arquivo_vizinhos=$diretorio_saida/vizinhos.euclidiano.csv
 arquivo_idh=$diretorio_saida/dados2010.csv
 arquivo_populacao=$diretorio_saida/populacao.csv
 
-# Entrar no diretório do script
-parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
-cd "$parent_path"
-
 # A menos que existam
-if [[ -f $saida_iniciativas && -f $saida_diferentices && -f $saida_historico ]]; then
+if [[ -f $saida_iniciativas && -f $saida_diferentices ]]; then
   echo "[`date`] Já processamos os dados mais recentes no portal de convênios. Data mais recente: " $data_dados_siconv
   exit 0
 fi
