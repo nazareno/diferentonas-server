@@ -16,6 +16,8 @@ case $i in
 esac
 done
 
+echo "[`date`] Executando a partir de `pwd`"
+
 if [ -z "$data_dados_siconv" ]; then
   reusando_dados_locais=false
   echo "[`date`] Checando data da atualização mais recente no siconv"
@@ -42,10 +44,10 @@ set -u
 #diretorio_saida='dist/data/'
 diretorio_saida=$1
 if [[ ! -d "./$diretorio_saida" ]]; then
-  echo "[`date`] Diretório de saída $1 não existe. Para tudo."
+  diretorio_saida=$( cd "$(dirname "$1/.")" ; pwd -P )
+  echo "[`date`] Diretório de saída $1 (ou $diretorio_saida) não existe. Para tudo."
   exit 2
 fi
-diretorio_saida=$( cd "$(dirname "$1/.")" ; pwd -P )
 
 saida_iniciativas=../${diretorio_saida}/iniciativas-${data_dados_siconv}.csv
 saida_diferentices=../${diretorio_saida}/diferentices-${data_dados_siconv}.csv

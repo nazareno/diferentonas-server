@@ -79,13 +79,13 @@ Para preparar a distribuição a partir do código mais recente:
 git clone http://github.com/nazareno/diferentonas-server
 cd diferentonas-server
 ./activator clean compile dist
-# Isso gera o arquivo diferentonas-server-1.0-SNAPSHOT.zip
+# Isso gera o arquivo diferentonas-server-1.0.zip
 ```
 
 Para iniciar o diferentonas em cada nó:
 
 ```
-unzip path-para-o-zip/diferentonas-server-1.0-SNAPSHOT.zip
-cd diferentonas-server-1.0-SNAPSHOT
+unzip path-para-o-zip/diferentonas-server-1.0.zip
+cd diferentonas-server-1.0
 ./bin/diferentonas-server -J-server -Dconfig.file=path-para-o-conf/producao.conf -Dlogger.resource=logback-prod.xml
 ```
