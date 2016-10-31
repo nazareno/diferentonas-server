@@ -53,9 +53,9 @@ if [[ ! -d "$diretorio_saida" ]]; then
   exit 2
 fi
 
-saida_iniciativas=../${diretorio_saida}/iniciativas-${data_dados_siconv}.csv
-saida_diferentices=../${diretorio_saida}/diferentices-${data_dados_siconv}.csv
-saida_historico=../${diretorio_saida}/historico-${data_dados_siconv}.csv
+saida_iniciativas=${diretorio_saida}/iniciativas-${data_dados_siconv}.csv
+saida_diferentices=${diretorio_saida}/diferentices-${data_dados_siconv}.csv
+saida_historico=${diretorio_saida}/historico-${data_dados_siconv}.csv
 
 # arquivos com dados de idh, populacao e vizinhos
 arquivo_vizinhos=$diretorio_saida/vizinhos.euclidiano.csv
@@ -90,7 +90,7 @@ f1=/tmp/iniciativas-${data_dados_siconv}.csv
 f2=/tmp/diferentices-${data_dados_siconv}.csv
 f3=/tmp/historico-${data_dados_siconv}.csv
 
-./R/atualiza_dados_cli.R dados-externos/$output_siconv dados-externos/$output_siafi $arquivo_vizinhos $arquivo_idh $arquivo_populacao $f1 $f2 $f3
+./R/atualiza_dados_cli.R dados-externos/$output_siconv dados-externos/$output_siafi dados-externos/$arquivo_vizinhos dados-externos/$arquivo_idh dados-externos/$arquivo_populacao $f1 $f2 $f3
 # Deu tudo certo, copia para dist/data
 # mv $f1 $f2 $f3 ${diretorio_saida}
 # Temporariamente decidimos não usar o arquivo de histórico (fica tudo mais rápido assim)
