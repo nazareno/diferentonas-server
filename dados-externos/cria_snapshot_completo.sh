@@ -41,6 +41,7 @@ set -e
 set -u
 
 # Entra no diretório do script
+diretorio_inicial=$PWD
 parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
 cd "$parent_path"
 
@@ -94,9 +95,9 @@ f3=/tmp/historico-${data_dados_siconv}.csv
 # Deu tudo certo, copia para dist/data
 # mv $f1 $f2 $f3 ${diretorio_saida}
 # Temporariamente decidimos não usar o arquivo de histórico (fica tudo mais rápido assim)
-mv $f1 $f2 ${diretorio_saida}
+mv $f1 $f2 dados-externos/${diretorio_saida}
 echo "[`date`] Dados movidos para ${diretorio_saida} : " $f1 " " $f2 " " $f3
-cd -
+cd $diretorio_inicial
 
 rm -rf $output_siconv
 
