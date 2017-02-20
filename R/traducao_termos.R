@@ -55,6 +55,10 @@ traduz_termos = function(iniciativas){
     return(paste(sapply(palavras, modificar.palavra), collapse = " "))
   }
   
+  novas.iniciativas = novas.iniciativas %>% 
+    mutate(OBJETO_PROPOSTA = ifelse(is.na(OBJETO_PROPOSTA), 
+                                    "Sem descrição cadastrada", 
+                                    OBJETO_PROPOSTA))
   novas.iniciativas$OBJETO_PROPOSTA <- sapply(novas.iniciativas$OBJETO_PROPOSTA, capitalizar)
   novas.iniciativas$DESC_ORGAO_SUP <- sapply(novas.iniciativas$DESC_ORGAO_SUP, capitalizar)
   

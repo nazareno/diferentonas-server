@@ -17,10 +17,12 @@ arquivo_historicos = args[8]
 # Debug / uso interativo: 
 # dados_siconv = "dados-externos/siconv-20160723"
 # arquivo_siafi = "dados-externos/convenios-siafi-201607.csv"
+# arquivo_idh = "dist/data/dados2010.csv"
+# arquivo_populacao = "dist/data/populacao.csv"
 # arquivo_vizinhos = "dist/data/vizinhos.euclidiano.csv"
-# arquivo_iniciativas_saida = "dist/data/iniciativas-20160723.csv"
-# arquivo_diferentices = "dist/data/diferentices-20160723.csv"
-# arquivo_historicos = "dist/data/historico-20160723.csv"
+# arquivo_iniciativas_saida = "dist/data/iniciativas-xxx"
+# arquivo_diferentices = "dist/data/diferentices-xxx.csv"
+# arquivo_historicos = "dist/data/historico-xxx.csv"
 
 library(futile.logger)
 
