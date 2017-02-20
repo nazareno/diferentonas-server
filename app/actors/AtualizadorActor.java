@@ -150,8 +150,10 @@ public class AtualizadorActor extends UntypedActor {
 	private void atualizaScores(String dataPath, Date dataDaAtualizacao, boolean primeiraExecucao) throws SQLException {
     	
     	int count = 0;
+    	
+    	Csv csv = new Csv();
 
-    	final ResultSet scoreResultSet = new Csv().read(dataPath, null, "utf-8");
+    	final ResultSet scoreResultSet = csv.read(dataPath, null, "utf-8");
     	count = 0;
     	while (scoreResultSet.next()) {
     		long originID = scoreResultSet.getLong(1);
@@ -188,6 +190,7 @@ public class AtualizadorActor extends UntypedActor {
     		}
     	}
     	scoreResultSet.close();
+    	csv.close();
     	
     	new File(dataPath).delete();
 	}
@@ -198,7 +201,8 @@ public class AtualizadorActor extends UntypedActor {
 	
 	private void atualizaIniciativas(String dataPath, Date dataDaAtualizacao, boolean primeiraExecucao) throws SQLException {
 
-		ResultSet resultSet = new Csv().read(dataPath, null, "utf-8");
+		Csv csv = new Csv();
+		ResultSet resultSet = csv.read(dataPath, null, "utf-8");
 		int count = 0;
 		while (resultSet.next()) {
 
@@ -231,6 +235,9 @@ public class AtualizadorActor extends UntypedActor {
 				Logger.info("Atualizou " + count + " iniciativas.");
 			}
 		}
+		
+		resultSet.close();
+		csv.close();
 		
 		new File(dataPath).delete();
     }
