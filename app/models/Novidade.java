@@ -54,8 +54,10 @@ public class Novidade implements Serializable{
     
     private String nomeDoCampo;
     
+    @Column(columnDefinition = "TEXT")
     private String valorAntigo;
 
+    @Column(columnDefinition = "TEXT")
 	private String valorNovo;
 
 	public Novidade(){
