@@ -46,8 +46,8 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE}")" ; pwd -P )
 cd "$parent_path"
 
 # Saídas que geraremos
-#diretorio_saida='dist/data/'
-diretorio_saida=../$1
+diretorio_saida='dist/data/'
+#diretorio_saida=../$1
 if [[ ! -d "$diretorio_saida" ]]; then
   diretorio_saida=$( cd "$(dirname "$1/.")" ; pwd -P )
   echo "[`date`] Diretório de saída $diretorio_saida (a partir do informado: $1) não existe. Para tudo."
