@@ -11,32 +11,32 @@ GET      /cidade/:id                                         controllers.CidadeC
 GET      /cidade/:id/similares                               controllers.CidadeController.getSimilares(id: Long)
 GET      /cidade/:id/iniciativas                             controllers.IniciativaController.getIniciativas(id: Long)
 GET      /cidade/:id/linhadotempo                            controllers.CidadeController.getNovidades(id: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
-POST     /cidade/:id/inscritos                               controllers.CidadeController.adicionaInscrito(id: Long)
-DELETE   /cidade/:id/inscritos                               controllers.CidadeController.removeInscrito(id: Long)
+#POST     /cidade/:id/inscritos                               controllers.CidadeController.adicionaInscrito(id: Long)
+#DELETE   /cidade/:id/inscritos                               controllers.CidadeController.removeInscrito(id: Long)
 
 # Mensagens do Governo
-GET      /mensagens                                          controllers.MensagemController.getMensagens(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
-POST     /mensagens                                          controllers.MensagemController.save()
-DELETE   /mensagens/:id                                      controllers.MensagemController.delete(id: String)
+#GET      /mensagens                                          controllers.MensagemController.getMensagens(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
+#POST     /mensagens                                          controllers.MensagemController.save()
+#DELETE   /mensagens/:id                                      controllers.MensagemController.delete(id: String)
 
 # Iniciativas
 GET      /iniciativas/:id                                    controllers.IniciativaController.get(id: Long)
 GET      /iniciativas/:id/similares                          controllers.IniciativaController.similares(id: Long, quantidade: Long?=10)
-POST     /iniciativas/:id/inscritos                          controllers.IniciativaController.adicionaInscrito(id: Long)
-DELETE   /iniciativas/:id/inscritos                          controllers.IniciativaController.removeInscrito(id: Long)
-POST     /iniciativas/:iniciativa/opinioes                   controllers.OpiniaoController.addOpiniao(iniciativa: Long)
+#POST     /iniciativas/:id/inscritos                          controllers.IniciativaController.adicionaInscrito(id: Long)
+#DELETE   /iniciativas/:id/inscritos                          controllers.IniciativaController.removeInscrito(id: Long)
+#POST     /iniciativas/:iniciativa/opinioes                   controllers.OpiniaoController.addOpiniao(iniciativa: Long)
 GET      /iniciativas/:iniciativa/opinioes                   controllers.OpiniaoController.getOpinioes(iniciativa: Long, pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
-POST     /iniciativas/:iniciativa/opinioes/:opiniao/joinha   controllers.OpiniaoController.addJoinha(iniciativa: Long, opiniao: String)
-DELETE   /iniciativas/:iniciativa/opinioes/:opiniao/joinha   controllers.OpiniaoController.removeJoinha(iniciativa: Long, opiniao: String)
+#POST     /iniciativas/:iniciativa/opinioes/:opiniao/joinha   controllers.OpiniaoController.addJoinha(iniciativa: Long, opiniao: String)
+#DELETE   /iniciativas/:iniciativa/opinioes/:opiniao/joinha   controllers.OpiniaoController.removeJoinha(iniciativa: Long, opiniao: String)
 
 # lista de novidades com links para o item
 GET      /linhadotempo                                       controllers.FeedController.getNovidades(pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
 # Cidadãos
-GET      /cidadaos                                           controllers.CidadaoController.getCidadaos(query: String ?= "", pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
-POST     /cidadaos/:id/funcionario                           controllers.CidadaoController.promoveAFuncionario(id: String, ministerio: String)
-DELETE   /cidadaos/:id/funcionario                           controllers.CidadaoController.removePapelDeFuncionario(id: String)
-GET      /funcionarios                                       controllers.CidadaoController.getFuncionarios(query: String ?= "", pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
+#GET      /cidadaos                                           controllers.CidadaoController.getCidadaos(query: String ?= "", pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
+#POST     /cidadaos/:id/funcionario                           controllers.CidadaoController.promoveAFuncionario(id: String, ministerio: String)
+#DELETE   /cidadaos/:id/funcionario                           controllers.CidadaoController.removePapelDeFuncionario(id: String)
+#GET      /funcionarios                                       controllers.CidadaoController.getFuncionarios(query: String ?= "", pagina: Int ?= 0, tamanhoPagina: Int ?= 10)
 
 # Map static resources from the /public folder to the /assets URL path
 GET      /admin/*file                                        controllers.Assets.at(path="/public", file)

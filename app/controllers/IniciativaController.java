@@ -27,7 +27,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
-@Security.Authenticated(AcessoCidadao.class)
 public class IniciativaController extends Controller {
 
     private IniciativaDAO iniciativaDAO;
@@ -43,9 +42,11 @@ public class IniciativaController extends Controller {
 
     @Transactional(readOnly = true)
     public Result get(Long id) {
-    	
-        iniciativaDAO.adicionaSumarios(iniciativaDAO.find(id), getCidadaoLogado());
-        return ok(toJson(iniciativaDAO.find(id)));
+        Iniciativa iniciativa = iniciativaDAO.find(id);
+        if(iniciativa == null){
+            return(notFound("Iniciativa " + id))
+        }
+        return ok(toJson(iniciativa));
     }
 
     @Transactional(readOnly = true)
@@ -61,10 +62,8 @@ public class IniciativaController extends Controller {
 
     @Transactional(readOnly = true)
     public CompletionStage<Result> similares(Long id, Long quantidade) {
-        Cidadao cidadao = getCidadaoLogado();
-        Hibernate.initialize(cidadao.getIniciativasAcompanhadas());// TODO isso não devia estar aqui na fachada...
 		return CompletableFuture.supplyAsync(
-				() -> (iniciativaDAO.findSimilares(id, quantidade, cidadao)))
+				() -> (iniciativaDAO.findSimilares(id, quantidade, null)))
 				.thenApply((iniciativas) -> {
 					ArrayNode arrayNode = JsonNodeFactory.instance.arrayNode();
 					for (Iniciativa iniciativa : iniciativas) {
@@ -100,7 +99,7 @@ public class IniciativaController extends Controller {
     }
 
 	private Cidadao getCidadaoLogado() {
-		return cidadaoDAO.find(UUID.fromString(request().username()));
+		return null;
 	}
 
 }

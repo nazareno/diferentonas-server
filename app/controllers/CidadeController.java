@@ -18,7 +18,6 @@ import play.mvc.Security;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Inject;
 
-@Security.Authenticated(AcessoCidadao.class)
 public class CidadeController extends Controller {
 
     @Inject
@@ -39,9 +38,6 @@ public class CidadeController extends Controller {
             return notFound(toJson(result));
         }
 
-        Cidadao cidadao = getCidadaoLogado();
-        cidade.setSeguidaPeloRequisitante(cidadao.isInscritoEm(cidade));
-        
         Logger.debug("Acesso a " + cidade.getNome());
 
         ObjectNode node = (ObjectNode) toJson(cidade);
@@ -116,7 +112,7 @@ public class CidadeController extends Controller {
     }
 
 	private Cidadao getCidadaoLogado() {
-		return daoCidadao.find(UUID.fromString(request().username()));
+		return null;
 	}
 
 }

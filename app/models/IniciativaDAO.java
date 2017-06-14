@@ -100,7 +100,6 @@ public class IniciativaDAO {
 
 	public Iniciativa adicionaSumarios(Iniciativa iniciativa, Cidadao cidadao) {
 		iniciativa.setSumario(this.calculaSumario(iniciativa.getId()));
-		iniciativa.setSeguidaPeloRequisitante(cidadao.isInscritoEm(iniciativa));
 		return iniciativa;
 	}
 
