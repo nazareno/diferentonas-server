@@ -44,7 +44,7 @@ public class IniciativaController extends Controller {
     public Result get(Long id) {
         Iniciativa iniciativa = iniciativaDAO.find(id);
         if(iniciativa == null){
-            return(notFound("Iniciativa " + id))
+            return(notFound("Iniciativa " + id));
         }
         return ok(toJson(iniciativa));
     }
