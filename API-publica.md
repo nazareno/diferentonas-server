@@ -5,7 +5,7 @@ API Diferentona Aberta
 
 Todos os endpoints abaixo estão descritos a partir de:
 
-http://150.165.85.28/api
+http://150.165.85.28:81/api
 
 ## Cidade
 
